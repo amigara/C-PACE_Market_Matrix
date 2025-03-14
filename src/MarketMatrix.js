@@ -294,6 +294,15 @@ const MarketMatrix = () => {
   const [allCategories, setAllCategories] = useState([]);
   const [activeFilters, setActiveFilters] = useState([]);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
+  const [searchTerm, setSearchTerm] = useState('');
+
+// Add this function to handle search input changes
+const handleSearchChange = (e) => {
+  setSearchTerm(e.target.value);
+  // Reset expanded/selected states when searching
+  setExpandedCompany(null);
+  setSelectedCompany(null);
+};
   
   // State for table sorting
   const [sortConfig, setSortConfig] = useState({
@@ -407,27 +416,58 @@ const MarketMatrix = () => {
     }
   };
 
-  // Filter the data based on active filters and sort by verification status
-  const getFilteredData = () => {
-    if (!companiesData) return {};
-    
-    return Object.entries(companiesData)
-      .filter(([category]) => activeFilters.includes(category))
+// Modified getFilteredData function to include search filtering
+const getFilteredData = () => {
+  if (!companiesData) return {};
+  
+  // First filter by active categories
+  const categoriesFiltered = Object.entries(companiesData)
+    .filter(([category]) => activeFilters.includes(category))
+    .reduce((obj, [category, companies]) => {
+      obj[category] = companies;
+      return obj;
+    }, {});
+  
+  // If no search term, just sort by verification status
+  if (!searchTerm.trim()) {
+    return Object.entries(categoriesFiltered)
       .reduce((obj, [category, companies]) => {
         // Sort companies to put verified ones first
         const sortedCompanies = [...companies].sort((a, b) => {
-          // If a is verified and b is not, a comes first
           if (a.verified && !b.verified) return -1;
-          // If b is verified and a is not, b comes first
           if (!a.verified && b.verified) return 1;
-          // Otherwise maintain original order
           return 0;
         });
         
         obj[category] = sortedCompanies;
         return obj;
       }, {});
-  };
+  }
+  
+  // If there is a search term, filter companies by name
+  const searchResults = {};
+  const searchTermLower = searchTerm.toLowerCase().trim();
+  
+  Object.entries(categoriesFiltered).forEach(([category, companies]) => {
+    const filteredCompanies = companies.filter(company => 
+      company.name.toLowerCase().includes(searchTermLower)
+    );
+    
+    // Only include categories that have matching companies
+    if (filteredCompanies.length > 0) {
+      // Sort companies to put verified ones first
+      const sortedCompanies = [...filteredCompanies].sort((a, b) => {
+        if (a.verified && !b.verified) return -1;
+        if (!a.verified && b.verified) return 1;
+        return 0;
+      });
+      
+      searchResults[category] = sortedCompanies;
+    }
+  });
+  
+  return searchResults;
+};
 
   // Function for sorting table columns
   const requestSort = (key) => {
@@ -471,6 +511,25 @@ const MarketMatrix = () => {
   return (
     <div className="market-matrix-container">
       <h2 className="matrix-title">C-PACE Market Matrix</h2>
+
+  {/* Search Bar */}
+<div className="search-container">
+  <input
+    type="text"
+    className="search-input"
+    placeholder="Search companies..."
+    value={searchTerm}
+    onChange={handleSearchChange}
+  />
+  {searchTerm && (
+    <button 
+      className="search-clear-button"
+      onClick={() => setSearchTerm('')}
+    >
+      ×
+    </button>
+  )}
+</div>
       
       {/* Filter Categories Section */}
       <div className="matrix-filters">
@@ -530,10 +589,17 @@ const MarketMatrix = () => {
         </div>
       </div>
       
-      {/* No categories selected message */}
-      {Object.keys(filteredData).length === 0 ? (
-        <div className="matrix-empty">
-          <p>No categories selected. Please select at least one category above.</p>
+{/* No results message */}
+{searchTerm.trim() !== '' && Object.keys(filteredData).length === 0 ? (
+  <div className="matrix-empty">
+    <p>No companies match your search for "{searchTerm}". Try a different search term.</p>
+  </div>
+) : Object.keys(filteredData).length === 0 ? (
+  <div className="matrix-empty">
+    <p>No categories selected. Please select at least one category above.</p>
+  </div>
+) : null}
+        
         </div>
       ) : (
         <>
