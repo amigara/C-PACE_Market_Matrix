@@ -699,8 +699,9 @@
 
 .company-details-sections {
   display: grid;
-  grid-template-columns: 1fr 1fr;
+  grid-template-columns: 1fr;
   gap: 20px;
+  width: 100%;
 }
 
 @media (max-width: 640px) {
