@@ -69,6 +69,78 @@ const SAMPLE_DATA = {
       contactInfo: "invest@greencapital.com"
     },
     { 
+      _id: "capital1", 
+      name: "GreenCapital Fund", 
+      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
+      verified: true,
+      states: ["All 50 States"],
+      contactInfo: "invest@greencapital.com"
+    },
+    { 
+      _id: "capital1", 
+      name: "GreenCapital Fund", 
+      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
+      verified: true,
+      states: ["All 50 States"],
+      contactInfo: "invest@greencapital.com"
+    },
+    { 
+      _id: "capital1", 
+      name: "GreenCapital Fund", 
+      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
+      verified: true,
+      states: ["All 50 States"],
+      contactInfo: "invest@greencapital.com"
+    },
+    { 
+      _id: "capital1", 
+      name: "GreenCapital Fund", 
+      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
+      verified: true,
+      states: ["All 50 States"],
+      contactInfo: "invest@greencapital.com"
+    },
+    { 
+      _id: "capital1", 
+      name: "GreenCapital Fund", 
+      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
+      verified: true,
+      states: ["All 50 States"],
+      contactInfo: "invest@greencapital.com"
+    },
+    { 
+      _id: "capital1", 
+      name: "GreenCapital Fund", 
+      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
+      verified: true,
+      states: ["All 50 States"],
+      contactInfo: "invest@greencapital.com"
+    },
+    { 
+      _id: "capital1", 
+      name: "GreenCapital Fund", 
+      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
+      verified: true,
+      states: ["All 50 States"],
+      contactInfo: "invest@greencapital.com"
+    },
+    { 
+      _id: "capital1", 
+      name: "GreenCapital Fund", 
+      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
+      verified: true,
+      states: ["All 50 States"],
+      contactInfo: "invest@greencapital.com"
+    },
+    { 
+      _id: "capital1", 
+      name: "GreenCapital Fund", 
+      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
+      verified: true,
+      states: ["All 50 States"],
+      contactInfo: "invest@greencapital.com"
+    },
+    { 
       _id: "capital2", 
       name: "EcoInvest Group", 
       logoUrl: "https://dummyimage.com/50x50/8e44ad/ffffff&text=EI", 
