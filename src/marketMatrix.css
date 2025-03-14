@@ -899,3 +899,57 @@
     grid-template-columns: 1fr 1fr;
   }
 }
+
+/* Search container styling */
+.search-container {
+  position: relative;
+  margin-bottom: 20px;
+  width: 100%;
+  max-width: 500px;
+}
+
+/* Search input styling */
+.search-input {
+  width: 100%;
+  padding: 12px 15px;
+  padding-right: 40px;
+  border: 2px solid #e2e8f0;
+  border-radius: 30px;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  outline: none;
+}
+
+.search-input:focus {
+  border-color: #000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.search-input::placeholder {
+  color: #a0aec0;
+}
+
+/* Clear button styling */
+.search-clear-button {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #718096;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.search-clear-button:hover {
+  background-color: #e2e8f0;
+}
