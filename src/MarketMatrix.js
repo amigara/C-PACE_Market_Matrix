@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from "react";
 import "./marketMatrix.css";
-import CompanyModal from "./CompanyModal"; // Keep for table view
+import CompanyModal from "./CompanyModal"; // Keep for grid view
 
 // Expanded sample data for testing the Market Matrix
 const SAMPLE_DATA = {
@@ -304,7 +304,7 @@ const MarketMatrix = () => {
   // State for expanded company in grid view
   const [expandedCompany, setExpandedCompany] = useState(null);
   
-  // State for modal in table view
+  // State for selected company in table view (now stores ID rather than company object)
   const [selectedCompany, setSelectedCompany] = useState(null);
 
   useEffect(() => {
@@ -375,18 +375,21 @@ const MarketMatrix = () => {
     
     // Reset expanded company when filters change
     setExpandedCompany(null);
+    setSelectedCompany(null);
   };
   
   // Select all categories
   const selectAll = () => {
     setActiveFilters([...allCategories]);
     setExpandedCompany(null);
+    setSelectedCompany(null);
   };
   
   // Clear all categories
   const clearAll = () => {
     setActiveFilters([]);
     setExpandedCompany(null);
+    setSelectedCompany(null);
   };
 
   // Toggle view mode
@@ -402,16 +405,6 @@ const MarketMatrix = () => {
     } else {
       setExpandedCompany(companyId);
     }
-  };
-  
-  // Open company modal in table view
-  const openCompanyModal = (company) => {
-    setSelectedCompany(company);
-  };
-  
-  // Close company modal
-  const closeCompanyModal = () => {
-    setSelectedCompany(null);
   };
 
   // Filter the data based on active filters and sort by verification status
@@ -479,7 +472,7 @@ const MarketMatrix = () => {
     <div className="market-matrix-container">
       <h2 className="matrix-title">C-PACE Market Matrix</h2>
       
-      {/* Filter Controls */}
+      {/* Filter Categories Section */}
       <div className="matrix-filters">
         <div className="filters-header">
           <h3 className="filters-title">Filter Categories:</h3>
@@ -515,27 +508,27 @@ const MarketMatrix = () => {
         </div>
       </div>
       
-{/* View Controls Section */}
-<div className="matrix-filters">
-  <div className="filters-header">
-    <h3 className="filters-title">View Options:</h3>
-  </div>
-  
-  <div className="view-toggle">
-    <button 
-      className={`view-button ${viewMode === 'grid' ? 'active' : ''}`}
-      onClick={() => toggleView('grid')}
-    >
-      Grid View
-    </button>
-    <button 
-      className={`view-button ${viewMode === 'table' ? 'active' : ''}`}
-      onClick={() => toggleView('table')}
-    >
-      Table View
-    </button>
-  </div>
-</div>
+      {/* View Options Section */}
+      <div className="matrix-filters">
+        <div className="filters-header">
+          <h3 className="filters-title">View Options:</h3>
+        </div>
+        
+        <div className="view-toggle">
+          <button 
+            className={`view-button ${viewMode === 'grid' ? 'active' : ''}`}
+            onClick={() => toggleView('grid')}
+          >
+            Grid View
+          </button>
+          <button 
+            className={`view-button ${viewMode === 'table' ? 'active' : ''}`}
+            onClick={() => toggleView('table')}
+          >
+            Table View
+          </button>
+        </div>
+      </div>
       
       {/* No categories selected message */}
       {Object.keys(filteredData).length === 0 ? (
@@ -671,7 +664,7 @@ const MarketMatrix = () => {
             </div>
           )}
           
-          {/* Table View with Sortable Columns and Modal */}
+          {/* Table View with Expandable Rows */}
           {viewMode === 'table' && (
             <div className="matrix-table-container">
               <table className="matrix-table">
@@ -704,52 +697,83 @@ const MarketMatrix = () => {
                 </thead>
                 <tbody>
                   {sortedAllCompanies.map((company) => (
-                    <tr key={company._id}>
-                      <td className="table-logo-cell">
-                        <img 
-                          src={company.logoUrl} 
-                          alt={`${company.name} logo`} 
-                          className="table-logo clickable"
-                          onClick={() => openCompanyModal(company)}
-                        />
-                      </td>
-                      <td>{company.name}</td>
-                      <td>{company.category}</td>
-                      <td>
-                        {company.verified ? (
-                          <span className="table-verified-badge">
-                            <span className="verified-badge-icon">✓</span> VERIFIED
-                          </span>
-                        ) : (
-                          <span className="table-unverified">—</span>
-                        )}
-                      </td>
-                      <td>
-                        <a 
-                          href={company.websiteUrl || "#"} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                        >
-                          <button className="website-button">
-                            Visit Website
-                          </button>
-                        </a>
-                      </td>
-                    </tr>
+                    <React.Fragment key={company._id}>
+                      <tr className={selectedCompany === company._id ? 'row-expanded' : ''}>
+                        <td className="table-logo-cell">
+                          <img 
+                            src={company.logoUrl} 
+                            alt={`${company.name} logo`} 
+                            className="table-logo clickable"
+                            onClick={() => {
+                              if (selectedCompany === company._id) {
+                                setSelectedCompany(null);
+                              } else {
+                                setSelectedCompany(company._id);
+                              }
+                            }}
+                          />
+                        </td>
+                        <td>{company.name}</td>
+                        <td>{company.category}</td>
+                        <td>
+                          {company.verified ? (
+                            <span className="table-verified-badge">
+                              <span className="verified-badge-icon">✓</span> VERIFIED
+                            </span>
+                          ) : (
+                            <span className="table-unverified">—</span>
+                          )}
+                        </td>
+                        <td>
+                          <a 
+                            href={company.websiteUrl || "#"} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                          >
+                            <button className="website-button">
+                              Visit Website
+                            </button>
+                          </a>
+                        </td>
+                      </tr>
+                      
+                      {/* Expandable row for company details */}
+                      {selectedCompany === company._id && (
+                        <tr className="expanded-details-row">
+                          <td colSpan="5">
+                            <div className="table-company-details">
+                              <div className="table-company-details-sections">
+                                <div className="table-company-details-section">
+                                  <h4 className="table-details-section-title">States of Operation</h4>
+                                  {company.states && company.states.length > 0 ? (
+                                    <div className="table-company-states-list">
+                                      {company.states.map((state, i) => (
+                                        <span key={i} className="table-company-state-tag">{state}</span>
+                                      ))}
+                                    </div>
+                                  ) : (
+                                    <p className="table-details-empty">No state information available</p>
+                                  )}
+                                </div>
+                              </div>
+                              
+                              <button 
+                                className="table-details-close" 
+                                onClick={() => setSelectedCompany(null)}
+                              >
+                                ×
+                              </button>
+                            </div>
+                          </td>
+                        </tr>
+                      )}
+                    </React.Fragment>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
         </>
-      )}
-      
-      {/* Company Modal for Table View */}
-      {selectedCompany && (
-        <CompanyModal 
-          company={selectedCompany} 
-          onClose={closeCompanyModal} 
-        />
       )}
     </div>
   );
