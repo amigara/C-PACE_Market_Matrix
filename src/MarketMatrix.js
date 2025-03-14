@@ -25,7 +25,7 @@ const MarketMatrix = () => {
   const [activeFilters, setActiveFilters] = useState([]);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
   
-  // New state for table sorting
+  // State for table sorting
   const [sortConfig, setSortConfig] = useState({
     key: 'verified', // Default sort by verification status (verified first)
     direction: 'descending'
@@ -129,19 +129,13 @@ const MarketMatrix = () => {
       }, {});
   };
 
-  // New function for sorting table columns
+  // Function for sorting table columns
   const requestSort = (key) => {
     let direction = 'ascending';
     if (sortConfig.key === key && sortConfig.direction === 'ascending') {
       direction = 'descending';
     }
     setSortConfig({ key, direction });
-  };
-
-  // Get a sort indicator icon (▲ or ▼)
-  const getSortIndicator = (column) => {
-    if (sortConfig.key !== column) return null;
-    return sortConfig.direction === 'ascending' ? ' ▲' : ' ▼';
   };
 
   if (loading) return <div className="matrix-loading">Loading market matrix...</div>;
@@ -279,21 +273,33 @@ const MarketMatrix = () => {
             </div>
           )}
           
-          {/* Table View with Sortable Columns */}
+          {/* Table View with Improved Sortable Columns */}
           {viewMode === 'table' && (
             <div className="matrix-table-container">
               <table className="matrix-table">
                 <thead>
                   <tr>
                     <th className="th-logo">Logo</th>
-                    <th className="th-sortable" onClick={() => requestSort('name')}>
-                      Company{getSortIndicator('name')}
+                    <th 
+                      className={`th-sortable ${sortConfig.key === 'name' ? 'sort-active' : ''}`}
+                      onClick={() => requestSort('name')}
+                      data-sort-direction={sortConfig.key === 'name' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : ''}
+                    >
+                      Company
                     </th>
-                    <th className="th-sortable" onClick={() => requestSort('category')}>
-                      Category{getSortIndicator('category')}
+                    <th 
+                      className={`th-sortable ${sortConfig.key === 'category' ? 'sort-active' : ''}`}
+                      onClick={() => requestSort('category')}
+                      data-sort-direction={sortConfig.key === 'category' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : ''}
+                    >
+                      Category
                     </th>
-                    <th className="th-sortable" onClick={() => requestSort('verified')}>
-                      Status{getSortIndicator('verified')}
+                    <th 
+                      className={`th-sortable ${sortConfig.key === 'verified' ? 'sort-active' : ''}`}
+                      onClick={() => requestSort('verified')}
+                      data-sort-direction={sortConfig.key === 'verified' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : ''}
+                    >
+                      Status
                     </th>
                     <th>Website</th>
                   </tr>
