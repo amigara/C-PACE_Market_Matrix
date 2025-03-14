@@ -323,21 +323,32 @@
 /* View Controls Section */
 .view-controls-section {
   position: relative;
-  margin-top: 20px;
-  padding-top: 5px;
-  border-top: 1px solid #e2e8f0;
+  margin-top: 30px;
+  margin-bottom: 20px;
 }
 
 .view-controls-section:before {
+  content: "";
+  position: absolute;
+  top: 10px;
+  left: 0;
+  right: 0;
+  height: 1px;
+  background-color: #e2e8f0;
+  z-index: 1;
+}
+
+.view-controls-section:after {
   content: "View Options";
   position: absolute;
-  top: -10px;
+  top: 0;
   left: 20px;
   background: white;
   padding: 0 10px;
   font-size: 14px;
   font-weight: 500;
   color: #4a5568;
+  z-index: 2;
 }
 
 /* Table Styles */
