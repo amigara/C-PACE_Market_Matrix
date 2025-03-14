@@ -4,24 +4,16 @@ import "./marketMatrix.css";
 // Sample data for testing in CodeSandbox
 const SAMPLE_DATA = {
   "C-PACE Administrators": [
-    { _id: "1", name: "GreenAdmin Co", logoUrl: "https://dummyimage.com/50x50/00aa00/ffffff&text=GA" },
-    { _id: "2", name: "EcoProperty Managers", logoUrl: "https://dummyimage.com/50x50/22cc22/ffffff&text=EP" },
-    { _id: "3", name: "CleanEnergy Admin", logoUrl: "https://dummyimage.com/50x50/44ee44/ffffff&text=CE" },
-    { _id: "4", name: "SustainableOps Inc", logoUrl: "https://dummyimage.com/50x50/66ff66/ffffff&text=SO" }
+    { _id: "1", name: "GreenAdmin Co", logoUrl: "https://dummyimage.com/50x50/00aa00/ffffff&text=GA", verified: true },
+    { _id: "2", name: "EcoProperty Managers", logoUrl: "https://dummyimage.com/50x50/22cc22/ffffff&text=EP", verified: false },
+    { _id: "3", name: "CleanEnergy Admin", logoUrl: "https://dummyimage.com/50x50/44ee44/ffffff&text=CE", verified: true },
   ],
   "Capital Providers": [
-    { _id: "5", name: "GreenCapital Fund", logoUrl: "https://dummyimage.com/50x50/0000aa/ffffff&text=GC" },
-    { _id: "6", name: "EcoInvest Group", logoUrl: "https://dummyimage.com/50x50/2222cc/ffffff&text=EI" },
-    { _id: "7", name: "RenewFinance Partners", logoUrl: "https://dummyimage.com/50x50/4444ee/ffffff&text=RF" },
-    { _id: "8", name: "CleanEnergy Capital", logoUrl: "https://dummyimage.com/50x50/6666ff/ffffff&text=CC" }
+    { _id: "5", name: "GreenCapital Fund", logoUrl: "https://dummyimage.com/50x50/0000aa/ffffff&text=GC", verified: true },
+    { _id: "6", name: "EcoInvest Group", logoUrl: "https://dummyimage.com/50x50/2222cc/ffffff&text=EI", verified: false },
   ],
   "Law Firms": [
-    { _id: "9", name: "GreenLaw Partners", logoUrl: "https://dummyimage.com/50x50/aa00aa/ffffff&text=GL" },
-    { _id: "10", name: "EcoLegal Group", logoUrl: "https://dummyimage.com/50x50/cc22cc/ffffff&text=EL" }
-  ],
-  "Consultants": [
-    { _id: "11", name: "GreenConsult Co", logoUrl: "https://dummyimage.com/50x50/aa0000/ffffff&text=GC" },
-    { _id: "12", name: "EcoStrategy Group", logoUrl: "https://dummyimage.com/50x50/cc2222/ffffff&text=ES" }
+    { _id: "9", name: "GreenLaw Partners", logoUrl: "https://dummyimage.com/50x50/aa00aa/ffffff&text=GL", verified: false },
   ]
 };
 
@@ -218,6 +210,11 @@ const MarketMatrix = () => {
                               alt={`${company.name} logo`} 
                               className="company-logo"
                             />
+                            {company.verified && (
+                              <div className="verified-badge">
+                                <span className="verified-badge-icon">✓</span> VERIFIED
+                              </div>
+                            )}
                             <div className="company-name-tooltip">
                               {company.name}
                             </div>
@@ -253,7 +250,14 @@ const MarketMatrix = () => {
                           className="table-logo"
                         />
                       </td>
-                      <td>{company.name}</td>
+                      <td>
+                        {company.name}
+                        {company.verified && (
+                          <span className="table-verified-badge">
+                            <span className="verified-badge-icon">✓</span> VERIFIED
+                          </span>
+                        )}
+                      </td>
                       <td>{company.category}</td>
                       <td>
                         <a 
