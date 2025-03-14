@@ -614,28 +614,19 @@ const MarketMatrix = () => {
                                       </div>
                                       
                                       <div className="company-details-sections">
-                                        <div className="company-details-section">
-                                          <h4 className="company-details-section-title">States of Operation</h4>
-                                          {c.states && c.states.length > 0 ? (
-                                            <div className="company-states-list">
-                                              {c.states.map((state, i) => (
-                                                <span key={i} className="company-state-tag">{state}</span>
-                                              ))}
-                                            </div>
-                                          ) : (
-                                            <p className="company-details-empty">No state information available</p>
-                                          )}
+                                          <div className="company-details-section">
+                                            <h4 className="company-details-section-title">States of Operation</h4>
+                                            {c.states && c.states.length > 0 ? (
+                                              <div className="company-states-list">
+                                                {c.states.map((state, i) => (
+                                                  <span key={i} className="company-state-tag">{state}</span>
+                                                ))}
+                                              </div>
+                                            ) : (
+                                              <p className="company-details-empty">No state information available</p>
+                                            )}
+                                          </div>
                                         </div>
-                                        
-                                        <div className="company-details-section">
-                                          <h4 className="company-details-section-title">Contact Information</h4>
-                                          {c.contactInfo ? (
-                                            <p>{c.contactInfo}</p>
-                                          ) : (
-                                            <p className="company-details-empty">No contact information available</p>
-                                          )}
-                                        </div>
-                                      </div>
                                       
                                       <div className="company-details-actions">
                                         <a 
