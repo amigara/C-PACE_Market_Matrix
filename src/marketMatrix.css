@@ -1,5 +1,6 @@
-/* marketMatrix.css - Styles for the Market Matrix component */
+/* marketMatrix.css - Complete styles for the Market Matrix component */
 
+/* Basic container styles */
 .market-matrix-container {
   max-width: 1200px;
   margin: 0 auto;
@@ -92,6 +93,7 @@
   grid-template-columns: repeat(4, 1fr);
   gap: 2px;
   margin-top: 15px;
+  position: relative;
 }
 
 @media (min-width: 640px) {
@@ -112,9 +114,16 @@
   }
 }
 
+/* Company grid item styles */
 .company-item {
-  text-decoration: none;
-  display: block;
+  cursor: pointer;
+  position: relative;
+  transition: all 0.2s ease;
+}
+
+.company-item.active .logo-container {
+  border-color: #524AE8;
+  box-shadow: 0 2px 8px rgba(82, 74, 232, 0.2);
 }
 
 .logo-container {
@@ -132,6 +141,7 @@
 }
 
 .company-item:hover .logo-container {
+  transform: translateY(-2px);
   box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
   z-index: 1;
 }
@@ -142,6 +152,32 @@
   object-fit: contain;
 }
 
+/* Verification badge */
+.verified-badge {
+  position: absolute;
+  bottom: -8px;
+  left: 50%;
+  transform: translateX(-50%);
+  background-color: #524AE8;
+  color: white;
+  font-size: 9px;
+  font-weight: bold;
+  padding: 3px 6px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  border: 1.5px solid white;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+  white-space: nowrap;
+}
+
+.verified-badge-icon {
+  margin-right: 2px;
+  font-size: 10px;
+}
+
+/* Company name tooltip */
 .company-name-tooltip {
   position: absolute;
   bottom: -30px;
@@ -176,7 +212,7 @@
   border-color: transparent transparent #1a202c transparent;
 }
 
-/* Filter styles - updated to match site aesthetic */
+/* Filter styles */
 .matrix-filters {
   margin-bottom: 30px;
 }
@@ -199,7 +235,6 @@
   gap: 8px;
 }
 
-/* Updated button styles with consistent action buttons */
 .filter-button {
   padding: 8px 16px;
   font-size: 16px;
@@ -256,7 +291,7 @@
   border: 1px dashed #cbd5e0;
 }
 
-/* View Toggle - updated to match site */
+/* View Toggle */
 .view-toggle {
   display: flex;
   justify-content: center;
@@ -314,11 +349,42 @@
   object-fit: contain;
 }
 
+.table-logo.clickable {
+  cursor: pointer;
+  transition: transform 0.2s ease;
+}
+
+.table-logo.clickable:hover {
+  transform: scale(1.1);
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
 .matrix-table tr:hover {
   background-color: #f7fafc;
 }
 
-/* Website button - updated to match site */
+/* Table verified badge */
+.table-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #524AE8;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+}
+
+.table-unverified {
+  color: #a0aec0;
+  display: inline-block;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* Website button */
 .website-button {
   padding: 8px 20px;
   background-color: #000;
@@ -335,49 +401,7 @@
   background-color: #222;
 }
 
-/* Updated verification badge CSS for centered positioning */
-.verified-badge {
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #524AE8;
-  color: white;
-  font-size: 9px;
-  font-weight: bold;
-  padding: 3px 6px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  border: 1.5px solid white;
-  z-index: 2;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  white-space: nowrap;
-}
-
-.verified-badge-icon {
-  margin-right: 2px;
-  font-size: 10px;
-}
-
-.table-verified-badge {
-  display: inline-flex;
-  align-items: center;
-  background-color: #524AE8;
-  color: white;
-  font-size: 10px;
-  font-weight: bold;
-  padding: 3px 8px;
-  border-radius: 12px;
-  margin-left: 8px;
-}
-
-/* Optional: Badge hover effect */
-.verified-badge:hover, .table-verified-badge:hover {
-  background-color: #433BD0; /* Slightly darker on hover */
-}
-
-/* Sortable table columns */
+/* Sortable columns */
 .th-sortable {
   cursor: pointer;
   user-select: none;
@@ -412,15 +436,6 @@
 /* Hover effects for sortable headers */
 .th-sortable:hover::after {
   color: #718096;
-}
-
-/* Status column styles */
-.table-unverified {
-  color: #a0aec0;
-  display: inline-block;
-  text-align: center;
-  font-size: 18px;
-  font-weight: 500;
 }
 
 /* Ensure the logo column has fixed width */
@@ -599,7 +614,7 @@
   to { transform: translateY(0); opacity: 1; }
 }
 
-/* Mobile adjustments */
+/* Mobile adjustments for modal */
 @media (max-width: 600px) {
   .modal-container {
     max-width: 100%;
@@ -616,21 +631,7 @@
   }
 }
 
-/* CSS for expandable company details in grid view */
-
-/* Company grid item styles */
-.company-item {
-  cursor: pointer;
-  position: relative;
-  transition: all 0.2s ease;
-}
-
-.company-item.active .logo-container {
-  border-color: #524AE8;
-  box-shadow: 0 2px 8px rgba(82, 74, 232, 0.2);
-}
-
-/* Expandable details section */
+/* Expandable details styles */
 .company-details-wrapper {
   grid-column: 1 / -1; /* Span all columns */
   overflow: hidden;
@@ -656,6 +657,7 @@
 .company-details {
   display: flex;
   flex-direction: column;
+  position: relative;
 }
 
 .company-details-header {
