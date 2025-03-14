@@ -261,6 +261,7 @@
   display: flex;
   flex-wrap: wrap;
   gap: 8px;
+  max-width: 80%;
 }
 
 .filter-category-button {
