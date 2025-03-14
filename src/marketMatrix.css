@@ -176,7 +176,7 @@
   border-color: transparent transparent #1a202c transparent;
 }
 
-/* Filter styles */
+/* Filter styles - updated to match site aesthetic */
 .matrix-filters {
   margin-bottom: 30px;
 }
@@ -199,31 +199,26 @@
   gap: 8px;
 }
 
+/* Updated button styles with consistent action buttons */
 .filter-button {
-  padding: 6px 12px;
-  font-size: 14px;
-  border-radius: 4px;
-  border: none;
+  padding: 8px 16px;
+  font-size: 16px;
+  border-radius: 30px;
   cursor: pointer;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
+  font-weight: 500;
 }
 
-.filter-button-select-all {
-  background-color: #3182ce;
-  color: white;
-}
-
-.filter-button-select-all:hover {
-  background-color: #2c5282;
-}
-
+.filter-button-select-all,
 .filter-button-clear-all {
-  background-color: #4a5568;
-  color: white;
+  background-color: white;
+  color: #000;
+  border: 2px solid #000;
 }
 
+.filter-button-select-all:hover,
 .filter-button-clear-all:hover {
-  background-color: #2d3748;
+  background-color: #f8f8f8;
 }
 
 .filter-buttons {
@@ -235,21 +230,21 @@
 .filter-category-button {
   padding: 6px 12px;
   font-size: 14px;
-  border-radius: 4px;
+  border-radius: 20px;
   cursor: pointer;
   transition: all 0.2s;
 }
 
 .filter-active {
-  background-color: #ebf8ff;
-  border: 1px solid #4299e1;
-  color: #2b6cb0;
+  background-color: #000;
+  border: 1px solid #000;
+  color: white;
 }
 
 .filter-inactive {
-  background-color: #f7fafc;
-  border: 1px solid #e2e8f0;
-  color: #4a5568;
+  background-color: white;
+  border: 1px solid #ddd;
+  color: #333;
 }
 
 .matrix-empty {
@@ -261,7 +256,7 @@
   border: 1px dashed #cbd5e0;
 }
 
-/* View Toggle */
+/* View Toggle - updated to match site */
 .view-toggle {
   display: flex;
   justify-content: center;
@@ -269,20 +264,20 @@
 }
 
 .view-button {
-  padding: 8px 16px;
+  padding: 8px 20px;
   margin: 0 5px;
-  background-color: #f7fafc;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
+  background-color: white;
+  border: 1px solid #ddd;
+  border-radius: 30px;
   cursor: pointer;
   transition: all 0.2s;
-  font-size: 14px;
+  font-size: 16px;
 }
 
 .view-button.active {
-  background-color: #3182ce;
+  background-color: #000;
   color: white;
-  border-color: #2c5282;
+  border-color: #000;
 }
 
 /* Table Styles */
@@ -323,13 +318,13 @@
   background-color: #f7fafc;
 }
 
-/* Website button */
+/* Website button - updated to match site */
 .website-button {
-  padding: 6px 12px;
-  background-color: #3182ce;
+  padding: 8px 20px;
+  background-color: #000;
   color: white;
   border: none;
-  border-radius: 4px;
+  border-radius: 30px;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -337,5 +332,5 @@
 }
 
 .website-button:hover {
-  background-color: #2c5282;
+  background-color: #222;
 }
