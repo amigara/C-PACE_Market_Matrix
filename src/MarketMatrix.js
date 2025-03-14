@@ -589,20 +589,18 @@ const getFilteredData = () => {
         </div>
       </div>
       
-{/* No results message */}
-{searchTerm.trim() !== '' && Object.keys(filteredData).length === 0 ? (
-  <div className="matrix-empty">
-    <p>No companies match your search for "{searchTerm}". Try a different search term.</p>
-  </div>
-) : Object.keys(filteredData).length === 0 ? (
-  <div className="matrix-empty">
-    <p>No categories selected. Please select at least one category above.</p>
-  </div>
-) : null}
-        
-        </div>
-      ) : (
-        <>
+        {/* No results message */}
+        {searchTerm.trim() !== '' && Object.keys(filteredData).length === 0 ? (
+          <div className="matrix-empty">
+            <p>No companies match your search for "{searchTerm}". Try a different search term.</p>
+          </div>
+        ) : Object.keys(filteredData).length === 0 ? (
+          <div className="matrix-empty">
+            <p>No categories selected. Please select at least one category above.</p>
+          </div>
+        ) : (
+          <>
+          
           {/* Grid View with Expandable Details */}
           {viewMode === 'grid' && (
             <div className="matrix-grid">
