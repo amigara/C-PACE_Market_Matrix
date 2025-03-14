@@ -991,3 +991,43 @@
 .search-clear-button:hover {
   background-color: #e2e8f0;
 }
+
+/* Adaptive category widths based on item count */
+@media (min-width: 1200px) {
+  /* These rules apply for desktop 3-column layout */
+  .category-third-width {
+    grid-column: span 1; /* 1/3 width (default) */
+  }
+  
+  .category-half-width {
+    grid-column: span 2; /* 1/2 width (span 2 of 3 columns) */
+  }
+  
+  .category-full-width {
+    grid-column: 1 / -1; /* Full width (span all columns) */
+  }
+}
+
+@media (min-width: 768px) and (max-width: 1199px) {
+  /* These rules apply for tablet 2-column layout */
+  .category-third-width {
+    grid-column: span 1; /* 1/2 width on tablet */
+  }
+  
+  .category-half-width {
+    grid-column: 1 / -1; /* Full width on tablet */
+  }
+  
+  .category-full-width {
+    grid-column: 1 / -1; /* Full width on tablet */
+  }
+}
+
+@media (max-width: 767px) {
+  /* On mobile, all categories are full width regardless of size */
+  .category-third-width,
+  .category-half-width,
+  .category-full-width {
+    grid-column: 1; /* Full width on mobile (already is by default, but being explicit) */
+  }
+}
