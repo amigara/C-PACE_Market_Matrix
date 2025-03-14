@@ -295,16 +295,14 @@ const MarketMatrix = () => {
   const [activeFilters, setActiveFilters] = useState([]);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
   const [searchTerm, setSearchTerm] = useState('');
-  const [expandedCategory, setExpandedCategory] = useState(null);
 
-  // Add this function to handle search input changes
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    // Reset expanded/selected states when searching
-    setExpandedCompany(null);
-    setSelectedCompany(null);
-    setExpandedCategory(null);
-  };
+// Add this function to handle search input changes
+const handleSearchChange = (e) => {
+  setSearchTerm(e.target.value);
+  // Reset expanded/selected states when searching
+  setExpandedCompany(null);
+  setSelectedCompany(null);
+};
   
   // State for table sorting
   const [sortConfig, setSortConfig] = useState({
@@ -372,7 +370,6 @@ const MarketMatrix = () => {
   useEffect(() => {
     setExpandedCompany(null);
     setSelectedCompany(null);
-    setExpandedCategory(null);
   }, [viewMode]);
 
   // Handle filter button clicks
@@ -388,7 +385,6 @@ const MarketMatrix = () => {
     // Reset expanded company when filters change
     setExpandedCompany(null);
     setSelectedCompany(null);
-    setExpandedCategory(null);
   };
   
   // Select all categories
@@ -396,7 +392,6 @@ const MarketMatrix = () => {
     setActiveFilters([...allCategories]);
     setExpandedCompany(null);
     setSelectedCompany(null);
-    setExpandedCategory(null);
   };
   
   // Clear all categories
@@ -404,7 +399,6 @@ const MarketMatrix = () => {
     setActiveFilters([]);
     setExpandedCompany(null);
     setSelectedCompany(null);
-    setExpandedCategory(null);
   };
 
   // Toggle view mode
@@ -413,70 +407,67 @@ const MarketMatrix = () => {
   };
   
   // Toggle expanded company in grid view
-  const toggleExpandedCompany = (companyId, categoryId, e) => {
+  const toggleExpandedCompany = (companyId, e) => {
     e.preventDefault(); // Prevent default link behavior
-    
     if (expandedCompany === companyId) {
       setExpandedCompany(null);
-      setExpandedCategory(null);
     } else {
       setExpandedCompany(companyId);
-      setExpandedCategory(categoryId);
     }
   };
 
-  // Modified getFilteredData function to include search filtering
-  const getFilteredData = () => {
-    if (!companiesData) return {};
-    
-    // First filter by active categories
-    const categoriesFiltered = Object.entries(companiesData)
-      .filter(([category]) => activeFilters.includes(category))
+// Modified getFilteredData function to include search filtering
+const getFilteredData = () => {
+  if (!companiesData) return {};
+  
+  // First filter by active categories
+  const categoriesFiltered = Object.entries(companiesData)
+    .filter(([category]) => activeFilters.includes(category))
+    .reduce((obj, [category, companies]) => {
+      obj[category] = companies;
+      return obj;
+    }, {});
+  
+  // If no search term, just sort by verification status
+  if (!searchTerm.trim()) {
+    return Object.entries(categoriesFiltered)
       .reduce((obj, [category, companies]) => {
-        obj[category] = companies;
-        return obj;
-      }, {});
-    
-    // If no search term, just sort by verification status
-    if (!searchTerm.trim()) {
-      return Object.entries(categoriesFiltered)
-        .reduce((obj, [category, companies]) => {
-          // Sort companies to put verified ones first
-          const sortedCompanies = [...companies].sort((a, b) => {
-            if (a.verified && !b.verified) return -1;
-            if (!a.verified && b.verified) return 1;
-            return 0;
-          });
-          
-          obj[category] = sortedCompanies;
-          return obj;
-        }, {});
-    }
-    
-    // If there is a search term, filter companies by name
-    const searchResults = {};
-    const searchTermLower = searchTerm.toLowerCase().trim();
-    
-    Object.entries(categoriesFiltered).forEach(([category, companies]) => {
-      const filteredCompanies = companies.filter(company => 
-        company.name.toLowerCase().includes(searchTermLower)
-      );
-      
-      // Only include categories that have matching companies
-      if (filteredCompanies.length > 0) {
         // Sort companies to put verified ones first
-        const sortedCompanies = [...filteredCompanies].sort((a, b) => {
+        const sortedCompanies = [...companies].sort((a, b) => {
           if (a.verified && !b.verified) return -1;
           if (!a.verified && b.verified) return 1;
           return 0;
         });
         
-        searchResults[category] = sortedCompanies;
-      }
-    });
+        obj[category] = sortedCompanies;
+        return obj;
+      }, {});
+  }
+  
+  // If there is a search term, filter companies by name
+  const searchResults = {};
+  const searchTermLower = searchTerm.toLowerCase().trim();
+  
+  Object.entries(categoriesFiltered).forEach(([category, companies]) => {
+    const filteredCompanies = companies.filter(company => 
+      company.name.toLowerCase().includes(searchTermLower)
+    );
     
-    return searchResults;
-  };
+    // Only include categories that have matching companies
+    if (filteredCompanies.length > 0) {
+      // Sort companies to put verified ones first
+      const sortedCompanies = [...filteredCompanies].sort((a, b) => {
+        if (a.verified && !b.verified) return -1;
+        if (!a.verified && b.verified) return 1;
+        return 0;
+      });
+      
+      searchResults[category] = sortedCompanies;
+    }
+  });
+  
+  return searchResults;
+};
 
   // Function for sorting table columns
   const requestSort = (key) => {
@@ -521,30 +512,30 @@ const MarketMatrix = () => {
     <div className="market-matrix-container">
       <h2 className="matrix-title">C-PACE Market Matrix</h2>
 
-      {/* Search Bar */}
-      <div className="search-container">
-        <div className="search-input-wrapper">
-          <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search companies and organizations..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          {searchTerm && (
-            <button 
-              className="search-clear-button"
-              onClick={() => setSearchTerm('')}
-            >
-              ×
-            </button>
-          )}
-        </div>
-      </div>
+  {/* Search Bar */}
+<div className="search-container">
+  <div className="search-input-wrapper">
+    <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <input
+      type="text"
+      className="search-input"
+      placeholder="Search companies..."
+      value={searchTerm}
+      onChange={handleSearchChange}
+    />
+    {searchTerm && (
+      <button 
+        className="search-clear-button"
+        onClick={() => setSearchTerm('')}
+      >
+        ×
+      </button>
+    )}
+  </div>
+</div>
       
       {/* Filter Categories Section */}
       <div className="matrix-filters">
@@ -604,25 +595,23 @@ const MarketMatrix = () => {
         </div>
       </div>
       
-      {/* No results message */}
-      {searchTerm.trim() !== '' && Object.keys(filteredData).length === 0 ? (
-        <div className="matrix-empty">
-          <p>No companies match your search for "{searchTerm}". Try a different search term.</p>
-        </div>
-      ) : Object.keys(filteredData).length === 0 ? (
-        <div className="matrix-empty">
-          <p>No categories selected. Please select at least one category above.</p>
-        </div>
-      ) : (
-        <>
-          {/* Grid View with Expandable Details and Categories */}
+        {/* No results message */}
+        {searchTerm.trim() !== '' && Object.keys(filteredData).length === 0 ? (
+          <div className="matrix-empty">
+            <p>No companies match your search for "{searchTerm}". Try a different search term.</p>
+          </div>
+        ) : Object.keys(filteredData).length === 0 ? (
+          <div className="matrix-empty">
+            <p>No categories selected. Please select at least one category above.</p>
+          </div>
+        ) : (
+          <>
+          
+          {/* Grid View with Expandable Details */}
           {viewMode === 'grid' && (
             <div className="matrix-grid">
               {Object.entries(filteredData).map(([category, companies]) => (
-                <div 
-                  key={category} 
-                  className={`matrix-category-container ${expandedCategory === category ? 'expanded' : ''}`}
-                >
+                <div key={category} className="matrix-category-container">
                   <div className="matrix-category-title">
                     <span className="category-title-text">{category}</span>
                   </div>
@@ -632,7 +621,7 @@ const MarketMatrix = () => {
                         <React.Fragment key={company._id}>
                           <div 
                             className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
-                            onClick={(e) => toggleExpandedCompany(company._id, category, e)}
+                            onClick={(e) => toggleExpandedCompany(company._id, e)}
                           >
                             <div className="logo-container">
                               <img 
@@ -670,7 +659,6 @@ const MarketMatrix = () => {
                                         onClick={(e) => {
                                           e.stopPropagation();
                                           setExpandedCompany(null);
-                                          setExpandedCategory(null);
                                         }}
                                       >
                                         ×
@@ -696,19 +684,19 @@ const MarketMatrix = () => {
                                       </div>
                                       
                                       <div className="company-details-sections">
-                                        <div className="company-details-section">
-                                          <h4 className="company-details-section-title">States of Operation</h4>
-                                          {c.states && c.states.length > 0 ? (
-                                            <div className="company-states-list">
-                                              {c.states.map((state, i) => (
-                                                <span key={i} className="company-state-tag">{state}</span>
-                                              ))}
-                                            </div>
-                                          ) : (
-                                            <p className="company-details-empty">No state information available</p>
-                                          )}
+                                          <div className="company-details-section">
+                                            <h4 className="company-details-section-title">States of Operation</h4>
+                                            {c.states && c.states.length > 0 ? (
+                                              <div className="company-states-list">
+                                                {c.states.map((state, i) => (
+                                                  <span key={i} className="company-state-tag">{state}</span>
+                                                ))}
+                                              </div>
+                                            ) : (
+                                              <p className="company-details-empty">No state information available</p>
+                                            )}
+                                          </div>
                                         </div>
-                                      </div>
                                       
                                       <div className="company-details-actions">
                                         <a 
