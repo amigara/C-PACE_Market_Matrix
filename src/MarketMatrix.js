@@ -2,13 +2,13 @@ import React, { useState, useEffect } from "react";
 import "./marketMatrix.css";
 import CompanyModal from "./CompanyModal"; // Keep for grid view
 
-// Expanded sample data for testing the Market Matrix
+// Expanded sample data for testing the Market Matrix with randomized logo colors
 const SAMPLE_DATA = {
   "C-PACE Administrators": [
     { 
       _id: "admin1", 
       name: "GreenAdmin Co", 
-      logoUrl: "https://dummyimage.com/50x50/00aa00/ffffff&text=GA", 
+      logoUrl: "https://dummyimage.com/50x50/3498db/ffffff&text=GA", 
       verified: true, 
       states: ["California", "New York", "Florida", "Texas"],
       contactInfo: "info@greenadmin.co"
@@ -16,14 +16,14 @@ const SAMPLE_DATA = {
     { 
       _id: "admin2", 
       name: "EcoProperty Managers", 
-      logoUrl: "https://dummyimage.com/50x50/22cc22/ffffff&text=EP", 
+      logoUrl: "https://dummyimage.com/50x50/e74c3c/ffffff&text=EP", 
       verified: false,
       states: ["Colorado", "Washington", "Oregon"]
     },
     { 
       _id: "admin3", 
       name: "CleanEnergy Admin", 
-      logoUrl: "https://dummyimage.com/50x50/44ee44/ffffff&text=CE", 
+      logoUrl: "https://dummyimage.com/50x50/9b59b6/ffffff&text=CE", 
       verified: true,
       states: ["Massachusetts", "Connecticut", "Rhode Island", "New Hampshire"],
       contactInfo: "contact@cleanenergy.org"
@@ -31,14 +31,14 @@ const SAMPLE_DATA = {
     { 
       _id: "admin4", 
       name: "SustainableOps Inc", 
-      logoUrl: "https://dummyimage.com/50x50/66ff66/ffffff&text=SO", 
+      logoUrl: "https://dummyimage.com/50x50/f1c40f/000000&text=SO", 
       verified: false,
       states: ["California", "Oregon"]
     },
     { 
       _id: "admin5", 
       name: "Pacific Admin Group", 
-      logoUrl: "https://dummyimage.com/50x50/88ff88/ffffff&text=PA", 
+      logoUrl: "https://dummyimage.com/50x50/2ecc71/ffffff&text=PA", 
       verified: true,
       states: ["California", "Hawaii", "Alaska"],
       contactInfo: "info@pacificadmin.com"
@@ -46,14 +46,14 @@ const SAMPLE_DATA = {
     { 
       _id: "admin6", 
       name: "Eastern Admin LLC", 
-      logoUrl: "https://dummyimage.com/50x50/aaffaa/ffffff&text=EA", 
+      logoUrl: "https://dummyimage.com/50x50/1abc9c/ffffff&text=EA", 
       verified: false,
       states: ["New York", "New Jersey", "Pennsylvania", "Delaware"]
     },
     { 
       _id: "admin7", 
       name: "Midwest PACE Admin", 
-      logoUrl: "https://dummyimage.com/50x50/ccffcc/ffffff&text=MP", 
+      logoUrl: "https://dummyimage.com/50x50/d35400/ffffff&text=MP", 
       verified: true,
       states: ["Illinois", "Wisconsin", "Michigan", "Indiana", "Ohio"],
       contactInfo: "hello@midwestpace.org"
@@ -63,7 +63,7 @@ const SAMPLE_DATA = {
     { 
       _id: "capital1", 
       name: "GreenCapital Fund", 
-      logoUrl: "https://dummyimage.com/50x50/0000aa/ffffff&text=GC", 
+      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
       verified: true,
       states: ["All 50 States"],
       contactInfo: "invest@greencapital.com"
@@ -71,14 +71,14 @@ const SAMPLE_DATA = {
     { 
       _id: "capital2", 
       name: "EcoInvest Group", 
-      logoUrl: "https://dummyimage.com/50x50/2222cc/ffffff&text=EI", 
+      logoUrl: "https://dummyimage.com/50x50/8e44ad/ffffff&text=EI", 
       verified: false,
       states: ["New York", "New Jersey", "Pennsylvania"]
     },
     { 
       _id: "capital3", 
       name: "RenewFinance Partners", 
-      logoUrl: "https://dummyimage.com/50x50/4444ee/ffffff&text=RF", 
+      logoUrl: "https://dummyimage.com/50x50/c0392b/ffffff&text=RF", 
       verified: true,
       states: ["California", "Nevada", "Arizona", "New Mexico"],
       contactInfo: "info@renewfinance.com"
@@ -86,14 +86,14 @@ const SAMPLE_DATA = {
     { 
       _id: "capital4", 
       name: "CleanEnergy Capital", 
-      logoUrl: "https://dummyimage.com/50x50/6666ff/ffffff&text=CC", 
+      logoUrl: "https://dummyimage.com/50x50/f39c12/000000&text=CC", 
       verified: false,
       states: ["Texas", "Oklahoma", "Louisiana"]
     },
     { 
       _id: "capital5", 
       name: "Sustainable Funding", 
-      logoUrl: "https://dummyimage.com/50x50/8888ff/ffffff&text=SF", 
+      logoUrl: "https://dummyimage.com/50x50/16a085/ffffff&text=SF", 
       verified: true,
       states: ["All 50 States"],
       contactInfo: "funding@sustainablefunding.org"
@@ -101,14 +101,14 @@ const SAMPLE_DATA = {
     { 
       _id: "capital6", 
       name: "Pacific Investment Group", 
-      logoUrl: "https://dummyimage.com/50x50/aaaaff/ffffff&text=PI", 
+      logoUrl: "https://dummyimage.com/50x50/2980b9/ffffff&text=PI", 
       verified: false,
       states: ["California", "Oregon", "Washington", "Alaska", "Hawaii"]
     },
     { 
       _id: "capital7", 
       name: "Eastern Funding LLC", 
-      logoUrl: "https://dummyimage.com/50x50/ccccff/ffffff&text=EF", 
+      logoUrl: "https://dummyimage.com/50x50/e67e22/ffffff&text=EF", 
       verified: true,
       states: ["All Northeast States"],
       contactInfo: "contact@easternfunding.com"
@@ -116,14 +116,14 @@ const SAMPLE_DATA = {
     { 
       _id: "capital8", 
       name: "Midwest PACE Capital", 
-      logoUrl: "https://dummyimage.com/50x50/ddddff/ffffff&text=MP", 
+      logoUrl: "https://dummyimage.com/50x50/95a5a6/ffffff&text=MP", 
       verified: false,
       states: ["Illinois", "Wisconsin", "Michigan", "Indiana", "Ohio"]
     },
     { 
       _id: "capital9", 
       name: "Southern Financing Co", 
-      logoUrl: "https://dummyimage.com/50x50/eeeeff/ffffff&text=SF", 
+      logoUrl: "https://dummyimage.com/50x50/34495e/ffffff&text=SF", 
       verified: true,
       states: ["Florida", "Georgia", "Alabama", "Mississippi", "South Carolina"],
       contactInfo: "invest@southernfinancing.com"
@@ -133,7 +133,7 @@ const SAMPLE_DATA = {
     { 
       _id: "law1", 
       name: "GreenLaw Partners", 
-      logoUrl: "https://dummyimage.com/50x50/aa00aa/ffffff&text=GL", 
+      logoUrl: "https://dummyimage.com/50x50/7f8c8d/ffffff&text=GL", 
       verified: true,
       states: ["California", "Nevada", "Arizona"],
       contactInfo: "info@greenlawpartners.com"
@@ -141,14 +141,14 @@ const SAMPLE_DATA = {
     { 
       _id: "law2", 
       name: "EcoLegal Group", 
-      logoUrl: "https://dummyimage.com/50x50/cc22cc/ffffff&text=EL", 
+      logoUrl: "https://dummyimage.com/50x50/3498db/ffffff&text=EL", 
       verified: false,
       states: ["New York", "New Jersey", "Connecticut"]
     },
     { 
       _id: "law3", 
       name: "PACE Law Associates", 
-      logoUrl: "https://dummyimage.com/50x50/ee44ee/ffffff&text=PL", 
+      logoUrl: "https://dummyimage.com/50x50/e74c3c/ffffff&text=PL", 
       verified: true,
       states: ["All 50 States"],
       contactInfo: "contact@pacelawassociates.com"
@@ -158,7 +158,7 @@ const SAMPLE_DATA = {
     { 
       _id: "consult1", 
       name: "GreenConsult Co", 
-      logoUrl: "https://dummyimage.com/50x50/aa0000/ffffff&text=GC", 
+      logoUrl: "https://dummyimage.com/50x50/9b59b6/ffffff&text=GC", 
       verified: true,
       states: ["All 50 States"],
       contactInfo: "info@greenconsult.co"
@@ -166,14 +166,14 @@ const SAMPLE_DATA = {
     { 
       _id: "consult2", 
       name: "EcoStrategy Group", 
-      logoUrl: "https://dummyimage.com/50x50/cc2222/ffffff&text=ES", 
+      logoUrl: "https://dummyimage.com/50x50/f1c40f/000000&text=ES", 
       verified: false,
       states: ["California", "Oregon", "Washington"]
     },
     { 
       _id: "consult3", 
       name: "PACE Advisory Services", 
-      logoUrl: "https://dummyimage.com/50x50/ee4444/ffffff&text=PA", 
+      logoUrl: "https://dummyimage.com/50x50/2ecc71/ffffff&text=PA", 
       verified: true,
       states: ["Texas", "Oklahoma", "New Mexico", "Arizona"],
       contactInfo: "hello@paceadvisory.com"
@@ -181,14 +181,14 @@ const SAMPLE_DATA = {
     { 
       _id: "consult4", 
       name: "Sustainable Solutions", 
-      logoUrl: "https://dummyimage.com/50x50/ff6666/ffffff&text=SS", 
+      logoUrl: "https://dummyimage.com/50x50/1abc9c/ffffff&text=SS", 
       verified: false,
       states: ["Florida", "Georgia", "Alabama"]
     },
     { 
       _id: "consult5", 
       name: "Energy Efficiency Experts", 
-      logoUrl: "https://dummyimage.com/50x50/ff8888/ffffff&text=EE", 
+      logoUrl: "https://dummyimage.com/50x50/d35400/ffffff&text=EE", 
       verified: true,
       states: ["New York", "Massachusetts", "Connecticut"],
       contactInfo: "experts@energyefficiency.org"
@@ -198,7 +198,7 @@ const SAMPLE_DATA = {
     { 
       _id: "software1", 
       name: "GreenTech Systems", 
-      logoUrl: "https://dummyimage.com/50x50/00aaaa/ffffff&text=GT", 
+      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GT", 
       verified: true,
       states: ["All 50 States"],
       contactInfo: "sales@greentechsystems.com"
@@ -206,7 +206,7 @@ const SAMPLE_DATA = {
     { 
       _id: "software2", 
       name: "EcoPlatform", 
-      logoUrl: "https://dummyimage.com/50x50/22cccc/ffffff&text=EP", 
+      logoUrl: "https://dummyimage.com/50x50/8e44ad/ffffff&text=EP", 
       verified: false,
       states: ["All 50 States"]
     }
@@ -215,7 +215,7 @@ const SAMPLE_DATA = {
     { 
       _id: "eng1", 
       name: "GreenEnergy Engineers", 
-      logoUrl: "https://dummyimage.com/50x50/aaaa00/ffffff&text=GE", 
+      logoUrl: "https://dummyimage.com/50x50/c0392b/ffffff&text=GE", 
       verified: true,
       states: ["California", "Nevada", "Oregon", "Washington"],
       contactInfo: "projects@greenenergy.com"
@@ -223,14 +223,14 @@ const SAMPLE_DATA = {
     { 
       _id: "eng2", 
       name: "EcoBuilding Design", 
-      logoUrl: "https://dummyimage.com/50x50/cccc22/ffffff&text=EB", 
+      logoUrl: "https://dummyimage.com/50x50/f39c12/000000&text=EB", 
       verified: false,
       states: ["New York", "New Jersey", "Connecticut"]
     },
     { 
       _id: "eng3", 
       name: "Sustainable Structures", 
-      logoUrl: "https://dummyimage.com/50x50/eeee44/ffffff&text=SS", 
+      logoUrl: "https://dummyimage.com/50x50/16a085/ffffff&text=SS", 
       verified: true,
       states: ["Texas", "Oklahoma", "Louisiana"],
       contactInfo: "build@sustainablestructures.com"
@@ -238,7 +238,7 @@ const SAMPLE_DATA = {
     { 
       _id: "eng4", 
       name: "Renewable Systems Inc", 
-      logoUrl: "https://dummyimage.com/50x50/ffff66/ffffff&text=RS", 
+      logoUrl: "https://dummyimage.com/50x50/2980b9/ffffff&text=RS", 
       verified: false,
       states: ["Florida", "Georgia", "South Carolina"]
     }
@@ -247,7 +247,7 @@ const SAMPLE_DATA = {
     { 
       _id: "contract1", 
       name: "GreenBuilders Co", 
-      logoUrl: "https://dummyimage.com/50x50/00aaff/ffffff&text=GB", 
+      logoUrl: "https://dummyimage.com/50x50/e67e22/ffffff&text=GB", 
       verified: true,
       states: ["California", "Nevada", "Arizona"],
       contactInfo: "build@greenbuilders.co"
@@ -255,14 +255,14 @@ const SAMPLE_DATA = {
     { 
       _id: "contract2", 
       name: "EcoConstruction Group", 
-      logoUrl: "https://dummyimage.com/50x50/22ccff/ffffff&text=EC", 
+      logoUrl: "https://dummyimage.com/50x50/95a5a6/ffffff&text=EC", 
       verified: false,
       states: ["Oregon", "Washington", "Idaho"]
     },
     { 
       _id: "contract3", 
       name: "PACE Installers", 
-      logoUrl: "https://dummyimage.com/50x50/44eeff/ffffff&text=PI", 
+      logoUrl: "https://dummyimage.com/50x50/34495e/ffffff&text=PI", 
       verified: true,
       states: ["New York", "New Jersey", "Pennsylvania"],
       contactInfo: "installs@paceinstallers.com"
@@ -272,7 +272,7 @@ const SAMPLE_DATA = {
     { 
       _id: "owner1", 
       name: "GreenProperties LLC", 
-      logoUrl: "https://dummyimage.com/50x50/ffaa00/ffffff&text=GP", 
+      logoUrl: "https://dummyimage.com/50x50/7f8c8d/ffffff&text=GP", 
       verified: true,
       states: ["California", "Arizona", "Nevada"],
       contactInfo: "leasing@greenproperties.com"
@@ -280,7 +280,7 @@ const SAMPLE_DATA = {
     { 
       _id: "owner2", 
       name: "EcoEstates Group", 
-      logoUrl: "https://dummyimage.com/50x50/ffcc22/ffffff&text=EE", 
+      logoUrl: "https://dummyimage.com/50x50/3498db/ffffff&text=EE", 
       verified: false,
       states: ["New York", "Connecticut", "Massachusetts"]
     }
