@@ -516,25 +516,26 @@ const MarketMatrix = () => {
       </div>
       
 {/* View Controls Section */}
-      <div className="view-controls-section">
-        <h3>View Options</h3>
-      </div>
-      
-      {/* View Toggle */}
-      <div className="view-toggle">
-        <button 
-          className={`view-button ${viewMode === 'grid' ? 'active' : ''}`}
-          onClick={() => toggleView('grid')}
-        >
-          Grid View
-        </button>
-        <button 
-          className={`view-button ${viewMode === 'table' ? 'active' : ''}`}
-          onClick={() => toggleView('table')}
-        >
-          Table View
-        </button>
-      </div>
+<div className="matrix-filters">
+  <div className="filters-header">
+    <h3 className="filters-title">View Options:</h3>
+  </div>
+  
+  <div className="view-toggle">
+    <button 
+      className={`view-button ${viewMode === 'grid' ? 'active' : ''}`}
+      onClick={() => toggleView('grid')}
+    >
+      Grid View
+    </button>
+    <button 
+      className={`view-button ${viewMode === 'table' ? 'active' : ''}`}
+      onClick={() => toggleView('table')}
+    >
+      Table View
+    </button>
+  </div>
+</div>
       
       {/* No categories selected message */}
       {Object.keys(filteredData).length === 0 ? (
