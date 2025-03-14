@@ -709,22 +709,6 @@ const getFilteredData = () => {
                     className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
                     onClick={(e) => toggleExpandedCompany(company._id, e)}
                   >
-                    <div className="logo-container">
-                      <img 
-                        src={company.logoUrl} 
-                        alt={`${company.name} logo`} 
-                        className="company-logo"
-                      />
-                      {company.verified && (
-                        <div className="verified-badge">
-                          <span className="verified-badge-icon">✓</span> VERIFIED
-                        </div>
-                      )}
-                      <div className="company-name-tooltip">
-                        {company.name}
-                      </div>
-                    </div>
-                  </div>
                   
                   {/* Expandable company details - add after every 5th item or at end of row */}
                   {(index + 1) % 5 === 0 || index === companies.length - 1 ? (
