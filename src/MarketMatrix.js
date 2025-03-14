@@ -522,7 +522,7 @@ const getFilteredData = () => {
     <input
       type="text"
       className="search-input"
-      placeholder="Search companies..."
+      placeholder="Search companies and organizations..."
       value={searchTerm}
       onChange={handleSearchChange}
     />
