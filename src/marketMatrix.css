@@ -388,7 +388,7 @@
   background-color: #edf2f7;
 }
 
-/* Add permanent sort indicators to sortable columns */
+/* Default sort indicator for all sortable columns */
 .th-sortable::after {
   content: "⇅";
   font-size: 12px;
@@ -397,18 +397,16 @@
   display: inline-block;
 }
 
-/* Style for active sort column */
-.th-sortable.sort-active::after {
-  content: attr(data-sort-direction);
+/* Override for active sort column - ascending */
+.th-sortable.sort-ascending::after {
+  content: "▲";
   color: #4a5568;
 }
 
-.th-sortable.sort-active[data-sort-direction="▲"]::after {
-  content: "▲";
-}
-
-.th-sortable.sort-active[data-sort-direction="▼"]::after {
+/* Override for active sort column - descending */
+.th-sortable.sort-descending::after {
   content: "▼";
+  color: #4a5568;
 }
 
 /* Hover effects for sortable headers */
