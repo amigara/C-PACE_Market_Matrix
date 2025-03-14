@@ -101,14 +101,24 @@ const MarketMatrix = () => {
     setViewMode(mode);
   };
 
-  // Filter the data based on active filters
+  // Filter the data based on active filters and sort by verification status
   const getFilteredData = () => {
     if (!companiesData) return {};
     
     return Object.entries(companiesData)
       .filter(([category]) => activeFilters.includes(category))
       .reduce((obj, [category, companies]) => {
-        obj[category] = companies;
+        // Sort companies to put verified ones first
+        const sortedCompanies = [...companies].sort((a, b) => {
+          // If a is verified and b is not, a comes first
+          if (a.verified && !b.verified) return -1;
+          // If b is verified and a is not, b comes first
+          if (!a.verified && b.verified) return 1;
+          // Otherwise maintain original order
+          return 0;
+        });
+        
+        obj[category] = sortedCompanies;
         return obj;
       }, {});
   };
@@ -122,6 +132,13 @@ const MarketMatrix = () => {
   const allCompanies = Object.entries(filteredData).reduce((acc, [category, companies]) => {
     return [...acc, ...companies.map(company => ({ ...company, category }))];
   }, []);
+  
+  // Sort the table view data to put verified companies first
+  const sortedAllCompanies = [...allCompanies].sort((a, b) => {
+    if (a.verified && !b.verified) return -1;
+    if (!a.verified && b.verified) return 1;
+    return 0;
+  });
 
   return (
     <div className="market-matrix-container">
@@ -241,7 +258,7 @@ const MarketMatrix = () => {
                   </tr>
                 </thead>
                 <tbody>
-                  {allCompanies.map((company) => (
+                  {sortedAllCompanies.map((company) => (
                     <tr key={company._id}>
                       <td className="table-logo-cell">
                         <img 
