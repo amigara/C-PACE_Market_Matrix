@@ -334,3 +334,43 @@
 .website-button:hover {
   background-color: #222;
 }
+
+/* Purple verification badge (#524AE8) */
+.verified-badge {
+  position: absolute;
+  bottom: -8px;
+  right: -8px;
+  background-color: #524AE8;
+  color: white;
+  font-size: 9px;
+  font-weight: bold;
+  padding: 3px 6px;
+  border-radius: 12px;
+  display: flex;
+  align-items: center;
+  border: 1.5px solid white;
+  z-index: 2;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+}
+
+.verified-badge-icon {
+  margin-right: 2px;
+  font-size: 10px;
+}
+
+.table-verified-badge {
+  display: inline-flex;
+  align-items: center;
+  background-color: #524AE8;
+  color: white;
+  font-size: 10px;
+  font-weight: bold;
+  padding: 3px 8px;
+  border-radius: 12px;
+  margin-left: 8px;
+}
+
+/* Optional: Badge hover effect */
+.verified-badge:hover, .table-verified-badge:hover {
+  background-color: #433BD0; /* Slightly darker on hover */
+}
