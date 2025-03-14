@@ -24,6 +24,12 @@ const MarketMatrix = () => {
   const [allCategories, setAllCategories] = useState([]);
   const [activeFilters, setActiveFilters] = useState([]);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
+  
+  // New state for table sorting
+  const [sortConfig, setSortConfig] = useState({
+    key: 'verified', // Default sort by verification status (verified first)
+    direction: 'descending'
+  });
 
   useEffect(() => {
     const fetchCompaniesData = async () => {
@@ -123,6 +129,21 @@ const MarketMatrix = () => {
       }, {});
   };
 
+  // New function for sorting table columns
+  const requestSort = (key) => {
+    let direction = 'ascending';
+    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
+      direction = 'descending';
+    }
+    setSortConfig({ key, direction });
+  };
+
+  // Get a sort indicator icon (▲ or ▼)
+  const getSortIndicator = (column) => {
+    if (sortConfig.key !== column) return null;
+    return sortConfig.direction === 'ascending' ? ' ▲' : ' ▼';
+  };
+
   if (loading) return <div className="matrix-loading">Loading market matrix...</div>;
   if (error) return <div className="matrix-error">{error}</div>;
 
@@ -133,11 +154,24 @@ const MarketMatrix = () => {
     return [...acc, ...companies.map(company => ({ ...company, category }))];
   }, []);
   
-  // Sort the table view data to put verified companies first
+  // Sort companies for table view based on current sort configuration
   const sortedAllCompanies = [...allCompanies].sort((a, b) => {
-    if (a.verified && !b.verified) return -1;
-    if (!a.verified && b.verified) return 1;
-    return 0;
+    // Special handling for verified status (boolean)
+    if (sortConfig.key === 'verified') {
+      if (a.verified && !b.verified) return sortConfig.direction === 'ascending' ? 1 : -1;
+      if (!a.verified && b.verified) return sortConfig.direction === 'ascending' ? -1 : 1;
+      return 0;
+    }
+    
+    // Handle regular string sorting
+    if (a[sortConfig.key] < b[sortConfig.key]) {
+      return sortConfig.direction === 'ascending' ? -1 : 1;
+    }
+    if (a[sortConfig.key] > b[sortConfig.key]) {
+      return sortConfig.direction === 'ascending' ? 1 : -1;
+    }
+    // If we're sorting by name or category but they're equal, fallback to verified status
+    return a.verified === b.verified ? 0 : a.verified ? -1 : 1;
   });
 
   return (
@@ -245,15 +279,22 @@ const MarketMatrix = () => {
             </div>
           )}
           
-          {/* Table View */}
+          {/* Table View with Sortable Columns */}
           {viewMode === 'table' && (
             <div className="matrix-table-container">
               <table className="matrix-table">
                 <thead>
                   <tr>
-                    <th>Logo</th>
-                    <th>Company</th>
-                    <th>Category</th>
+                    <th className="th-logo">Logo</th>
+                    <th className="th-sortable" onClick={() => requestSort('name')}>
+                      Company{getSortIndicator('name')}
+                    </th>
+                    <th className="th-sortable" onClick={() => requestSort('category')}>
+                      Category{getSortIndicator('category')}
+                    </th>
+                    <th className="th-sortable" onClick={() => requestSort('verified')}>
+                      Status{getSortIndicator('verified')}
+                    </th>
                     <th>Website</th>
                   </tr>
                 </thead>
@@ -267,15 +308,17 @@ const MarketMatrix = () => {
                           className="table-logo"
                         />
                       </td>
+                      <td>{company.name}</td>
+                      <td>{company.category}</td>
                       <td>
-                        {company.name}
-                        {company.verified && (
+                        {company.verified ? (
                           <span className="table-verified-badge">
                             <span className="verified-badge-icon">✓</span> VERIFIED
                           </span>
+                        ) : (
+                          <span className="table-unverified">—</span>
                         )}
                       </td>
-                      <td>{company.category}</td>
                       <td>
                         <a 
                           href={company.websiteUrl || "#"} 
