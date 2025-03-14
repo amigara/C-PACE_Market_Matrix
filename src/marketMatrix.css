@@ -1,106 +1,60 @@
-import React, { useState, useEffect } from "react";
-import "./marketMatrix.css";
+/* View Toggle */
+.view-toggle {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 20px;
+}
 
-const MarketMatrix = () => {
-  // Existing state variables
-  const [companiesData, setCompaniesData] = useState(null);
-  const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
-  const [allCategories, setAllCategories] = useState([]);
-  const [activeFilters, setActiveFilters] = useState([]);
-  
-  // New state for view toggle
-  const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
+.view-button {
+  padding: 8px 16px;
+  margin: 0 5px;
+  background-color: #f7fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 4px;
+  cursor: pointer;
+  transition: all 0.2s;
+}
 
-  // Rest of your existing code...
-  
-  // Toggle view handler
-  const toggleView = (mode) => {
-    setViewMode(mode);
-  };
+.view-button.active {
+  background-color: #3182ce;
+  color: white;
+  border-color: #2c5282;
+}
 
-  if (loading) return <div className="matrix-loading">Loading market matrix...</div>;
-  if (error) return <div className="matrix-error">{error}</div>;
+/* Table Styles */
+.matrix-table-container {
+  overflow-x: auto;
+  margin-top: 20px;
+}
 
-  const filteredData = getFilteredData();
-  
-  // Get all companies across categories for table view
-  const allCompanies = Object.entries(filteredData).reduce((acc, [category, companies]) => {
-    return [...acc, ...companies.map(company => ({ ...company, category }))];
-  }, []);
+.matrix-table {
+  width: 100%;
+  border-collapse: collapse;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
+}
 
-  return (
-    <div className="market-matrix-container">
-      <h2 className="matrix-title">C-PACE Market Matrix</h2>
-      
-      {/* Filter Controls - same as before */}
-      <div className="matrix-filters">
-        {/* Your existing filter buttons */}
-      </div>
-      
-      {/* View Toggle */}
-      <div className="view-toggle">
-        <button 
-          className={`view-button ${viewMode === 'grid' ? 'active' : ''}`}
-          onClick={() => toggleView('grid')}
-        >
-          Grid View
-        </button>
-        <button 
-          className={`view-button ${viewMode === 'table' ? 'active' : ''}`}
-          onClick={() => toggleView('table')}
-        >
-          Table View
-        </button>
-      </div>
-      
-      {/* Conditional View Rendering */}
-      {viewMode === 'grid' ? (
-        /* Your existing grid code */
-        <div className="matrix-grid">
-          {/* ... */}
-        </div>
-      ) : (
-        /* Table View */
-        <div className="matrix-table-container">
-          <table className="matrix-table">
-            <thead>
-              <tr>
-                <th>Logo</th>
-                <th>Company</th>
-                <th>Category</th>
-                <th>Website</th>
-              </tr>
-            </thead>
-            <tbody>
-              {allCompanies.map((company) => (
-                <tr key={company._id}>
-                  <td className="table-logo-cell">
-                    <img 
-                      src={company.logoUrl} 
-                      alt={`${company.name} logo`} 
-                      className="table-logo"
-                    />
-                  </td>
-                  <td>{company.name}</td>
-                  <td>{company.category}</td>
-                  <td>
-                    <a 
-                      href={company.websiteUrl || "#"} 
-                      target="_blank" 
-                      rel="noopener noreferrer"
-                    >
-                      Visit Website
-                    </a>
-                  </td>
-                </tr>
-              ))}
-            </tbody>
-          </table>
-        </div>
-      )}
-    </div>
-  );
-};
+.matrix-table th,
+.matrix-table td {
+  padding: 12px;
+  text-align: left;
+  border-bottom: 1px solid #e2e8f0;
+}
 
-export default MarketMatrix;
+.matrix-table th {
+  background-color: #f7fafc;
+  font-weight: 600;
+}
+
+.table-logo-cell {
+  width: 60px;
+}
+
+.table-logo {
+  width: 40px;
+  height: 40px;
+  object-fit: contain;
+}
+
+.matrix-table tr:hover {
+  background-color: #f7fafc;
+}
