@@ -1,19 +1,59 @@
 import React, { useState, useEffect } from "react";
 import "./marketMatrix.css";
+import CompanyModal from "./CompanyModal"; // Keep for table view
 
 // Sample data for testing in CodeSandbox
 const SAMPLE_DATA = {
   "C-PACE Administrators": [
-    { _id: "1", name: "GreenAdmin Co", logoUrl: "https://dummyimage.com/50x50/00aa00/ffffff&text=GA", verified: true },
-    { _id: "2", name: "EcoProperty Managers", logoUrl: "https://dummyimage.com/50x50/22cc22/ffffff&text=EP", verified: false },
-    { _id: "3", name: "CleanEnergy Admin", logoUrl: "https://dummyimage.com/50x50/44ee44/ffffff&text=CE", verified: true },
+    { 
+      _id: "1", 
+      name: "GreenAdmin Co", 
+      logoUrl: "https://dummyimage.com/50x50/00aa00/ffffff&text=GA", 
+      verified: true, 
+      states: ["California", "New York", "Florida", "Texas"],
+      contactInfo: "info@greenadmin.co"
+    },
+    { 
+      _id: "2", 
+      name: "EcoProperty Managers", 
+      logoUrl: "https://dummyimage.com/50x50/22cc22/ffffff&text=EP", 
+      verified: false,
+      states: ["Colorado", "Washington", "Oregon"]
+    },
+    { 
+      _id: "3", 
+      name: "CleanEnergy Admin", 
+      logoUrl: "https://dummyimage.com/50x50/44ee44/ffffff&text=CE", 
+      verified: true,
+      states: ["Massachusetts", "Connecticut", "Rhode Island", "New Hampshire"],
+      contactInfo: "contact@cleanenergy.org"
+    },
   ],
   "Capital Providers": [
-    { _id: "5", name: "GreenCapital Fund", logoUrl: "https://dummyimage.com/50x50/0000aa/ffffff&text=GC", verified: true },
-    { _id: "6", name: "EcoInvest Group", logoUrl: "https://dummyimage.com/50x50/2222cc/ffffff&text=EI", verified: false },
+    { 
+      _id: "5", 
+      name: "GreenCapital Fund", 
+      logoUrl: "https://dummyimage.com/50x50/0000aa/ffffff&text=GC", 
+      verified: true,
+      states: ["All 50 States"],
+      contactInfo: "invest@greencapital.com"
+    },
+    { 
+      _id: "6", 
+      name: "EcoInvest Group", 
+      logoUrl: "https://dummyimage.com/50x50/2222cc/ffffff&text=EI", 
+      verified: false,
+      states: ["New York", "New Jersey", "Pennsylvania"]
+    },
   ],
   "Law Firms": [
-    { _id: "9", name: "GreenLaw Partners", logoUrl: "https://dummyimage.com/50x50/aa00aa/ffffff&text=GL", verified: false },
+    { 
+      _id: "9", 
+      name: "GreenLaw Partners", 
+      logoUrl: "https://dummyimage.com/50x50/aa00aa/ffffff&text=GL", 
+      verified: false,
+      states: ["California", "Nevada", "Arizona"]
+    },
   ]
 };
 
@@ -30,6 +70,12 @@ const MarketMatrix = () => {
     key: 'verified', // Default sort by verification status (verified first)
     direction: 'descending'
   });
+  
+  // State for expanded company in grid view
+  const [expandedCompany, setExpandedCompany] = useState(null);
+  
+  // State for modal in table view
+  const [selectedCompany, setSelectedCompany] = useState(null);
 
   useEffect(() => {
     const fetchCompaniesData = async () => {
@@ -81,6 +127,12 @@ const MarketMatrix = () => {
     fetchCompaniesData();
   }, []);
 
+  // When changing view mode, reset expanded/selected states
+  useEffect(() => {
+    setExpandedCompany(null);
+    setSelectedCompany(null);
+  }, [viewMode]);
+
   // Handle filter button clicks
   const toggleFilter = (category) => {
     if (activeFilters.includes(category)) {
@@ -90,21 +142,46 @@ const MarketMatrix = () => {
       // Add the category if it's not active
       setActiveFilters([...activeFilters, category]);
     }
+    
+    // Reset expanded company when filters change
+    setExpandedCompany(null);
   };
   
   // Select all categories
   const selectAll = () => {
     setActiveFilters([...allCategories]);
+    setExpandedCompany(null);
   };
   
   // Clear all categories
   const clearAll = () => {
     setActiveFilters([]);
+    setExpandedCompany(null);
   };
 
   // Toggle view mode
   const toggleView = (mode) => {
     setViewMode(mode);
+  };
+  
+  // Toggle expanded company in grid view
+  const toggleExpandedCompany = (companyId, e) => {
+    e.preventDefault(); // Prevent default link behavior
+    if (expandedCompany === companyId) {
+      setExpandedCompany(null);
+    } else {
+      setExpandedCompany(companyId);
+    }
+  };
+  
+  // Open company modal in table view
+  const openCompanyModal = (company) => {
+    setSelectedCompany(company);
+  };
+  
+  // Close company modal
+  const closeCompanyModal = () => {
+    setSelectedCompany(null);
   };
 
   // Filter the data based on active filters and sort by verification status
@@ -231,7 +308,7 @@ const MarketMatrix = () => {
         </div>
       ) : (
         <>
-          {/* Grid View */}
+          {/* Grid View with Expandable Details */}
           {viewMode === 'grid' && (
             <div className="matrix-grid">
               {Object.entries(filteredData).map(([category, companies]) => (
@@ -241,30 +318,115 @@ const MarketMatrix = () => {
                   </div>
                   <div className="matrix-category">
                     <div className="companies-grid">
-                      {companies.map((company) => (
-                        <a 
-                          key={company._id} 
-                          href={company.websiteUrl || "#"}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                          className="company-item"
-                        >
-                          <div className="logo-container">
-                            <img 
-                              src={company.logoUrl} 
-                              alt={`${company.name} logo`} 
-                              className="company-logo"
-                            />
-                            {company.verified && (
-                              <div className="verified-badge">
-                                <span className="verified-badge-icon">✓</span> VERIFIED
+                      {companies.map((company, index) => (
+                        <React.Fragment key={company._id}>
+                          <div 
+                            className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
+                            onClick={(e) => toggleExpandedCompany(company._id, e)}
+                          >
+                            <div className="logo-container">
+                              <img 
+                                src={company.logoUrl} 
+                                alt={`${company.name} logo`} 
+                                className="company-logo"
+                              />
+                              {company.verified && (
+                                <div className="verified-badge">
+                                  <span className="verified-badge-icon">✓</span> VERIFIED
+                                </div>
+                              )}
+                              <div className="company-name-tooltip">
+                                {company.name}
                               </div>
-                            )}
-                            <div className="company-name-tooltip">
-                              {company.name}
                             </div>
                           </div>
-                        </a>
+                          
+                          {/* Expandable company details - add after every 5th item or at end of row */}
+                          {(index + 1) % 5 === 0 || index === companies.length - 1 ? (
+                            <div 
+                              className={`company-details-wrapper ${
+                                expandedCompany === company._id || 
+                                (expandedCompany && companies.slice(Math.floor(index / 5) * 5, index + 1).some(c => c._id === expandedCompany))
+                                  ? 'expanded' 
+                                  : ''
+                              }`}
+                            >
+                              {expandedCompany && companies.slice(Math.max(0, Math.floor(index / 5) * 5), index + 1).map(c => {
+                                if (c._id === expandedCompany) {
+                                  return (
+                                    <div key={c._id} className="company-details">
+                                      <button 
+                                        className="company-details-close" 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setExpandedCompany(null);
+                                        }}
+                                      >
+                                        ×
+                                      </button>
+                                      
+                                      <div className="company-details-header">
+                                        <img 
+                                          src={c.logoUrl} 
+                                          alt={`${c.name} logo`}
+                                          className="company-details-logo" 
+                                        />
+                                        <div className="company-details-info">
+                                          <h3 className="company-details-name">
+                                            {c.name}
+                                            {c.verified && (
+                                              <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
+                                                <span className="verified-badge-icon">✓</span> VERIFIED
+                                              </span>
+                                            )}
+                                          </h3>
+                                          <div className="company-details-category">{category}</div>
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="company-details-sections">
+                                        <div className="company-details-section">
+                                          <h4 className="company-details-section-title">States of Operation</h4>
+                                          {c.states && c.states.length > 0 ? (
+                                            <div className="company-states-list">
+                                              {c.states.map((state, i) => (
+                                                <span key={i} className="company-state-tag">{state}</span>
+                                              ))}
+                                            </div>
+                                          ) : (
+                                            <p className="company-details-empty">No state information available</p>
+                                          )}
+                                        </div>
+                                        
+                                        <div className="company-details-section">
+                                          <h4 className="company-details-section-title">Contact Information</h4>
+                                          {c.contactInfo ? (
+                                            <p>{c.contactInfo}</p>
+                                          ) : (
+                                            <p className="company-details-empty">No contact information available</p>
+                                          )}
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="company-details-actions">
+                                        <a 
+                                          href={c.websiteUrl || "#"} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="company-website-button"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          Visit Website
+                                        </a>
+                                      </div>
+                                    </div>
+                                  );
+                                }
+                                return null;
+                              })}
+                            </div>
+                          ) : null}
+                        </React.Fragment>
                       ))}
                     </div>
                   </div>
@@ -273,7 +435,7 @@ const MarketMatrix = () => {
             </div>
           )}
           
-          {/* Table View with Improved Sortable Columns */}
+          {/* Table View with Sortable Columns and Modal */}
           {viewMode === 'table' && (
             <div className="matrix-table-container">
               <table className="matrix-table">
@@ -281,23 +443,23 @@ const MarketMatrix = () => {
                   <tr>
                     <th className="th-logo">Logo</th>
                     <th 
-                      className={`th-sortable ${sortConfig.key === 'name' ? 'sort-active' : ''}`}
+                      className={`th-sortable ${sortConfig.key === 'name' ? 
+                        (sortConfig.direction === 'ascending' ? 'sort-ascending' : 'sort-descending') : ''}`}
                       onClick={() => requestSort('name')}
-                      data-sort-direction={sortConfig.key === 'name' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : ''}
                     >
                       Company
                     </th>
                     <th 
-                      className={`th-sortable ${sortConfig.key === 'category' ? 'sort-active' : ''}`}
+                      className={`th-sortable ${sortConfig.key === 'category' ? 
+                        (sortConfig.direction === 'ascending' ? 'sort-ascending' : 'sort-descending') : ''}`}
                       onClick={() => requestSort('category')}
-                      data-sort-direction={sortConfig.key === 'category' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : ''}
                     >
                       Category
                     </th>
                     <th 
-                      className={`th-sortable ${sortConfig.key === 'verified' ? 'sort-active' : ''}`}
+                      className={`th-sortable ${sortConfig.key === 'verified' ? 
+                        (sortConfig.direction === 'ascending' ? 'sort-ascending' : 'sort-descending') : ''}`}
                       onClick={() => requestSort('verified')}
-                      data-sort-direction={sortConfig.key === 'verified' ? (sortConfig.direction === 'ascending' ? '▲' : '▼') : ''}
                     >
                       Status
                     </th>
@@ -311,7 +473,8 @@ const MarketMatrix = () => {
                         <img 
                           src={company.logoUrl} 
                           alt={`${company.name} logo`} 
-                          className="table-logo"
+                          className="table-logo clickable"
+                          onClick={() => openCompanyModal(company)}
                         />
                       </td>
                       <td>{company.name}</td>
@@ -343,6 +506,14 @@ const MarketMatrix = () => {
             </div>
           )}
         </>
+      )}
+      
+      {/* Company Modal for Table View */}
+      {selectedCompany && (
+        <CompanyModal 
+          company={selectedCompany} 
+          onClose={closeCompanyModal} 
+        />
       )}
     </div>
   );
