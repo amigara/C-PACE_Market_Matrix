@@ -388,6 +388,34 @@
   background-color: #edf2f7;
 }
 
+/* Add permanent sort indicators to sortable columns */
+.th-sortable::after {
+  content: "⇅";
+  font-size: 12px;
+  color: #cbd5e0;
+  margin-left: 4px;
+  display: inline-block;
+}
+
+/* Style for active sort column */
+.th-sortable.sort-active::after {
+  content: attr(data-sort-direction);
+  color: #4a5568;
+}
+
+.th-sortable.sort-active[data-sort-direction="▲"]::after {
+  content: "▲";
+}
+
+.th-sortable.sort-active[data-sort-direction="▼"]::after {
+  content: "▼";
+}
+
+/* Hover effects for sortable headers */
+.th-sortable:hover::after {
+  color: #718096;
+}
+
 /* Status column styles */
 .table-unverified {
   color: #a0aec0;
@@ -400,18 +428,4 @@
 /* Ensure the logo column has fixed width */
 .th-logo {
   width: 60px;
-}
-
-/* Add subtle indication of sortable columns */
-.matrix-table th.th-sortable::after {
-  content: "⇅";
-  font-size: 12px;
-  color: #cbd5e0;
-  margin-left: 4px;
-  opacity: 0.5;
-}
-
-.matrix-table th.th-sortable:hover::after {
-  opacity: 1;
-  color: #718096;
 }
