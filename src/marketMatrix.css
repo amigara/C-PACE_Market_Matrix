@@ -376,3 +376,42 @@
 .verified-badge:hover, .table-verified-badge:hover {
   background-color: #433BD0; /* Slightly darker on hover */
 }
+
+/* Sortable table columns */
+.th-sortable {
+  cursor: pointer;
+  user-select: none;
+  position: relative;
+}
+
+.th-sortable:hover {
+  background-color: #edf2f7;
+}
+
+/* Status column styles */
+.table-unverified {
+  color: #a0aec0;
+  display: inline-block;
+  text-align: center;
+  font-size: 18px;
+  font-weight: 500;
+}
+
+/* Ensure the logo column has fixed width */
+.th-logo {
+  width: 60px;
+}
+
+/* Add subtle indication of sortable columns */
+.matrix-table th.th-sortable::after {
+  content: "⇅";
+  font-size: 12px;
+  color: #cbd5e0;
+  margin-left: 4px;
+  opacity: 0.5;
+}
+
+.matrix-table th.th-sortable:hover::after {
+  opacity: 1;
+  color: #718096;
+}
