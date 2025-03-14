@@ -214,7 +214,8 @@
 
 /* Filter styles */
 .matrix-filters {
-  margin-bottom: 30px;
+  margin-bottom: 15px;
+  padding-bottom: 10px;
 }
 
 .filters-header {
@@ -295,7 +296,11 @@
 .view-toggle {
   display: flex;
   justify-content: center;
+  margin-top: 25px;
   margin-bottom: 20px;
+  position: relative;
+  padding-top: 20px;
+  border-top: 1px solid #e2e8f0;
 }
 
 .view-button {
@@ -313,6 +318,26 @@
   background-color: #000;
   color: white;
   border-color: #000;
+}
+
+/* View Controls Section */
+.view-controls-section {
+  position: relative;
+  margin-top: 20px;
+  padding-top: 5px;
+  border-top: 1px solid #e2e8f0;
+}
+
+.view-controls-section:before {
+  content: "View Options";
+  position: absolute;
+  top: -10px;
+  left: 20px;
+  background: white;
+  padding: 0 10px;
+  font-size: 14px;
+  font-weight: 500;
+  color: #4a5568;
 }
 
 /* Table Styles */
