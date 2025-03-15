@@ -79,6 +79,15 @@ const CompanyModal = ({ company, onClose }) => {
               )}
             </div>
           </div>
+          
+          <div className="modal-info-section">
+            <h3 className="modal-section-title">Contact Information</h3>
+            {company.contactInfo ? (
+              <p>{company.contactInfo}</p>
+            ) : (
+              <p className="modal-info-empty">No contact information available</p>
+            )}
+          </div>
         </div>
         
         <div className="modal-footer">
