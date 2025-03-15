@@ -227,7 +227,7 @@
 /* Logo container styles */
 .logo-container {
   position: relative;
-  background-color: #f7fafc;
+  background-color: #ffffff;
   padding: 4px;
   border-radius: 6px;
   height: 80px;
@@ -498,7 +498,7 @@
   width: 60px;
   height: 60px;
   object-fit: contain;
-  background-color: #f7fafc;
+  background-color: #ffffff;
   padding: 3px;
   border-radius: 0;
   border: 1px solid #e2e8f0;
@@ -665,7 +665,7 @@
   width: 70px;
   height: 70px;
   object-fit: contain;
-  background-color: #f7fafc;
+  background-color: #ffffff;
   padding: 3px;
   border: 1px solid #e2e8f0;
   border-radius: 0;
@@ -903,11 +903,12 @@
   cursor: help;
 }
 
+/* Company details logo */
 .company-details-logo {
   width: 70px;
   height: 70px;
   object-fit: contain;
-  background-color: white;
+  background-color: #ffffff;
   padding: 4px;
   border-radius: 0;
   margin-right: 15px;
