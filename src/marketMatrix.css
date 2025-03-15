@@ -107,8 +107,13 @@
    but the inline style from the JS component will override it on larger screens */
 @media (min-width: 768px) {
   .matrix-grid {
-    /* This will be overridden by the inline style based on the config */
+    grid-template-columns: repeat(2, 1fr);
     gap: 30px;
+  }
+  
+  /* Full-width category container */
+  .matrix-category-container.full-width {
+    grid-column: 1 / -1; /* Span all columns */
   }
 }
 
@@ -188,6 +193,11 @@
   .companies-grid {
     grid-template-columns: repeat(4, 1fr);
   }
+  
+  /* For full-width categories, show more logos per row */
+  .full-width .companies-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
 }
 
 @media (min-width: 1024px) {
@@ -195,18 +205,23 @@
   .companies-grid {
     grid-template-columns: repeat(5, 1fr);
   }
+  
+  /* For full-width categories, show more logos per row */
+  .full-width .companies-grid {
+    grid-template-columns: repeat(8, 1fr);
+  }
 }
 
-/* For single-column layout, allow more logos per row */
+/* Remove the old selectors that were based on inline styles */
 @media (min-width: 768px) and (max-width: 1023px) {
   .matrix-grid[style*="gridTemplateColumns: 1fr"] .companies-grid {
-    grid-template-columns: repeat(6, 1fr);
+    /* This is no longer needed */
   }
 }
 
 @media (min-width: 1024px) {
   .matrix-grid[style*="gridTemplateColumns: 1fr"] .companies-grid {
-    grid-template-columns: repeat(8, 1fr);
+    /* This is no longer needed */
   }
 }
 

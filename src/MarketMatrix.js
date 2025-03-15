@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./marketMatrix.css";
 import CompanyModal from "./CompanyModal"; // Keep for table view
-import CATEGORY_ORDER, { LAYOUT_CONFIG } from "./categoryConfig"; // Import the category order and layout configuration
+import { CATEGORIES_CONFIG, CATEGORY_ORDER, LAYOUT_CONFIG } from "./categoryConfig"; // Import the updated configuration
 
 const MarketMatrix = () => {
   const [companiesData, setCompaniesData] = useState(null);
@@ -265,6 +265,12 @@ const MarketMatrix = () => {
     setSortConfig({ key, direction });
   };
 
+  // Function to determine if a category should be full width
+  const isFullWidthCategory = (categoryName) => {
+    const categoryConfig = CATEGORIES_CONFIG.find(cat => cat.name === categoryName);
+    return categoryConfig ? categoryConfig.fullWidth : false;
+  };
+
   if (loading) return <div className="matrix-loading">Loading market matrix...</div>;
   if (error) return (
     <div className="matrix-error">
@@ -411,13 +417,14 @@ const MarketMatrix = () => {
           <>
             {/* Grid View with Expandable Details */}
             {viewMode === 'grid' && (
-              <div className="matrix-grid" style={{ 
-                gridTemplateColumns: LAYOUT_CONFIG.columnCount === 1 ? "1fr" : "repeat(2, 1fr)" 
-              }}>
+              <div className="matrix-grid">
                 {allCategories
                   .filter(category => filteredData[category]) // Only include categories that exist in filtered data
                   .map(category => (
-                  <div key={category} className="matrix-category-container">
+                  <div 
+                    key={category} 
+                    className={`matrix-category-container ${isFullWidthCategory(category) ? 'full-width' : ''}`}
+                  >
                     <div className="matrix-category-title">
                       <span className="category-title-text">{category}</span>
                     </div>
