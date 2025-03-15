@@ -531,323 +531,94 @@ const MarketMatrix = () => {
     }
   };
 
-// Modified getFilteredData function to include search filtering
-const getFilteredData = () => {
-  if (!companiesData) return {};
-  
-  // First filter by active categories
-  const categoriesFiltered = Object.entries(companiesData)
-    .filter(([category]) => activeFilters.includes(category))
-    .reduce((obj, [category, companies]) => {
-      obj[category] = companies;
-      return obj;
-    }, {});
-  
-  // If no search term, just sort by verification status
-  if (!searchTerm.trim()) {
-    return Object.entries(categoriesFiltered)
-      .reduce((obj, [category, companies]) => {
-        // Sort companies to put verified ones first
-        const sortedCompanies = [...companies].sort((a, b) => {
-          if (a.verified && !b.verified) return -1;
-          if (!a.verified && b.verified) return 1;
-          return 0;
-        });
-        
-        obj[category] = sortedCompanies;
-        return obj;
-      }, {});
-  }
-  
-  // If there is a search term, filter companies by name
-  const searchResults = {};
-  const searchTermLower = searchTerm.toLowerCase().trim();
-  
-  Object.entries(categoriesFiltered).forEach(([category, companies]) => {
-    const filteredCompanies = companies.filter(company => 
-      company.name.toLowerCase().includes(searchTermLower)
-    );
-    
-    // Only include categories that have matching companies
-    if (filteredCompanies.length > 0) {
-      // Sort companies to put verified ones first
-      const sortedCompanies = [...filteredCompanies].sort((a, b) => {
-        if (a.verified && !b.verified) return -1;
-        if (!a.verified && b.verified) return 1;
-        return 0;
-      });
-      
-      searchResults[category] = sortedCompanies;
-    }
-  });
-  
-  return searchResults;
-};
-
-  // Function for sorting table columns
-  const requestSort = (key) => {
-    let direction = 'ascending';
-    if (sortConfig.key === key && sortConfig.direction === 'ascending') {
-      direction = 'descending';
-    }
-    setSortConfig({ key, direction });
-  };
-
-  if (loading) return <div className="matrix-loading">Loading market matrix...</div>;
-  if (error) return <div className="matrix-error">{error}</div>;
-
-  const filteredData = getFilteredData();
-  
-  // Get all companies for table view using ordered categories
-  const allCompanies = categoryOrder
-    .filter(category => filteredData[category]) // Only include categories that exist in filtered data
-    .reduce((acc, category) => {
-      return [...acc, ...filteredData[category].map(company => ({ ...company, category }))];
-    }, []);
-  
-  // Sort companies for table view based on current sort configuration
-  const sortedAllCompanies = [...allCompanies].sort((a, b) => {
-    // Special handling for verified status (boolean)
-    if (sortConfig.key === 'verified') {
-      if (a.verified && !b.verified) return sortConfig.direction === 'ascending' ? 1 : -1;
-      if (!a.verified && b.verified) return sortConfig.direction === 'ascending' ? -1 : 1;
-      return 0;
-    }
-    
-    // Handle regular string sorting
-    if (a[sortConfig.key] < b[sortConfig.key]) {
-      return sortConfig.direction === 'ascending' ? -1 : 1;
-    }
-    if (a[sortConfig.key] > b[sortConfig.key]) {
-      return sortConfig.direction === 'ascending' ? 1 : -1;
-    }
-    // If we're sorting by name or category but they're equal, fallback to verified status
-    return a.verified === b.verified ? 0 : a.verified ? -1 : 1;
-  });
-
-  return (
-    <div className="market-matrix-container">
-      <h2 className="matrix-title">C-PACE Market Matrix</h2>
-
-  {/* Search Bar */}
-<div className="search-container">
-  <div className="search-input-wrapper">
-    <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8"></circle>
-      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-    </svg>
-    <input
-      type="text"
-      className="search-input"
-      placeholder="Search companies..."
-      value={searchTerm}
-      onChange={handleSearchChange}
-    />
-    {searchTerm && (
-      <button 
-        className="search-clear-button"
-        onClick={() => setSearchTerm('')}
-      >
-        ×
-      </button>
-    )}
-  </div>
-</div>
-      
-      {/* Filter Categories Section */}
-      <div className="matrix-filters">
-        <div className="filters-header">
-          <h3 className="filters-title">Filter Categories:</h3>
-          <div className="filters-actions">
-            <button 
-              onClick={selectAll}
-              className="filter-button filter-button-select-all"
-            >
-              Select All
-            </button>
-            <button 
-              onClick={clearAll}
-              className="filter-button filter-button-clear-all"
-            >
-              Clear All
-            </button>
-          </div>
-        </div>
-        
-        <div className="filter-buttons">
-          {/* Use categoryOrder instead of allCategories */}
-          {categoryOrder.map(category => (
-            <button
-              key={category}
-              onClick={() => toggleFilter(category)}
-              className={`filter-category-button ${
-                activeFilters.includes(category) ? 'filter-active' : 'filter-inactive'
-              }`}
-            >
-              {category}
-              {activeFilters.includes(category) ? ' ✓' : ''}
-            </button>
-          ))}
-        </div>
-      </div>
-      
-      {/* View Options Section */}
-      <div className="matrix-filters">
-        <div className="filters-header">
-          <h3 className="filters-title">View Options:</h3>
-        </div>
-        
-        <div className="view-toggle">
-          <button 
-            className={`view-button ${viewMode === 'grid' ? 'active' : ''}`}
-            onClick={() => toggleView('grid')}
-          >
-            Grid View
-          </button>
-          <button 
-            className={`view-button ${viewMode === 'table' ? 'active' : ''}`}
-            onClick={() => toggleView('table')}
-          >
-            Table View
-          </button>
-        </div>
-      </div>
-      
-        {/* No results message */}
-        {searchTerm.trim() !== '' && Object.keys(filteredData).length === 0 ? (
-          <div className="matrix-empty">
-            <p>No companies match your search for "{searchTerm}". Try a different search term.</p>
-          </div>
-        ) : Object.keys(filteredData).length === 0 ? (
-          <div className="matrix-empty">
-            <p>No categories selected. Please select at least one category above.</p>
-          </div>
-        ) : (
-          <>
-          
-          {/* Grid View with Adaptive Width Categories - Using ordered categories */}
-{viewMode === 'grid' && (
-  <div className="matrix-grid">
-    {categoryOrder
-      .filter(category => filteredData[category]) // Only include categories that exist in filtered data
-      .map(category => {
-        const companies = filteredData[category];
-      
-        // Determine column span based on number of logos
-        let spanClass = '';
-        if (companies.length > 20) {
-          spanClass = 'category-full-width';
-        } else if (companies.length > 10) {
-          spanClass = 'category-half-width';
-        } else {
-          spanClass = 'category-third-width';
-        }
-
-        return (
-          <div 
-            key={category} 
-            className={`matrix-category-container ${spanClass} ${expandedCompany && companies.some(c => c._id === expandedCompany) ? 'expanded' : ''}`}
-          >
-            <div className="matrix-category-title">
-              <span className="category-title-text">{category}</span>
-            </div>
-            <div className="matrix-category">
-              <div className="companies-grid">
-                // Update the expandable company details logic in MarketMatrix.js
-// Replace the existing implementation with this improved version
-
-{companies.map((company, index) => (
-  <React.Fragment key={company._id}>
-    <div 
-      className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
-      onClick={(e) => toggleExpandedCompany(company._id, e)}
-    >
-      <div className="logo-container">
-        <img 
-          src={company.logoUrl} 
-          alt={`${company.name} logo`} 
-          className="company-logo"
-        />
-        {company.verified && (
-          <div className="verified-badge">
-            <span className="verified-badge-icon">✓</span> VERIFIED
-          </div>
-        )}
-        <div className="company-name-tooltip">
-          {company.name}
-        </div>
-      </div>
-    </div>
-    
-    {/* 
-      Place expandable details after every item, but only show for active item
-      This fixes the layout issue with rows having 1 item
-    */}
-    <div 
-      className={`company-details-wrapper ${expandedCompany === company._id ? 'expanded' : ''}`}
-    >
-      {expandedCompany === company._id && (
-        <div className="company-details">
-          <button 
-            className="company-details-close" 
-            onClick={(e) => {
-              e.stopPropagation();
-              setExpandedCompany(null);
-            }}
-          >
-            ×
-          </button>
-          
-          <div className="company-details-header">
-            <img 
-              src={company.logoUrl} 
-              alt={`${company.name} logo`}
-              className="company-details-logo" 
-            />
-            <div className="company-details-info">
-              <h3 className="company-details-name">
-                {company.name}
-                {company.verified && (
-                  <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
-                    <span className="verified-badge-icon">✓</span> VERIFIED
-                  </span>
-                )}
-              </h3>
-              <div className="company-details-category">{category}</div>
-            </div>
-          </div>
-          
-          <div className="company-details-sections">
-            <div className="company-details-section">
-              <h4 className="company-details-section-title">States of Operation</h4>
-              {company.states && company.states.length > 0 ? (
-                <div className="company-states-list">
-                  {company.states.map((state, i) => (
-                    <span key={i} className="company-state-tag">{state}</span>
-                  ))}
-                </div>
-              ) : (
-                <p className="company-details-empty">No state information available</p>
-              )}
-            </div>
-          </div>
-          
-          <div className="company-details-actions">
-            <a 
-              href={company.websiteUrl || "#"} 
-              target="_blank" 
-              rel="noopener noreferrer"
-              className="company-website-button"
-              onClick={(e) => e.stopPropagation()}
-            >
-              Visit Website
-            </a>
-          </div>
-        </div>
-      )}
-    </div>
-  </React.Fragment>
-))}
+onClick={(e) => toggleExpandedCompany(company._id, e)}
+                    >
+                      <div className="logo-container">
+                        <img 
+                          src={company.logoUrl} 
+                          alt={`${company.name} logo`} 
+                          className="company-logo"
+                        />
+                        {company.verified && (
+                          <div className="verified-badge">
+                            <span className="verified-badge-icon">✓</span> VERIFIED
+                          </div>
+                        )}
+                        <div className="company-name-tooltip">
+                          {company.name}
+                        </div>
+                      </div>
+                    </div>
+                    
+                    {/* 
+                      Place expandable details after every item, but only show for active item
+                      This fixes the layout issue with rows having 1 item
+                    */}
+                    <div 
+                      className={`company-details-wrapper ${expandedCompany === company._id ? 'expanded' : ''}`}
+                    >
+                      {expandedCompany === company._id && (
+                        <div className="company-details">
+                          <button 
+                            className="company-details-close" 
+                            onClick={(e) => {
+                              e.stopPropagation();
+                              setExpandedCompany(null);
+                            }}
+                          >
+                            ×
+                          </button>
+                          
+                          <div className="company-details-header">
+                            <img 
+                              src={company.logoUrl} 
+                              alt={`${company.name} logo`}
+                              className="company-details-logo" 
+                            />
+                            <div className="company-details-info">
+                              <h3 className="company-details-name">
+                                {company.name}
+                                {company.verified && (
+                                  <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
+                                    <span className="verified-badge-icon">✓</span> VERIFIED
+                                  </span>
+                                )}
+                              </h3>
+                              <div className="company-details-category">{category}</div>
+                            </div>
+                          </div>
+                          
+                          <div className="company-details-sections">
+                            <div className="company-details-section">
+                              <h4 className="company-details-section-title">States of Operation</h4>
+                              {company.states && company.states.length > 0 ? (
+                                <div className="company-states-list">
+                                  {company.states.map((state, i) => (
+                                    <span key={i} className="company-state-tag">{state}</span>
+                                  ))}
+                                </div>
+                              ) : (
+                                <p className="company-details-empty">No state information available</p>
+                              )}
+                            </div>
+                          </div>
+                          
+                          <div className="company-details-actions">
+                            <a 
+                              href={company.websiteUrl || "#"} 
+                              target="_blank" 
+                              rel="noopener noreferrer"
+                              className="company-website-button"
+                              onClick={(e) => e.stopPropagation()}
+                            >
+                              Visit Website
+                            </a>
+                          </div>
+                        </div>
+                      )}
+                    </div>
+                  </React.Fragment>
+                ))}
               </div>
             </div>
           </div>
