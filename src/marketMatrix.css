@@ -164,7 +164,7 @@
   position: relative;
   margin-top: -1px;
   border-radius: 0;
-  background-color: white;
+  background-color: #f8fafc;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
   flex-grow: 1;
   display: flex;
@@ -180,6 +180,7 @@
   margin-top: 15px;
   position: relative;
   align-content: start; /* Keep logos at the top, don't stretch them */
+  padding: 5px; /* Add slight padding around the grid */
 }
 
 @media (min-width: 640px) {
@@ -232,6 +233,7 @@
   transition: all 0.2s ease;
   display: flex;
   justify-content: center;
+  padding: 2px; /* Add slight padding around each item */
 }
 
 .company-item.active .logo-container {
@@ -242,7 +244,7 @@
 /* Logo container styles */
 .logo-container {
   position: relative;
-  background-color: #f7fafc;
+  background-color: #ffffff;
   padding: 4px;
   border-radius: 6px;
   height: 80px;
@@ -257,7 +259,8 @@
 
 .company-item:hover .logo-container {
   transform: translateY(-2px);
-  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
+  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
+  border-color: #4299e1;
   z-index: 1;
 }
 
@@ -471,6 +474,7 @@
   margin-top: 20px;
   border-radius: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
+  background-color: #ffffff; /* Ensure white background */
 }
 
 .matrix-table {
@@ -498,22 +502,23 @@
 }
 
 .matrix-table tr:nth-child(even) {
-  background-color: #f8fafc;
+  background-color: #f8fafc; /* Light blue-gray for even rows */
 }
 
 .matrix-table tr:nth-child(odd) {
-  background-color: #ffffff;
+  background-color: #ffffff; /* White for odd rows */
 }
 
 .table-logo-cell {
   width: 70px;
+  background-color: #ffffff; /* Ensure white background for logo cells */
 }
 
 .table-logo {
   width: 60px;
   height: 60px;
   object-fit: contain;
-  background-color: #f7fafc;
+  background-color: #ffffff;
   padding: 3px;
   border-radius: 0;
   border: 1px solid #e2e8f0;
@@ -680,7 +685,7 @@
   width: 70px;
   height: 70px;
   object-fit: contain;
-  background-color: #f7fafc;
+  background-color: #ffffff;
   padding: 3px;
   border: 1px solid #e2e8f0;
   border-radius: 0;
@@ -834,7 +839,7 @@
   max-height: 0;
   opacity: 0;
   transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
-  background-color: #f9fafc;
+  background-color: #ffffff; /* Changed to white to match logo backgrounds */
   border-radius: 0;
   margin: 0;
   padding: 0;
@@ -863,6 +868,7 @@
   margin-bottom: 20px;
   padding-bottom: 15px;
   border-bottom: 1px solid #e2e8f0;
+  background-color: #ffffff; /* Ensure white background */
 }
 
 .company-details-name {
@@ -922,7 +928,7 @@
   width: 70px;
   height: 70px;
   object-fit: contain;
-  background-color: white;
+  background-color: #ffffff;
   padding: 4px;
   border-radius: 0;
   margin-right: 15px;
@@ -937,7 +943,7 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
-  background-color: #f8fafc;
+  background-color: #f8fafc; /* Light background to contrast with white */
   padding: 16px;
   border-radius: 0;
   margin-bottom: 16px;
