@@ -103,12 +103,72 @@
   gap: 30px;
 }
 
-/* We'll keep this media query for automatic responsiveness on small screens,
-   but the inline style from the JS component will override it on larger screens */
+/* Media queries for responsive layout */
+@media (max-width: 767px) {
+  /* Mobile styles */
+  .matrix-grid {
+    grid-template-columns: 1fr !important; /* Force single column on mobile */
+  }
+  
+  /* Adjust company grid to show more items per row on mobile */
+  .companies-grid {
+    grid-template-columns: repeat(3, 1fr);
+    gap: 10px;
+  }
+  
+  /* Make logo containers slightly smaller on mobile */
+  .logo-container {
+    height: 70px;
+    width: 70px;
+  }
+  
+  .company-logo {
+    max-height: 55px;
+    max-width: 55px;
+  }
+  
+  /* Adjust filter buttons for mobile */
+  .filters-header {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  
+  .filters-title {
+    margin-bottom: 10px;
+  }
+  
+  .filter-buttons {
+    gap: 8px;
+  }
+  
+  .filter-category-button {
+    padding: 6px 12px;
+    font-size: 13px;
+  }
+}
+
+/* For larger screens, use the JS-controlled layout */
 @media (min-width: 768px) {
   .matrix-grid {
     /* This will be overridden by the inline style based on the config */
     gap: 30px;
+  }
+  
+  /* For two-column layout, use 4 logos per row */
+  .companies-grid {
+    grid-template-columns: repeat(4, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  /* For two-column layout, use 5 logos per row on larger screens */
+  .companies-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
+  
+  /* For single-column layout, allow more logos per row */
+  .matrix-grid[style*="gridTemplateColumns: 1fr"] .companies-grid {
+    grid-template-columns: repeat(8, 1fr);
   }
 }
 

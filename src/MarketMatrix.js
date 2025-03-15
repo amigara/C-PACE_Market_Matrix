@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./marketMatrix.css";
 import CompanyModal from "./CompanyModal"; // Keep for table view
 import CATEGORY_ORDER, { LAYOUT_CONFIG } from "./categoryConfig"; // Import the category order and layout configuration
@@ -12,6 +12,7 @@ const MarketMatrix = () => {
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
   const [warnings, setWarnings] = useState(null); // Keep for logging purposes, but don't display
   const [searchTerm, setSearchTerm] = useState(''); // New state for search functionality
+  const [windowWidth, setWindowWidth] = useState(window.innerWidth);
   
   // State for table sorting
   const [sortConfig, setSortConfig] = useState({
@@ -27,6 +28,18 @@ const MarketMatrix = () => {
   
   // State for tracking data source - now we only have 'netlify'
   const [dataSource, setDataSource] = useState('netlify');
+
+  // Add a resize event listener to track window width
+  useEffect(() => {
+    const handleResize = () => {
+      setWindowWidth(window.innerWidth);
+    };
+
+    window.addEventListener('resize', handleResize);
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
 
   useEffect(() => {
     const fetchCompaniesData = async () => {
@@ -265,6 +278,16 @@ const MarketMatrix = () => {
     setSortConfig({ key, direction });
   };
 
+  // Determine column count based on window width and config
+  const getColumnCount = () => {
+    // Always use 1 column for mobile devices (below 768px)
+    if (windowWidth < 768) {
+      return 1;
+    }
+    // Use the configured column count for larger screens
+    return LAYOUT_CONFIG.columnCount;
+  };
+
   if (loading) return <div className="matrix-loading">Loading market matrix...</div>;
   if (error) return (
     <div className="matrix-error">
@@ -412,7 +435,7 @@ const MarketMatrix = () => {
             {/* Grid View with Expandable Details */}
             {viewMode === 'grid' && (
               <div className="matrix-grid" style={{ 
-                gridTemplateColumns: LAYOUT_CONFIG.columnCount === 1 ? "1fr" : "repeat(2, 1fr)" 
+                gridTemplateColumns: getColumnCount() === 1 ? "1fr" : "repeat(2, 1fr)" 
               }}>
                 {allCategories
                   .filter(category => filteredData[category]) // Only include categories that exist in filtered data
