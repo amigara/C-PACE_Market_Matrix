@@ -42,10 +42,7 @@ const MarketMatrix = () => {
     direction: 'descending'
   });
   
-  // State for expanded company in grid view
-  const [expandedCompany, setExpandedCompany] = useState(null);
-  
-  // State for modal in table view
+  // State for modal in both grid and table views
   const [selectedCompany, setSelectedCompany] = useState(null);
   
   // State for tracking data source - now we only have 'netlify'
@@ -53,9 +50,6 @@ const MarketMatrix = () => {
 
   // Ref for the dropdown container
   const stateDropdownRef = useRef(null);
-
-  // Add refs to track company items for better positioning of expandable details
-  const companyRefs = useRef({});
 
   useEffect(() => {
     const fetchCompaniesData = async () => {
@@ -148,9 +142,8 @@ const MarketMatrix = () => {
     fetchCompaniesData();
   }, []);
 
-  // When changing view mode, reset expanded/selected states
+  // When changing view mode, reset selected state
   useEffect(() => {
-    setExpandedCompany(null);
     setSelectedCompany(null);
   }, [viewMode]);
 
@@ -164,20 +157,19 @@ const MarketMatrix = () => {
       setActiveFilters([...activeFilters, category]);
     }
     
-    // Reset expanded company when filters change
-    setExpandedCompany(null);
+    // No need to reset expandedCompany anymore
   };
   
   // Select all categories
   const selectAll = () => {
     setActiveFilters([...allCategories]);
-    setExpandedCompany(null);
+    // No need to reset expandedCompany anymore
   };
   
   // Clear all categories
   const clearAll = () => {
     setActiveFilters([]);
-    setExpandedCompany(null);
+    // No need to reset expandedCompany anymore
   };
 
   // Toggle view mode
@@ -185,17 +177,7 @@ const MarketMatrix = () => {
     setViewMode(mode);
   };
   
-  // Toggle expanded company in grid view with improved positioning
-  const toggleExpandedCompany = (companyId, e) => {
-    e.preventDefault(); // Prevent default link behavior
-    if (expandedCompany === companyId) {
-      setExpandedCompany(null);
-    } else {
-      setExpandedCompany(companyId);
-    }
-  };
-  
-  // Open company modal in table view
+  // Open company modal in both grid and table views
   const openCompanyModal = (company) => {
     setSelectedCompany(company);
   };
@@ -208,8 +190,7 @@ const MarketMatrix = () => {
   // Handle search input change
   const handleSearchChange = (e) => {
     setSearchTerm(e.target.value);
-    // Reset expanded company when search changes
-    setExpandedCompany(null);
+    // No need to reset expandedCompany anymore
   };
   
   // Clear search
@@ -224,20 +205,19 @@ const MarketMatrix = () => {
     } else {
       setSelectedStates([...selectedStates, state]);
     }
-    // Reset expanded company when filters change
-    setExpandedCompany(null);
+    // No need to reset expandedCompany anymore
   };
   
   // Select all states
   const selectAllStates = () => {
     setSelectedStates([...US_STATES]);
-    setExpandedCompany(null);
+    // No need to reset expandedCompany anymore
   };
   
   // Clear all selected states
   const clearStateSelection = () => {
     setSelectedStates([]);
-    setExpandedCompany(null);
+    // No need to reset expandedCompany anymore
   };
   
   // Filter states based on search term
@@ -432,16 +412,6 @@ const MarketMatrix = () => {
     // If we're sorting by name or category but they're equal, fallback to verified status
     return a.verified === b.verified ? 0 : a.verified ? -1 : 1;
   });
-
-  // Calculate the position for the expandable details
-  const getExpandedDetailsPosition = (index) => {
-    // On mobile (2-column layout), position it after every 2nd item
-    const rowHeight = 95; // Approximate height of a logo item with margins
-    const rowIndex = Math.floor(index / 2); // Which row the logo is in (0-indexed)
-    return {
-      top: `${rowIndex * rowHeight + rowHeight}px` // Position after the current row
-    };
-  };
 
   return (
     <div className="market-matrix-container">
@@ -704,7 +674,7 @@ const MarketMatrix = () => {
               }}>
                 {allCategories
                   .filter(category => filteredData[category]) // Only include categories that exist in filtered data
-                  .map((category, index) => (
+                  .map(category => (
                 <div key={category} className="matrix-category-container">
                   <div className="matrix-category-title">
                     <span className="category-title-text">{category}</span>
@@ -714,9 +684,11 @@ const MarketMatrix = () => {
                         {filteredData[category].map((company, index) => (
                         <React.Fragment key={company._id}>
                           <div 
-                            className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
-                            onClick={(e) => toggleExpandedCompany(company._id, e)}
-                            id={`company-${company._id}`}
+                            className="company-item"
+                            onClick={(e) => {
+                              e.preventDefault(); // Prevent default behavior
+                              openCompanyModal(company);
+                            }}
                           >
                             <div className="logo-container">
                               <img 
@@ -734,96 +706,6 @@ const MarketMatrix = () => {
                               </div>
                             </div>
                           </div>
-                          
-                          {/* Inline expandable details - appears immediately after the clicked item */}
-                          {expandedCompany === company._id && (
-                            <div 
-                              className="company-details-wrapper expanded inline-after" 
-                              style={getExpandedDetailsPosition(index)}
-                            >
-                              <div className="company-details">
-                                <button 
-                                  className="company-details-close" 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setExpandedCompany(null);
-                                  }}
-                                >
-                                  ×
-                                </button>
-                                
-                                <div className="company-details-header">
-                                  <img 
-                                    src={company.logoUrl} 
-                                    alt={`${company.name} logo`}
-                                    className="company-details-logo" 
-                                  />
-                                  <div className="company-details-info">
-                                    <h3 className="company-details-name">
-                                      {company.name}
-                                      {company.verified && (
-                                        <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
-                                          <span className="verified-badge-icon">✓</span> VERIFIED
-                                        </span>
-                                      )}
-                                    </h3>
-                                      <div className="company-details-category">
-                                        {/* Show primary category */}
-                                        {category}
-                                        
-                                        {/* Show all categories if company belongs to multiple */}
-                                        {company.allCategories && company.allCategories.length > 1 && (
-                                          <div className="company-all-categories">
-                                            <span className="all-categories-label">All categories: </span>
-                                            <div className="categories-tags">
-                                              {company.allCategories.map((cat, i) => (
-                                                <span key={i} className="category-tag">{cat}</span>
-                                              ))}
-                                            </div>
-                                          </div>
-                                        )}
-                                      </div>
-                                    </div>
-                                </div>
-                                
-                                <div className="company-details-sections">
-                                  <div className="company-details-section">
-                                    <h4 className="company-details-section-title">States of Operation</h4>
-                                    {company.states && company.states.length > 0 ? (
-                                      <div className="company-states-list">
-                                        {company.states.map((state, i) => (
-                                          <span key={i} className="company-state-tag">{state}</span>
-                                        ))}
-                                      </div>
-                                    ) : (
-                                      <p className="company-details-empty">No state information available</p>
-                                    )}
-                                  </div>
-                                  
-                                  <div className="company-details-section">
-                                    <h4 className="company-details-section-title">Contact Information</h4>
-                                    {company.contactInfo ? (
-                                      <p>{company.contactInfo}</p>
-                                    ) : (
-                                      <p className="company-details-empty">No contact information available</p>
-                                    )}
-                                  </div>
-                                </div>
-                                
-                                <div className="company-details-actions">
-                                  <a 
-                                    href={company.websiteUrl || "#"} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="company-website-button"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    Visit Website
-                                  </a>
-                                </div>
-                              </div>
-                            </div>
-                          )}
                         </React.Fragment>
                       ))}
                       
@@ -922,7 +804,7 @@ const MarketMatrix = () => {
       )}
       </div>
       
-      {/* Company Modal for Table View */}
+      {/* Company Modal for Both Grid and Table Views */}
       {selectedCompany && (
         <CompanyModal 
           company={selectedCompany} 
