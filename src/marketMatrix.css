@@ -107,14 +107,8 @@
    but the inline style from the JS component will override it on larger screens */
 @media (min-width: 768px) {
   .matrix-grid {
-    grid-template-columns: repeat(2, 1fr);
+    /* This will be overridden by the inline style based on the config */
     gap: 30px;
-  }
-  
-  /* Full-width category container */
-  .matrix-category-container.full-width {
-    grid-column: 1 / -1; /* Span all columns */
-    margin-top: 40px; /* Add more space above full-width categories */
   }
 }
 
@@ -159,46 +153,40 @@
 
 /* Category box styles */
 .matrix-category {
-  border: 1px solid #e5e7eb;
-  border-radius: 8px;
-  padding: 20px 15px 15px;
-  background-color: #fff;
-  min-height: 100px;
+  border: 2px solid #4a5568;
+  border-top: 2px solid #4a5568;
+  padding: 20px 20px 20px;
   position: relative;
-  overflow: visible; /* Allow expanded details to be visible */
-  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin-top: -1px;
+  border-radius: 0;
+  background-color: white;
+  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
+  flex-grow: 1;
+  display: flex;
+  flex-direction: column;
+  min-height: 200px; /* Ensure minimum height for categories with few logos */
 }
 
 /* Companies grid - adjust based on column count */
 .companies-grid {
   display: grid;
-  grid-template-columns: repeat(5, 1fr);
-  gap: 10px; /* Slightly reduce gap for better spacing */
+  grid-template-columns: repeat(4, 1fr);
+  gap: 12px;
   margin-top: 15px;
   position: relative;
   align-content: start; /* Keep logos at the top, don't stretch them */
-  padding: 5px; /* Add slight padding around the grid */
-  width: 100%; /* Ensure grid takes full width of container */
-  box-sizing: border-box; /* Include padding in width calculation */
 }
 
-/* Override media queries for full-width categories */
-.full-width .companies-grid {
-  grid-template-columns: repeat(5, 1fr) !important; /* Force 5 columns on small screens */
-  justify-content: start; /* Align items to the start */
-  width: 100%; /* Ensure full width */
+@media (min-width: 640px) {
+  .companies-grid {
+    grid-template-columns: repeat(5, 1fr);
+  }
 }
 
 @media (min-width: 768px) {
   /* For two-column layout, use 4 logos per row */
   .companies-grid {
     grid-template-columns: repeat(4, 1fr);
-  }
-  
-  /* For full-width categories, use more columns */
-  .full-width .companies-grid {
-    grid-template-columns: repeat(6, 1fr) !important; /* Force 6 columns on medium screens */
-    width: 100%; /* Ensure full width */
   }
 }
 
@@ -207,26 +195,18 @@
   .companies-grid {
     grid-template-columns: repeat(5, 1fr);
   }
-  
-  /* For full-width categories, use more columns */
-  .full-width .companies-grid {
-    grid-template-columns: repeat(8, 1fr) !important; /* Force 8 columns on large screens */
-    width: 100%; /* Ensure full width */
+}
+
+/* For single-column layout, allow more logos per row */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .matrix-grid[style*="gridTemplateColumns: 1fr"] .companies-grid {
+    grid-template-columns: repeat(6, 1fr);
   }
 }
 
-@media (min-width: 1280px) {
-  /* For full-width categories on extra large screens */
-  .full-width .companies-grid {
-    grid-template-columns: repeat(10, 1fr) !important; /* Force 10 columns on extra large screens */
-    width: 100%; /* Ensure full width */
-  }
-}
-
-/* Remove the auto-fill approach which was causing issues */
-@media (max-width: 767px) {
-  .companies-grid {
-    grid-template-columns: repeat(3, 1fr);
+@media (min-width: 1024px) {
+  .matrix-grid[style*="gridTemplateColumns: 1fr"] .companies-grid {
+    grid-template-columns: repeat(8, 1fr);
   }
 }
 
@@ -237,9 +217,6 @@
   transition: all 0.2s ease;
   display: flex;
   justify-content: center;
-  padding: 2px; /* Add slight padding around each item */
-  width: 100%; /* Ensure item takes full width of its grid cell */
-  box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .company-item.active .logo-container {
@@ -250,7 +227,7 @@
 /* Logo container styles */
 .logo-container {
   position: relative;
-  background-color: #ffffff;
+  background-color: #f7fafc;
   padding: 4px;
   border-radius: 6px;
   height: 80px;
@@ -261,13 +238,11 @@
   transition: all 0.2s ease;
   border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
-  margin: 0 auto; /* Center the logo container */
 }
 
 .company-item:hover .logo-container {
   transform: translateY(-2px);
-  box-shadow: 0 4px 8px rgba(0, 0, 0, 0.15);
-  border-color: #4299e1;
+  box-shadow: 0 4px 6px rgba(0, 0, 0, 0.1);
   z-index: 1;
 }
 
@@ -481,7 +456,6 @@
   margin-top: 20px;
   border-radius: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
-  background-color: #ffffff; /* Ensure white background */
 }
 
 .matrix-table {
@@ -509,23 +483,22 @@
 }
 
 .matrix-table tr:nth-child(even) {
-  background-color: #f8fafc; /* Light blue-gray for even rows */
+  background-color: #f8fafc;
 }
 
 .matrix-table tr:nth-child(odd) {
-  background-color: #ffffff; /* White for odd rows */
+  background-color: #ffffff;
 }
 
 .table-logo-cell {
   width: 70px;
-  background-color: #ffffff; /* Ensure white background for logo cells */
 }
 
 .table-logo {
   width: 60px;
   height: 60px;
   object-fit: contain;
-  background-color: #ffffff;
+  background-color: #f7fafc;
   padding: 3px;
   border-radius: 0;
   border: 1px solid #e2e8f0;
@@ -692,7 +665,7 @@
   width: 70px;
   height: 70px;
   object-fit: contain;
-  background-color: #ffffff;
+  background-color: #f7fafc;
   padding: 3px;
   border: 1px solid #e2e8f0;
   border-radius: 0;
@@ -839,31 +812,27 @@
   }
 }
 
-/* Expandable details styles - fix containment issues */
+/* Expandable details styles */
 .company-details-wrapper {
   grid-column: 1 / -1; /* Span all columns */
   overflow: hidden;
   max-height: 0;
   opacity: 0;
-  transition: all 0.3s ease-in-out;
-  width: calc(100% - 2px); /* Account for borders */
-  margin-left: 1px; /* Center within the category */
-  position: relative;
-  z-index: 5; /* Keep above other elements */
-  box-sizing: border-box;
-  background-color: #fff; /* Match background color */
-  border-top: 1px solid #e5e7eb; /* Add subtle top border */
+  transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
+  background-color: #f9fafc;
+  border-radius: 0;
+  margin: 0;
+  padding: 0;
+  border: 1px solid transparent;
 }
 
-/* Expanded state for company details */
 .company-details-wrapper.expanded {
-  max-height: 400px; /* Allow enough space for content */
+  max-height: 400px; /* Increased to accommodate larger content */
   opacity: 1;
-  padding: 15px 10px;
-  margin-top: 10px;
-  margin-bottom: 5px;
-  border-radius: 0 0 6px 6px; /* Round bottom corners */
-  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
+  margin: 16px 0;
+  padding: 20px;
+  border-color: #e2e8f0;
+  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
 }
 
 /* Company details styles */
@@ -871,7 +840,6 @@
   display: flex;
   flex-direction: column;
   position: relative;
-  width: 100%; /* Ensure full width */
 }
 
 .company-details-header {
@@ -880,7 +848,6 @@
   margin-bottom: 20px;
   padding-bottom: 15px;
   border-bottom: 1px solid #e2e8f0;
-  background-color: #ffffff; /* Ensure white background */
 }
 
 .company-details-name {
@@ -940,7 +907,7 @@
   width: 70px;
   height: 70px;
   object-fit: contain;
-  background-color: #ffffff;
+  background-color: white;
   padding: 4px;
   border-radius: 0;
   margin-right: 15px;
@@ -955,29 +922,15 @@
   display: grid;
   grid-template-columns: 1fr 1fr;
   gap: 24px;
-  background-color: #f8fafc; /* Light background to contrast with white */
+  background-color: #f8fafc;
   padding: 16px;
   border-radius: 0;
   margin-bottom: 16px;
-  width: 100%; /* Ensure full width */
-  box-sizing: border-box; /* Include padding in width calculation */
-}
-
-/* Adjust grid columns for full-width categories */
-.full-width .company-details-sections {
-  grid-template-columns: repeat(3, 1fr); /* Use 3 columns for full-width categories */
-}
-
-@media (max-width: 1024px) {
-  .full-width .company-details-sections {
-    grid-template-columns: 1fr 1fr; /* Fallback to 2 columns on medium screens */
-  }
 }
 
 @media (max-width: 640px) {
-  .company-details-sections,
-  .full-width .company-details-sections {
-    grid-template-columns: 1fr; /* Single column on small screens */
+  .company-details-sections {
+    grid-template-columns: 1fr;
   }
 }
 
@@ -1199,34 +1152,4 @@
   background-color: #3182ce;
   transform: translateY(-1px);
   box-shadow: 0 3px 6px rgba(66, 153, 225, 0.3);
-}
-
-/* Full-width category container - spans the entire width with proper spacing */
-.matrix-category-container.full-width {
-  width: 100%;
-  margin-top: 40px;
-  margin-bottom: 10px;
-  position: relative;
-}
-
-/* Adjust grid columns for different screen sizes */
-@media (min-width: 768px) and (max-width: 1023px) {
-  /* For full-width categories on medium screens */
-  .full-width .companies-grid {
-    grid-template-columns: repeat(6, 1fr); /* 6 columns on medium screens */
-  }
-}
-
-@media (min-width: 1024px) and (max-width: 1279px) {
-  /* For full-width categories on large screens */
-  .full-width .companies-grid {
-    grid-template-columns: repeat(8, 1fr); /* 8 columns on large screens */
-  }
-}
-
-@media (min-width: 1280px) {
-  /* For full-width categories on extra large screens */
-  .full-width .companies-grid {
-    grid-template-columns: repeat(10, 1fr); /* 10 columns on extra large screens */
-  }
 }
