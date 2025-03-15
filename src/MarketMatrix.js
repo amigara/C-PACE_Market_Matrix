@@ -367,14 +367,15 @@ const MarketMatrix = () => {
   const [activeFilters, setActiveFilters] = useState([]);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
   const [searchTerm, setSearchTerm] = useState('');
+  const [categoryOrder, setCategoryOrder] = useState([]); // Added state for category order
 
-// Add this function to handle search input changes
-const handleSearchChange = (e) => {
-  setSearchTerm(e.target.value);
-  // Reset expanded/selected states when searching
-  setExpandedCompany(null);
-  setSelectedCompany(null);
-};
+  // Add this function to handle search input changes
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    // Reset expanded/selected states when searching
+    setExpandedCompany(null);
+    setSelectedCompany(null);
+  };
   
   // State for table sorting
   const [sortConfig, setSortConfig] = useState({
@@ -391,14 +392,18 @@ const handleSearchChange = (e) => {
   useEffect(() => {
     const fetchCompaniesData = async () => {
       try {
-        // In CodeSandbox, use the sample data
-        // In production, this would check for window.companiesData first
-        if (window.companiesData) {
+        // Check for Webflow data first
+        if (window.Webflow && window.Webflow.categoryData && window.Webflow.companiesData) {
+          // Process data from Webflow CMS
+          processWebflowData(window.Webflow.categoryData, window.Webflow.companiesData);
+        } 
+        // Fall back to regular companiesData if available
+        else if (window.companiesData) {
           processData(window.companiesData);
-        } else {
-          // Use sample data for development
-          const data = SAMPLE_DATA;
-          processData(data);
+        } 
+        // Use sample data for development
+        else {
+          processData(SAMPLE_DATA);
         }
       } catch (err) {
         console.error("Error fetching company data:", err);
@@ -407,6 +412,39 @@ const handleSearchChange = (e) => {
       }
     };
 
+    // Process Webflow CMS data
+    const processWebflowData = (categoryData, companiesData) => {
+      // Sort categories by display order
+      const sortedCategories = [...categoryData].sort((a, b) => 
+        (a.displayOrder || 999) - (b.displayOrder || 999)
+      );
+      
+      // Store the ordered category names
+      const orderedCategoryNames = sortedCategories.map(category => category.name);
+      setCategoryOrder(orderedCategoryNames);
+      
+      // Group companies by category
+      const groupedCompanies = {};
+      
+      // Initialize empty arrays for each category
+      orderedCategoryNames.forEach(categoryName => {
+        groupedCompanies[categoryName] = [];
+      });
+      
+      // Populate the categories with companies
+      companiesData.forEach(company => {
+        if (company.category && groupedCompanies[company.category]) {
+          groupedCompanies[company.category].push(company);
+        }
+      });
+      
+      setCompaniesData(groupedCompanies);
+      setAllCategories(orderedCategoryNames);
+      setActiveFilters(orderedCategoryNames);
+      setLoading(false);
+    };
+
+    // Process regular data
     const processData = (data) => {
       // If data is an array of companies with category property
       if (Array.isArray(data)) {
@@ -420,18 +458,23 @@ const handleSearchChange = (e) => {
         }, {});
         
         setCompaniesData(groupedData);
+        
+        // Get categories
+        const categories = [...new Set(data.map(item => item.category))];
+        setCategoryOrder(categories);
+        setAllCategories(categories);
+        setActiveFilters(categories);
       } else {
         // If data is already grouped by category
         setCompaniesData(data);
+        
+        // Get categories
+        const categories = Object.keys(data);
+        setCategoryOrder(categories);
+        setAllCategories(categories);
+        setActiveFilters(categories);
       }
       
-      // Set all categories and initialize active filters
-      const categories = Array.isArray(data) 
-        ? [...new Set(data.map(item => item.category))]
-        : Object.keys(data);
-      
-      setAllCategories(categories);
-      setActiveFilters(categories);
       setLoading(false);
     };
 
@@ -555,10 +598,12 @@ const getFilteredData = () => {
 
   const filteredData = getFilteredData();
   
-  // Get all companies for table view
-  const allCompanies = Object.entries(filteredData).reduce((acc, [category, companies]) => {
-    return [...acc, ...companies.map(company => ({ ...company, category }))];
-  }, []);
+  // Get all companies for table view using ordered categories
+  const allCompanies = categoryOrder
+    .filter(category => filteredData[category]) // Only include categories that exist in filtered data
+    .reduce((acc, category) => {
+      return [...acc, ...filteredData[category].map(company => ({ ...company, category }))];
+    }, []);
   
   // Sort companies for table view based on current sort configuration
   const sortedAllCompanies = [...allCompanies].sort((a, b) => {
@@ -630,7 +675,8 @@ const getFilteredData = () => {
         </div>
         
         <div className="filter-buttons">
-          {allCategories.map(category => (
+          {/* Use categoryOrder instead of allCategories */}
+          {categoryOrder.map(category => (
             <button
               key={category}
               onClick={() => toggleFilter(category)}
@@ -679,136 +725,140 @@ const getFilteredData = () => {
         ) : (
           <>
           
-          {/* Grid View with Adaptive Width Categories */}
+          {/* Grid View with Adaptive Width Categories - Using ordered categories */}
 {viewMode === 'grid' && (
   <div className="matrix-grid">
-    {Object.entries(filteredData).map(([category, companies]) => {
-      // Determine column span based on number of logos
-      let spanClass = '';
-      if (companies.length > 20) {
-        spanClass = 'category-full-width';
-      } else if (companies.length > 10) {
-        spanClass = 'category-half-width';
-      } else {
-        spanClass = 'category-third-width';
-      }
+    {categoryOrder
+      .filter(category => filteredData[category]) // Only include categories that exist in filtered data
+      .map(category => {
+        const companies = filteredData[category];
+      
+        // Determine column span based on number of logos
+        let spanClass = '';
+        if (companies.length > 20) {
+          spanClass = 'category-full-width';
+        } else if (companies.length > 10) {
+          spanClass = 'category-half-width';
+        } else {
+          spanClass = 'category-third-width';
+        }
 
-      return (
-        <div 
-          key={category} 
-          className={`matrix-category-container ${spanClass} ${expandedCompany && companies.some(c => c._id === expandedCompany) ? 'expanded' : ''}`}
-        >
-          <div className="matrix-category-title">
-            <span className="category-title-text">{category}</span>
-          </div>
-          <div className="matrix-category">
-            <div className="companies-grid">
-              {companies.map((company, index) => (
-                <React.Fragment key={company._id}>
-                  <div 
-                    className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
-                    onClick={(e) => toggleExpandedCompany(company._id, e)}
-                  >
-                    <div className="logo-container">
-                      <img 
-                        src={company.logoUrl} 
-                        alt={`${company.name} logo`} 
-                        className="company-logo"
-                      />
-                      {company.verified && (
-                        <div className="verified-badge">
-                          <span className="verified-badge-icon">✓</span> VERIFIED
+        return (
+          <div 
+            key={category} 
+            className={`matrix-category-container ${spanClass} ${expandedCompany && companies.some(c => c._id === expandedCompany) ? 'expanded' : ''}`}
+          >
+            <div className="matrix-category-title">
+              <span className="category-title-text">{category}</span>
+            </div>
+            <div className="matrix-category">
+              <div className="companies-grid">
+                {companies.map((company, index) => (
+                  <React.Fragment key={company._id}>
+                    <div 
+                      className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
+                      onClick={(e) => toggleExpandedCompany(company._id, e)}
+                    >
+                      <div className="logo-container">
+                        <img 
+                          src={company.logoUrl} 
+                          alt={`${company.name} logo`} 
+                          className="company-logo"
+                        />
+                        {company.verified && (
+                          <div className="verified-badge">
+                            <span className="verified-badge-icon">✓</span> VERIFIED
+                          </div>
+                        )}
+                        <div className="company-name-tooltip">
+                          {company.name}
                         </div>
-                      )}
-                      <div className="company-name-tooltip">
-                        {company.name}
                       </div>
                     </div>
-                  </div>
-                  
-                  {/* Expandable company details - add after every 5th item or at end of row */}
-                  {(index + 1) % 5 === 0 || index === companies.length - 1 ? (
-                    <div 
-                      className={`company-details-wrapper ${
-                        expandedCompany === company._id || 
-                        (expandedCompany && companies.slice(Math.floor(index / 5) * 5, index + 1).some(c => c._id === expandedCompany))
-                          ? 'expanded' 
-                          : ''
-                      }`}
-                    >
-                      {expandedCompany && companies.slice(Math.max(0, Math.floor(index / 5) * 5), index + 1).map(c => {
-                        if (c._id === expandedCompany) {
-                          return (
-                            <div key={c._id} className="company-details">
-                              <button 
-                                className="company-details-close" 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setExpandedCompany(null);
-                                }}
-                              >
-                                ×
-                              </button>
-                              
-                              <div className="company-details-header">
-                                <img 
-                                  src={c.logoUrl} 
-                                  alt={`${c.name} logo`}
-                                  className="company-details-logo" 
-                                />
-                                <div className="company-details-info">
-                                  <h3 className="company-details-name">
-                                    {c.name}
-                                    {c.verified && (
-                                      <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
-                                        <span className="verified-badge-icon">✓</span> VERIFIED
-                                      </span>
-                                    )}
-                                  </h3>
-                                  <div className="company-details-category">{category}</div>
-                                </div>
-                              </div>
-                              
-                              <div className="company-details-sections">
-                                <div className="company-details-section">
-                                  <h4 className="company-details-section-title">States of Operation</h4>
-                                  {c.states && c.states.length > 0 ? (
-                                    <div className="company-states-list">
-                                      {c.states.map((state, i) => (
-                                        <span key={i} className="company-state-tag">{state}</span>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    <p className="company-details-empty">No state information available</p>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              <div className="company-details-actions">
-                                <a 
-                                  href={c.websiteUrl || "#"} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="company-website-button"
-                                  onClick={(e) => e.stopPropagation()}
+                    
+                    {/* Expandable company details - add after every 5th item or at end of row */}
+                    {(index + 1) % 5 === 0 || index === companies.length - 1 ? (
+                      <div 
+                        className={`company-details-wrapper ${
+                          expandedCompany === company._id || 
+                          (expandedCompany && companies.slice(Math.floor(index / 5) * 5, index + 1).some(c => c._id === expandedCompany))
+                            ? 'expanded' 
+                            : ''
+                        }`}
+                      >
+                        {expandedCompany && companies.slice(Math.max(0, Math.floor(index / 5) * 5), index + 1).map(c => {
+                          if (c._id === expandedCompany) {
+                            return (
+                              <div key={c._id} className="company-details">
+                                <button 
+                                  className="company-details-close" 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setExpandedCompany(null);
+                                  }}
                                 >
-                                  Visit Website
-                                </a>
+                                  ×
+                                </button>
+                                
+                                <div className="company-details-header">
+                                  <img 
+                                    src={c.logoUrl} 
+                                    alt={`${c.name} logo`}
+                                    className="company-details-logo" 
+                                  />
+                                  <div className="company-details-info">
+                                    <h3 className="company-details-name">
+                                      {c.name}
+                                      {c.verified && (
+                                        <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
+                                          <span className="verified-badge-icon">✓</span> VERIFIED
+                                        </span>
+                                      )}
+                                    </h3>
+                                    <div className="company-details-category">{category}</div>
+                                  </div>
+                                </div>
+                                
+                                <div className="company-details-sections">
+                                  <div className="company-details-section">
+                                    <h4 className="company-details-section-title">States of Operation</h4>
+                                    {c.states && c.states.length > 0 ? (
+                                      <div className="company-states-list">
+                                        {c.states.map((state, i) => (
+                                          <span key={i} className="company-state-tag">{state}</span>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <p className="company-details-empty">No state information available</p>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                <div className="company-details-actions">
+                                  <a 
+                                    href={c.websiteUrl || "#"} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="company-website-button"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    Visit Website
+                                  </a>
+                                </div>
                               </div>
-                            </div>
-                          );
-                        }
-                        return null;
-                      })}
-                    </div>
-                  ) : null}
-                </React.Fragment>
-              ))}
+                            );
+                          }
+                          return null;
+                        })}
+                      </div>
+                    ) : null}
+                  </React.Fragment>
+                ))}
+              </div>
             </div>
           </div>
-        </div>
-      );
-    })}
+        );
+      })}
   </div>
 )}
           
