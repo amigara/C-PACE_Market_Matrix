@@ -467,14 +467,13 @@
   object-fit: contain;
 }
 
-.table-logo.clickable {
+.clickable-row {
   cursor: pointer;
-  transition: transform 0.2s ease;
+  transition: background-color 0.2s ease;
 }
 
-.table-logo.clickable:hover {
-  transform: scale(1.1);
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+.clickable-row:hover {
+  background-color: #edf2f7;
 }
 
 .matrix-table tr:hover {

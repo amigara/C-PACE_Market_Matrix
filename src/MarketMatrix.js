@@ -553,13 +553,16 @@ const MarketMatrix = () => {
                   </thead>
                   <tbody>
                     {sortedAllCompanies.map((company) => (
-                      <tr key={company._id}>
+                      <tr 
+                        key={company._id} 
+                        onClick={() => openCompanyModal(company)}
+                        className="clickable-row"
+                      >
                         <td className="table-logo-cell">
                           <img 
                             src={company.logoUrl} 
                             alt={`${company.name} logo`} 
-                            className="table-logo clickable"
-                            onClick={() => openCompanyModal(company)}
+                            className="table-logo"
                           />
                         </td>
                         <td>{company.name}</td>
@@ -583,7 +586,7 @@ const MarketMatrix = () => {
                             <span className="table-unverified">—</span>
                           )}
                         </td>
-                        <td>
+                        <td onClick={(e) => e.stopPropagation()}>
                           <a 
                             href={company.websiteUrl || "#"} 
                             target="_blank" 
