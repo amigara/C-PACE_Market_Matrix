@@ -279,212 +279,215 @@ const MarketMatrix = () => {
         </button>
       </div>
       
-      {/* No categories selected message */}
-      {Object.keys(filteredData).length === 0 ? (
-        <div className="matrix-empty">
-          <p>No categories selected. Please select at least one category above.</p>
-        </div>
-      ) : (
-        <>
-          {/* Grid View with Expandable Details */}
-          {viewMode === 'grid' && (
-            <div className="matrix-grid" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
-              {Object.entries(filteredData).map(([category, companies]) => (
-                <div key={category} className="matrix-category-container">
-                  <div className="matrix-category-title">
-                    <span className="category-title-text">{category}</span>
-                  </div>
-                  <div className="matrix-category">
-                    <div className="companies-grid">
-                      {companies.map((company, index) => (
-                        <React.Fragment key={company._id}>
-                          <div 
-                            className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
-                            onClick={(e) => toggleExpandedCompany(company._id, e)}
-                          >
-                            <div className="logo-container">
-                              <img 
-                                src={company.logoUrl} 
-                                alt={`${company.name} logo`} 
-                                className="company-logo"
-                              />
-                              {company.verified && (
-                                <div className="verified-badge">
-                                  <span className="verified-badge-icon">✓</span> VERIFIED
+      {/* Content Area */}
+      <div className="view-content">
+        {/* No categories selected message */}
+        {Object.keys(filteredData).length === 0 ? (
+          <div className="matrix-empty">
+            <p>No categories selected. Please select at least one category above.</p>
+          </div>
+        ) : (
+          <>
+            {/* Grid View with Expandable Details */}
+            {viewMode === 'grid' && (
+              <div className="matrix-grid" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
+                {Object.entries(filteredData).map(([category, companies]) => (
+                  <div key={category} className="matrix-category-container">
+                    <div className="matrix-category-title">
+                      <span className="category-title-text">{category}</span>
+                    </div>
+                    <div className="matrix-category">
+                      <div className="companies-grid">
+                        {companies.map((company, index) => (
+                          <React.Fragment key={company._id}>
+                            <div 
+                              className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
+                              onClick={(e) => toggleExpandedCompany(company._id, e)}
+                            >
+                              <div className="logo-container">
+                                <img 
+                                  src={company.logoUrl} 
+                                  alt={`${company.name} logo`} 
+                                  className="company-logo"
+                                />
+                                {company.verified && (
+                                  <div className="verified-badge">
+                                    <span className="verified-badge-icon">✓</span> VERIFIED
+                                  </div>
+                                )}
+                                <div className="company-name-tooltip">
+                                  {company.name}
                                 </div>
-                              )}
-                              <div className="company-name-tooltip">
-                                {company.name}
                               </div>
                             </div>
-                          </div>
-                          
-                          {/* Expandable company details - add after every 5th item or at end of row */}
-                          {(index + 1) % 5 === 0 || index === companies.length - 1 ? (
-                            <div 
-                              className={`company-details-wrapper ${
-                                expandedCompany === company._id || 
-                                (expandedCompany && companies.slice(Math.floor(index / 5) * 5, index + 1).some(c => c._id === expandedCompany))
-                                  ? 'expanded' 
-                                  : ''
-                              }`}
-                            >
-                              {expandedCompany && companies.slice(Math.max(0, Math.floor(index / 5) * 5), index + 1).map(c => {
-                                if (c._id === expandedCompany) {
-                                  return (
-                                    <div key={c._id} className="company-details">
-                                      <button 
-                                        className="company-details-close" 
-                                        onClick={(e) => {
-                                          e.stopPropagation();
-                                          setExpandedCompany(null);
-                                        }}
-                                      >
-                                        ×
-                                      </button>
-                                      
-                                      <div className="company-details-header">
-                                        <img 
-                                          src={c.logoUrl} 
-                                          alt={`${c.name} logo`}
-                                          className="company-details-logo" 
-                                        />
-                                        <div className="company-details-info">
-                                          <h3 className="company-details-name">
-                                            {c.name}
-                                            {c.verified && (
-                                              <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
-                                                <span className="verified-badge-icon">✓</span> VERIFIED
-                                              </span>
-                                            )}
-                                          </h3>
-                                          <div className="company-details-category">{category}</div>
-                                        </div>
-                                      </div>
-                                      
-                                      <div className="company-details-sections">
-                                        <div className="company-details-section">
-                                          <h4 className="company-details-section-title">States of Operation</h4>
-                                          {c.states && c.states.length > 0 ? (
-                                            <div className="company-states-list">
-                                              {c.states.map((state, i) => (
-                                                <span key={i} className="company-state-tag">{state}</span>
-                                              ))}
-                                            </div>
-                                          ) : (
-                                            <p className="company-details-empty">No state information available</p>
-                                          )}
+                            
+                            {/* Expandable company details - add after every 5th item or at end of row */}
+                            {(index + 1) % 5 === 0 || index === companies.length - 1 ? (
+                              <div 
+                                className={`company-details-wrapper ${
+                                  expandedCompany === company._id || 
+                                  (expandedCompany && companies.slice(Math.floor(index / 5) * 5, index + 1).some(c => c._id === expandedCompany))
+                                    ? 'expanded' 
+                                    : ''
+                                }`}
+                              >
+                                {expandedCompany && companies.slice(Math.max(0, Math.floor(index / 5) * 5), index + 1).map(c => {
+                                  if (c._id === expandedCompany) {
+                                    return (
+                                      <div key={c._id} className="company-details">
+                                        <button 
+                                          className="company-details-close" 
+                                          onClick={(e) => {
+                                            e.stopPropagation();
+                                            setExpandedCompany(null);
+                                          }}
+                                        >
+                                          ×
+                                        </button>
+                                        
+                                        <div className="company-details-header">
+                                          <img 
+                                            src={c.logoUrl} 
+                                            alt={`${c.name} logo`}
+                                            className="company-details-logo" 
+                                          />
+                                          <div className="company-details-info">
+                                            <h3 className="company-details-name">
+                                              {c.name}
+                                              {c.verified && (
+                                                <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
+                                                  <span className="verified-badge-icon">✓</span> VERIFIED
+                                                </span>
+                                              )}
+                                            </h3>
+                                            <div className="company-details-category">{category}</div>
+                                          </div>
                                         </div>
                                         
-                                        <div className="company-details-section">
-                                          <h4 className="company-details-section-title">Contact Information</h4>
-                                          {c.contactInfo ? (
-                                            <p>{c.contactInfo}</p>
-                                          ) : (
-                                            <p className="company-details-empty">No contact information available</p>
-                                          )}
+                                        <div className="company-details-sections">
+                                          <div className="company-details-section">
+                                            <h4 className="company-details-section-title">States of Operation</h4>
+                                            {c.states && c.states.length > 0 ? (
+                                              <div className="company-states-list">
+                                                {c.states.map((state, i) => (
+                                                  <span key={i} className="company-state-tag">{state}</span>
+                                                ))}
+                                              </div>
+                                            ) : (
+                                              <p className="company-details-empty">No state information available</p>
+                                            )}
+                                          </div>
+                                          
+                                          <div className="company-details-section">
+                                            <h4 className="company-details-section-title">Contact Information</h4>
+                                            {c.contactInfo ? (
+                                              <p>{c.contactInfo}</p>
+                                            ) : (
+                                              <p className="company-details-empty">No contact information available</p>
+                                            )}
+                                          </div>
+                                        </div>
+                                        
+                                        <div className="company-details-actions">
+                                          <a 
+                                            href={c.websiteUrl || "#"} 
+                                            target="_blank" 
+                                            rel="noopener noreferrer"
+                                            className="company-website-button"
+                                            onClick={(e) => e.stopPropagation()}
+                                          >
+                                            Visit Website
+                                          </a>
                                         </div>
                                       </div>
-                                      
-                                      <div className="company-details-actions">
-                                        <a 
-                                          href={c.websiteUrl || "#"} 
-                                          target="_blank" 
-                                          rel="noopener noreferrer"
-                                          className="company-website-button"
-                                          onClick={(e) => e.stopPropagation()}
-                                        >
-                                          Visit Website
-                                        </a>
-                                      </div>
-                                    </div>
-                                  );
-                                }
-                                return null;
-                              })}
-                            </div>
-                          ) : null}
-                        </React.Fragment>
-                      ))}
+                                    );
+                                  }
+                                  return null;
+                                })}
+                              </div>
+                            ) : null}
+                          </React.Fragment>
+                        ))}
+                      </div>
                     </div>
                   </div>
-                </div>
-              ))}
-            </div>
-          )}
-          
-          {/* Table View with Sortable Columns and Modal */}
-          {viewMode === 'table' && (
-            <div className="matrix-table-container">
-              <table className="matrix-table">
-                <thead>
-                  <tr>
-                    <th className="th-logo">Logo</th>
-                    <th 
-                      className={`th-sortable ${sortConfig.key === 'name' ? 
-                        (sortConfig.direction === 'ascending' ? 'sort-ascending' : 'sort-descending') : ''}`}
-                      onClick={() => requestSort('name')}
-                    >
-                      Company
-                    </th>
-                    <th 
-                      className={`th-sortable ${sortConfig.key === 'category' ? 
-                        (sortConfig.direction === 'ascending' ? 'sort-ascending' : 'sort-descending') : ''}`}
-                      onClick={() => requestSort('category')}
-                    >
-                      Category
-                    </th>
-                    <th 
-                      className={`th-sortable ${sortConfig.key === 'verified' ? 
-                        (sortConfig.direction === 'ascending' ? 'sort-ascending' : 'sort-descending') : ''}`}
-                      onClick={() => requestSort('verified')}
-                    >
-                      Status
-                    </th>
-                    <th>Website</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {sortedAllCompanies.map((company) => (
-                    <tr key={company._id}>
-                      <td className="table-logo-cell">
-                        <img 
-                          src={company.logoUrl} 
-                          alt={`${company.name} logo`} 
-                          className="table-logo clickable"
-                          onClick={() => openCompanyModal(company)}
-                        />
-                      </td>
-                      <td>{company.name}</td>
-                      <td>{company.category}</td>
-                      <td>
-                        {company.verified ? (
-                          <span className="table-verified-badge">
-                            <span className="verified-badge-icon">✓</span> VERIFIED
-                          </span>
-                        ) : (
-                          <span className="table-unverified">—</span>
-                        )}
-                      </td>
-                      <td>
-                        <a 
-                          href={company.websiteUrl || "#"} 
-                          target="_blank" 
-                          rel="noopener noreferrer"
-                        >
-                          <button className="website-button">
-                            Visit Website
-                          </button>
-                        </a>
-                      </td>
+                ))}
+              </div>
+            )}
+            
+            {/* Table View with Sortable Columns and Modal */}
+            {viewMode === 'table' && (
+              <div className="matrix-table-container">
+                <table className="matrix-table">
+                  <thead>
+                    <tr>
+                      <th className="th-logo">Logo</th>
+                      <th 
+                        className={`th-sortable ${sortConfig.key === 'name' ? 
+                          (sortConfig.direction === 'ascending' ? 'sort-ascending' : 'sort-descending') : ''}`}
+                        onClick={() => requestSort('name')}
+                      >
+                        Company
+                      </th>
+                      <th 
+                        className={`th-sortable ${sortConfig.key === 'category' ? 
+                          (sortConfig.direction === 'ascending' ? 'sort-ascending' : 'sort-descending') : ''}`}
+                        onClick={() => requestSort('category')}
+                      >
+                        Category
+                      </th>
+                      <th 
+                        className={`th-sortable ${sortConfig.key === 'verified' ? 
+                          (sortConfig.direction === 'ascending' ? 'sort-ascending' : 'sort-descending') : ''}`}
+                        onClick={() => requestSort('verified')}
+                      >
+                        Status
+                      </th>
+                      <th>Website</th>
                     </tr>
-                  ))}
-                </tbody>
-              </table>
-            </div>
-          )}
-        </>
-      )}
+                  </thead>
+                  <tbody>
+                    {sortedAllCompanies.map((company) => (
+                      <tr key={company._id}>
+                        <td className="table-logo-cell">
+                          <img 
+                            src={company.logoUrl} 
+                            alt={`${company.name} logo`} 
+                            className="table-logo clickable"
+                            onClick={() => openCompanyModal(company)}
+                          />
+                        </td>
+                        <td>{company.name}</td>
+                        <td>{company.category}</td>
+                        <td>
+                          {company.verified ? (
+                            <span className="table-verified-badge">
+                              <span className="verified-badge-icon">✓</span> VERIFIED
+                            </span>
+                          ) : (
+                            <span className="table-unverified">—</span>
+                          )}
+                        </td>
+                        <td>
+                          <a 
+                            href={company.websiteUrl || "#"} 
+                            target="_blank" 
+                            rel="noopener noreferrer"
+                          >
+                            <button className="website-button">
+                              Visit Website
+                            </button>
+                          </a>
+                        </td>
+                      </tr>
+                    ))}
+                  </tbody>
+                </table>
+              </div>
+            )}
+          </>
+        )}
+      </div>
       
       {/* Company Modal for Table View */}
       {selectedCompany && (

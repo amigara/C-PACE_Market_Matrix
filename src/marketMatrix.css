@@ -355,28 +355,44 @@
   border: 1px dashed #cbd5e0;
 }
 
-/* View Toggle */
+/* View Toggle - Updated to Tabs */
 .view-toggle {
   display: flex;
   justify-content: center;
-  margin-bottom: 20px;
+  margin-bottom: 0;
+  border-bottom: 2px solid #e2e8f0;
+  position: relative;
 }
 
 .view-button {
-  padding: 8px 20px;
-  margin: 0 5px;
-  background-color: white;
-  border: 1px solid #ddd;
-  border-radius: 30px;
+  padding: 12px 30px;
+  margin: 0;
+  background-color: transparent;
+  border: none;
+  border-bottom: 3px solid transparent;
   cursor: pointer;
   transition: all 0.2s;
   font-size: 16px;
+  font-weight: 500;
+  color: #718096;
+  position: relative;
+  bottom: -2px;
+}
+
+.view-button:hover {
+  color: #2d3748;
 }
 
 .view-button.active {
-  background-color: #000;
-  color: white;
-  border-color: #000;
+  color: #000;
+  border-bottom: 3px solid #000;
+  font-weight: 600;
+}
+
+/* Content area */
+.view-content {
+  padding-top: 25px;
+  background-color: #fff;
 }
 
 /* Table Styles */
