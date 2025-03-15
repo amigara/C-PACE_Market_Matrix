@@ -30,13 +30,26 @@
 .matrix-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: 0; /* Remove the gap between grid items */
   align-items: stretch; /* Make all grid items stretch to match the tallest in their row */
+  margin: 24px 0; /* Add margin to the grid instead of gap between items */
 }
 
 @media (min-width: 768px) {
   .matrix-grid {
     grid-template-columns: repeat(2, 1fr);
+    column-gap: 24px; /* Add gap between columns */
+  }
+  
+  /* Remove the horizontal margin when using grid gap */
+  .matrix-category-container:nth-child(odd),
+  .matrix-category-container:nth-child(even) {
+    margin-left: 0;
+    margin-right: 0;
+  }
+  
+  .matrix-category-container {
+    margin-bottom: 24px; /* Add vertical spacing between rows */
   }
 }
 
@@ -69,6 +82,24 @@
   display: flex;
   flex-direction: column;
   height: 100%; /* Fill the entire grid cell */
+  margin: 24px 12px 0; /* Add horizontal margin between categories */
+}
+
+/* For the first column */
+.matrix-category-container:nth-child(odd) {
+  margin-left: 0;
+}
+
+/* For the second column */
+.matrix-category-container:nth-child(even) {
+  margin-right: 0;
+}
+
+@media (max-width: 767px) {
+  .matrix-category-container {
+    margin-left: 0;
+    margin-right: 0;
+  }
 }
 
 .matrix-category-title {
@@ -110,6 +141,7 @@
   flex-direction: column;
   /* Ensure content aligns to the top while the box expands */
   justify-content: flex-start;
+  box-sizing: border-box; /* Ensure border is included in width calculation */
 }
 
 /* Company logos grid */
