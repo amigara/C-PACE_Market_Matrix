@@ -97,6 +97,18 @@ exports.handler = async function(event, context) {
     console.log(`- AIRTABLE_PAT exists: ${Boolean(process.env.AIRTABLE_PAT)}`);
     console.log(`- REACT_APP_AIRTABLE_PAT exists: ${Boolean(process.env.REACT_APP_AIRTABLE_PAT)}`);
     
+    // Check if environment variables are set
+    const baseId = process.env.AIRTABLE_BASE_ID || process.env.REACT_APP_AIRTABLE_BASE_ID;
+    const token = process.env.AIRTABLE_PAT || process.env.REACT_APP_AIRTABLE_PAT;
+    
+    if (!baseId) {
+      throw new Error('Airtable Base ID is not configured. Please check your environment variables.');
+    }
+    
+    if (!token) {
+      throw new Error('Airtable Personal Access Token is not configured. Please check your environment variables.');
+    }
+    
     // Fetch data from all tables in parallel
     const promises = Object.values(TABLES).map(tableName => 
       fetchFromAirtable(tableName)
@@ -119,11 +131,29 @@ exports.handler = async function(event, context) {
   } catch (error) {
     console.error('Error fetching data from Airtable:', error);
     
+    // Provide more specific error messages based on the error
+    let errorMessage = 'Failed to fetch data from Airtable';
+    let statusCode = 500;
+    
+    if (error.message.includes('403')) {
+      errorMessage = 'Authentication error: Your Airtable Personal Access Token does not have permission to access this base or lacks the required scopes.';
+      statusCode = 403;
+    } else if (error.message.includes('404')) {
+      errorMessage = 'Not found: The Airtable base or table could not be found. Please check your Base ID and table names.';
+      statusCode = 404;
+    } else if (error.message.includes('401')) {
+      errorMessage = 'Unauthorized: Your Airtable Personal Access Token is invalid or expired.';
+      statusCode = 401;
+    } else if (error.message.includes('429')) {
+      errorMessage = 'Rate limit exceeded: Too many requests to Airtable API. Please try again later.';
+      statusCode = 429;
+    }
+    
     return {
-      statusCode: 500,
+      statusCode,
       headers,
       body: JSON.stringify({ 
-        error: 'Failed to fetch data from Airtable',
+        error: errorMessage,
         message: error.message,
         details: process.env.NODE_ENV === 'development' ? error.stack : undefined
       })

@@ -2,291 +2,6 @@ import React, { useState, useEffect } from "react";
 import "./marketMatrix.css";
 import CompanyModal from "./CompanyModal"; // Keep for table view
 
-// Expanded sample data for testing the Market Matrix
-const SAMPLE_DATA = {
-  "C-PACE Administrators": [
-    { 
-      _id: "admin1", 
-      name: "GreenAdmin Co", 
-      logoUrl: "https://dummyimage.com/50x50/00aa00/ffffff&text=GA", 
-      verified: true, 
-      states: ["California", "New York", "Florida", "Texas"],
-      contactInfo: "info@greenadmin.co"
-    },
-    { 
-      _id: "admin2", 
-      name: "EcoProperty Managers", 
-      logoUrl: "https://dummyimage.com/50x50/22cc22/ffffff&text=EP", 
-      verified: false,
-      states: ["Colorado", "Washington", "Oregon"]
-    },
-    { 
-      _id: "admin3", 
-      name: "CleanEnergy Admin", 
-      logoUrl: "https://dummyimage.com/50x50/44ee44/ffffff&text=CE", 
-      verified: true,
-      states: ["Massachusetts", "Connecticut", "Rhode Island", "New Hampshire"],
-      contactInfo: "contact@cleanenergy.org"
-    },
-    { 
-      _id: "admin4", 
-      name: "SustainableOps Inc", 
-      logoUrl: "https://dummyimage.com/50x50/66ff66/ffffff&text=SO", 
-      verified: false,
-      states: ["California", "Oregon"]
-    },
-    { 
-      _id: "admin5", 
-      name: "Pacific Admin Group", 
-      logoUrl: "https://dummyimage.com/50x50/88ff88/ffffff&text=PA", 
-      verified: true,
-      states: ["California", "Hawaii", "Alaska"],
-      contactInfo: "info@pacificadmin.com"
-    },
-    { 
-      _id: "admin6", 
-      name: "Eastern Admin LLC", 
-      logoUrl: "https://dummyimage.com/50x50/aaffaa/ffffff&text=EA", 
-      verified: false,
-      states: ["New York", "New Jersey", "Pennsylvania", "Delaware"]
-    },
-    { 
-      _id: "admin7", 
-      name: "Midwest PACE Admin", 
-      logoUrl: "https://dummyimage.com/50x50/ccffcc/ffffff&text=MP", 
-      verified: true,
-      states: ["Illinois", "Wisconsin", "Michigan", "Indiana", "Ohio"],
-      contactInfo: "hello@midwestpace.org"
-    }
-  ],
-  "Capital Providers": [
-    { 
-      _id: "capital1", 
-      name: "GreenCapital Fund", 
-      logoUrl: "https://dummyimage.com/50x50/0000aa/ffffff&text=GC", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "invest@greencapital.com"
-    },
-    { 
-      _id: "capital2", 
-      name: "EcoInvest Group", 
-      logoUrl: "https://dummyimage.com/50x50/2222cc/ffffff&text=EI", 
-      verified: false,
-      states: ["New York", "New Jersey", "Pennsylvania"]
-    },
-    { 
-      _id: "capital3", 
-      name: "RenewFinance Partners", 
-      logoUrl: "https://dummyimage.com/50x50/4444ee/ffffff&text=RF", 
-      verified: true,
-      states: ["California", "Nevada", "Arizona", "New Mexico"],
-      contactInfo: "info@renewfinance.com"
-    },
-    { 
-      _id: "capital4", 
-      name: "CleanEnergy Capital", 
-      logoUrl: "https://dummyimage.com/50x50/6666ff/ffffff&text=CC", 
-      verified: false,
-      states: ["Texas", "Oklahoma", "Louisiana"]
-    },
-    { 
-      _id: "capital5", 
-      name: "Sustainable Funding", 
-      logoUrl: "https://dummyimage.com/50x50/8888ff/ffffff&text=SF", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "funding@sustainablefunding.org"
-    },
-    { 
-      _id: "capital6", 
-      name: "Pacific Investment Group", 
-      logoUrl: "https://dummyimage.com/50x50/aaaaff/ffffff&text=PI", 
-      verified: false,
-      states: ["California", "Oregon", "Washington", "Alaska", "Hawaii"]
-    },
-    { 
-      _id: "capital7", 
-      name: "Eastern Funding LLC", 
-      logoUrl: "https://dummyimage.com/50x50/ccccff/ffffff&text=EF", 
-      verified: true,
-      states: ["All Northeast States"],
-      contactInfo: "contact@easternfunding.com"
-    },
-    { 
-      _id: "capital8", 
-      name: "Midwest PACE Capital", 
-      logoUrl: "https://dummyimage.com/50x50/ddddff/ffffff&text=MP", 
-      verified: false,
-      states: ["Illinois", "Wisconsin", "Michigan", "Indiana", "Ohio"]
-    },
-    { 
-      _id: "capital9", 
-      name: "Southern Financing Co", 
-      logoUrl: "https://dummyimage.com/50x50/eeeeff/ffffff&text=SF", 
-      verified: true,
-      states: ["Florida", "Georgia", "Alabama", "Mississippi", "South Carolina"],
-      contactInfo: "invest@southernfinancing.com"
-    }
-  ],
-  "Law Firms": [
-    { 
-      _id: "law1", 
-      name: "GreenLaw Partners", 
-      logoUrl: "https://dummyimage.com/50x50/aa00aa/ffffff&text=GL", 
-      verified: true,
-      states: ["California", "Nevada", "Arizona"],
-      contactInfo: "info@greenlawpartners.com"
-    },
-    { 
-      _id: "law2", 
-      name: "EcoLegal Group", 
-      logoUrl: "https://dummyimage.com/50x50/cc22cc/ffffff&text=EL", 
-      verified: false,
-      states: ["New York", "New Jersey", "Connecticut"]
-    },
-    { 
-      _id: "law3", 
-      name: "PACE Law Associates", 
-      logoUrl: "https://dummyimage.com/50x50/ee44ee/ffffff&text=PL", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "contact@pacelawassociates.com"
-    }
-  ],
-  "Consultants": [
-    { 
-      _id: "consult1", 
-      name: "GreenConsult Co", 
-      logoUrl: "https://dummyimage.com/50x50/aa0000/ffffff&text=GC", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "info@greenconsult.co"
-    },
-    { 
-      _id: "consult2", 
-      name: "EcoStrategy Group", 
-      logoUrl: "https://dummyimage.com/50x50/cc2222/ffffff&text=ES", 
-      verified: false,
-      states: ["California", "Oregon", "Washington"]
-    },
-    { 
-      _id: "consult3", 
-      name: "PACE Advisory Services", 
-      logoUrl: "https://dummyimage.com/50x50/ee4444/ffffff&text=PA", 
-      verified: true,
-      states: ["Texas", "Oklahoma", "New Mexico", "Arizona"],
-      contactInfo: "hello@paceadvisory.com"
-    },
-    { 
-      _id: "consult4", 
-      name: "Sustainable Solutions", 
-      logoUrl: "https://dummyimage.com/50x50/ff6666/ffffff&text=SS", 
-      verified: false,
-      states: ["Florida", "Georgia", "Alabama"]
-    },
-    { 
-      _id: "consult5", 
-      name: "Energy Efficiency Experts", 
-      logoUrl: "https://dummyimage.com/50x50/ff8888/ffffff&text=EE", 
-      verified: true,
-      states: ["New York", "Massachusetts", "Connecticut"],
-      contactInfo: "experts@energyefficiency.org"
-    }
-  ],
-  "Software Providers": [
-    { 
-      _id: "software1", 
-      name: "GreenTech Systems", 
-      logoUrl: "https://dummyimage.com/50x50/00aaaa/ffffff&text=GT", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "sales@greentechsystems.com"
-    },
-    { 
-      _id: "software2", 
-      name: "EcoPlatform", 
-      logoUrl: "https://dummyimage.com/50x50/22cccc/ffffff&text=EP", 
-      verified: false,
-      states: ["All 50 States"]
-    }
-  ],
-  "Engineering Firms": [
-    { 
-      _id: "eng1", 
-      name: "GreenEnergy Engineers", 
-      logoUrl: "https://dummyimage.com/50x50/aaaa00/ffffff&text=GE", 
-      verified: true,
-      states: ["California", "Nevada", "Oregon", "Washington"],
-      contactInfo: "projects@greenenergy.com"
-    },
-    { 
-      _id: "eng2", 
-      name: "EcoBuilding Design", 
-      logoUrl: "https://dummyimage.com/50x50/cccc22/ffffff&text=EB", 
-      verified: false,
-      states: ["New York", "New Jersey", "Connecticut"]
-    },
-    { 
-      _id: "eng3", 
-      name: "Sustainable Structures", 
-      logoUrl: "https://dummyimage.com/50x50/eeee44/ffffff&text=SS", 
-      verified: true,
-      states: ["Texas", "Oklahoma", "Louisiana"],
-      contactInfo: "build@sustainablestructures.com"
-    },
-    { 
-      _id: "eng4", 
-      name: "Renewable Systems Inc", 
-      logoUrl: "https://dummyimage.com/50x50/ffff66/ffffff&text=RS", 
-      verified: false,
-      states: ["Florida", "Georgia", "South Carolina"]
-    }
-  ],
-  "Contractors": [
-    { 
-      _id: "contract1", 
-      name: "GreenBuilders Co", 
-      logoUrl: "https://dummyimage.com/50x50/00aaff/ffffff&text=GB", 
-      verified: true,
-      states: ["California", "Nevada", "Arizona"],
-      contactInfo: "build@greenbuilders.co"
-    },
-    { 
-      _id: "contract2", 
-      name: "EcoConstruction Group", 
-      logoUrl: "https://dummyimage.com/50x50/22ccff/ffffff&text=EC", 
-      verified: false,
-      states: ["Oregon", "Washington", "Idaho"]
-    },
-    { 
-      _id: "contract3", 
-      name: "PACE Installers", 
-      logoUrl: "https://dummyimage.com/50x50/44eeff/ffffff&text=PI", 
-      verified: true,
-      states: ["New York", "New Jersey", "Pennsylvania"],
-      contactInfo: "installs@paceinstallers.com"
-    }
-  ],
-  "Property Owners": [
-    { 
-      _id: "owner1", 
-      name: "GreenProperties LLC", 
-      logoUrl: "https://dummyimage.com/50x50/ffaa00/ffffff&text=GP", 
-      verified: true,
-      states: ["California", "Arizona", "Nevada"],
-      contactInfo: "leasing@greenproperties.com"
-    },
-    { 
-      _id: "owner2", 
-      name: "EcoEstates Group", 
-      logoUrl: "https://dummyimage.com/50x50/ffcc22/ffffff&text=EE", 
-      verified: false,
-      states: ["New York", "Connecticut", "Massachusetts"]
-    }
-  ]
-};
-
 const MarketMatrix = () => {
   const [companiesData, setCompaniesData] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -307,50 +22,27 @@ const MarketMatrix = () => {
   // State for modal in table view
   const [selectedCompany, setSelectedCompany] = useState(null);
   
-  // State for tracking data source
-  const [dataSource, setDataSource] = useState('sample'); // 'netlify', 'window', or 'sample'
+  // State for tracking data source - now we only have 'netlify'
+  const [dataSource, setDataSource] = useState('netlify');
 
   useEffect(() => {
     const fetchCompaniesData = async () => {
       try {
-        // First try to fetch from Netlify function
-        try {
-          const response = await fetch('/api/getCompanies');
-          
-          if (!response.ok) {
-            throw new Error(`API error: ${response.status}`);
-          }
-          
-          const data = await response.json();
-          processData(data);
-          setDataSource('netlify');
-          console.log("Data loaded from Netlify function successfully");
-        } catch (apiError) {
-          console.warn("Failed to load data from Netlify function, falling back to alternatives:", apiError);
-          
-          // Check if it's an authentication error
-          if (apiError.message && (
-              apiError.message.includes("401") || 
-              apiError.message.includes("403") ||
-              apiError.message.includes("authentication") ||
-              apiError.message.includes("unauthorized")
-            )) {
-            console.error("Authentication error. Please check your Airtable credentials in Netlify environment variables.");
-          }
-          
-          // If API fails, check for window.companiesData
-          if (window.companiesData) {
-            processData(window.companiesData);
-            setDataSource('window');
-          } else {
-            // Use sample data as last resort
-            processData(SAMPLE_DATA);
-            setDataSource('sample');
-          }
+        // Fetch from Netlify function
+        const response = await fetch('/api/getCompanies');
+        
+        if (!response.ok) {
+          const errorData = await response.json().catch(() => ({}));
+          throw new Error(errorData.message || `API error: ${response.status}`);
         }
+        
+        const data = await response.json();
+        processData(data);
+        setDataSource('netlify');
+        console.log("Data loaded from Netlify function successfully");
       } catch (err) {
         console.error("Error fetching company data:", err);
-        setError("Failed to load company data. Please try again later.");
+        setError(`Failed to load company data: ${err.message}`);
         setLoading(false);
       }
     };
@@ -475,7 +167,19 @@ const MarketMatrix = () => {
   };
 
   if (loading) return <div className="matrix-loading">Loading market matrix...</div>;
-  if (error) return <div className="matrix-error">{error}</div>;
+  if (error) return (
+    <div className="matrix-error">
+      <h3>Error Loading Data</h3>
+      <p>{error}</p>
+      <p>Please check your Airtable connection and try again.</p>
+      <button 
+        onClick={() => window.location.reload()} 
+        className="retry-button"
+      >
+        Retry
+      </button>
+    </div>
+  );
 
   const filteredData = getFilteredData();
   
@@ -508,20 +212,9 @@ const MarketMatrix = () => {
     <div className="market-matrix-container">
       <h2 className="matrix-title">C-PACE Market Matrix</h2>
       
-      {/* Data Source Indicator */}
+      {/* Data Source Indicator - simplified */}
       <div className="data-source-indicator">
-        {dataSource === 'netlify' ? (
-          <span className="data-source airtable">Live data from Airtable (via Netlify)</span>
-        ) : dataSource === 'window' ? (
-          <span className="data-source window">Data from window.companiesData</span>
-        ) : (
-          <span className="data-source sample">
-            Sample data 
-            <span className="data-source-info">
-              (Airtable connection not configured - check Netlify environment variables)
-            </span>
-          </span>
-        )}
+        <span className="data-source airtable">Live data from Airtable (via Netlify)</span>
       </div>
       
       {/* Filter Controls */}
