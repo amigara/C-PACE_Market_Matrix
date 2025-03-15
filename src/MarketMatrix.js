@@ -82,9 +82,49 @@ const MarketMatrix = () => {
       }
       
       // Set all categories and initialize active filters
-      const categories = Array.isArray(data) 
-        ? [...new Set(data.map(item => item.category))]
-        : Object.keys(data);
+      let categories = [];
+      
+      if (Array.isArray(data)) {
+        // For array data, extract unique categories
+        categories = [...new Set(data.map(item => item.category))];
+      } else {
+        // For pre-grouped data, get categories from object keys
+        // This is the case with our Airtable data
+        categories = Object.keys(data);
+        
+        // Try to determine the original order from the allCategories arrays in the data
+        // We'll create a map of category to its earliest position in any company's allCategories
+        const categoryPositions = {};
+        
+        // Examine each category's companies
+        Object.entries(data).forEach(([category, companies]) => {
+          companies.forEach(company => {
+            if (company.allCategories && Array.isArray(company.allCategories)) {
+              // Find position of this category in the company's allCategories
+              const position = company.allCategories.indexOf(category);
+              if (position !== -1) {
+                // If we haven't seen this category yet, or this position is earlier
+                if (categoryPositions[category] === undefined || position < categoryPositions[category]) {
+                  categoryPositions[category] = position;
+                }
+              }
+            }
+          });
+        });
+        
+        // Sort categories based on their positions
+        categories.sort((a, b) => {
+          // If we have position data for both categories, use it
+          if (categoryPositions[a] !== undefined && categoryPositions[b] !== undefined) {
+            return categoryPositions[a] - categoryPositions[b];
+          }
+          // If we only have position for one, prioritize the one with position
+          if (categoryPositions[a] !== undefined) return -1;
+          if (categoryPositions[b] !== undefined) return 1;
+          // If neither has position data, maintain alphabetical order
+          return a.localeCompare(b);
+        });
+      }
       
       setAllCategories(categories);
       setActiveFilters(categories);
@@ -177,38 +217,14 @@ const MarketMatrix = () => {
     
     // Then filter by search term if one exists
     if (searchTerm.trim() === '') {
-      // No search term, just sort the companies
-      return Object.entries(categoryFiltered).reduce((obj, [category, companies]) => {
-        // Sort companies to put verified ones first
-        const sortedCompanies = [...companies].sort((a, b) => {
-          // If a is verified and b is not, a comes first
-          if (a.verified && !b.verified) return -1;
-          // If b is verified and a is not, b comes first
-          if (!a.verified && b.verified) return 1;
-          // Otherwise maintain original order
-          return 0;
-        });
-        
-        obj[category] = sortedCompanies;
-        return obj;
-      }, {});
-    } else {
-      // Filter by search term
-      const searchTermLower = searchTerm.toLowerCase();
+      // No search term, just sort the companies within each category
+      const result = {};
       
-      return Object.entries(categoryFiltered).reduce((obj, [category, companies]) => {
-        // Filter companies by search term
-        const filteredCompanies = companies.filter(company => 
-          company.name.toLowerCase().includes(searchTermLower) || 
-          (company.contactInfo && company.contactInfo.toLowerCase().includes(searchTermLower)) ||
-          (company.states && company.states.some(state => state.toLowerCase().includes(searchTermLower))) ||
-          (company.allCategories && company.allCategories.some(cat => cat.toLowerCase().includes(searchTermLower)))
-        );
-        
-        // Only include categories that have matching companies
-        if (filteredCompanies.length > 0) {
+      // Use allCategories to maintain the original order
+      allCategories.forEach(category => {
+        if (categoryFiltered[category]) {
           // Sort companies to put verified ones first
-          const sortedCompanies = [...filteredCompanies].sort((a, b) => {
+          result[category] = [...categoryFiltered[category]].sort((a, b) => {
             // If a is verified and b is not, a comes first
             if (a.verified && !b.verified) return -1;
             // If b is verified and a is not, b comes first
@@ -216,12 +232,42 @@ const MarketMatrix = () => {
             // Otherwise maintain original order
             return 0;
           });
-          
-          obj[category] = sortedCompanies;
         }
-        
-        return obj;
-      }, {});
+      });
+      
+      return result;
+    } else {
+      // Filter by search term
+      const searchTermLower = searchTerm.toLowerCase();
+      const result = {};
+      
+      // Use allCategories to maintain the original order
+      allCategories.forEach(category => {
+        if (categoryFiltered[category]) {
+          // Filter companies by search term
+          const filteredCompanies = categoryFiltered[category].filter(company => 
+            company.name.toLowerCase().includes(searchTermLower) || 
+            (company.contactInfo && company.contactInfo.toLowerCase().includes(searchTermLower)) ||
+            (company.states && company.states.some(state => state.toLowerCase().includes(searchTermLower))) ||
+            (company.allCategories && company.allCategories.some(cat => cat.toLowerCase().includes(searchTermLower)))
+          );
+          
+          // Only include categories that have matching companies
+          if (filteredCompanies.length > 0) {
+            // Sort companies to put verified ones first
+            result[category] = [...filteredCompanies].sort((a, b) => {
+              // If a is verified and b is not, a comes first
+              if (a.verified && !b.verified) return -1;
+              // If b is verified and a is not, b comes first
+              if (!a.verified && b.verified) return 1;
+              // Otherwise maintain original order
+              return 0;
+            });
+          }
+        }
+      });
+      
+      return result;
     }
   };
 
@@ -381,14 +427,16 @@ const MarketMatrix = () => {
             {/* Grid View with Expandable Details */}
             {viewMode === 'grid' && (
               <div className="matrix-grid" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
-                {Object.entries(filteredData).map(([category, companies]) => (
+                {allCategories
+                  .filter(category => filteredData[category]) // Only include categories that exist in filtered data
+                  .map(category => (
                   <div key={category} className="matrix-category-container">
                     <div className="matrix-category-title">
                       <span className="category-title-text">{category}</span>
                     </div>
                     <div className="matrix-category">
                       <div className="companies-grid">
-                        {companies.map((company, index) => (
+                        {filteredData[category].map((company, index) => (
                           <React.Fragment key={company._id}>
                             <div 
                               className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
@@ -412,16 +460,16 @@ const MarketMatrix = () => {
                             </div>
                             
                             {/* Expandable company details - add after every 5th item or at end of row */}
-                            {(index + 1) % 5 === 0 || index === companies.length - 1 ? (
+                            {(index + 1) % 5 === 0 || index === filteredData[category].length - 1 ? (
                               <div 
                                 className={`company-details-wrapper ${
                                   expandedCompany === company._id || 
-                                  (expandedCompany && companies.slice(Math.floor(index / 5) * 5, index + 1).some(c => c._id === expandedCompany))
+                                  (expandedCompany && filteredData[category].slice(Math.floor(index / 5) * 5, index + 1).some(c => c._id === expandedCompany))
                                     ? 'expanded' 
                                     : ''
                                 }`}
                               >
-                                {expandedCompany && companies.slice(Math.max(0, Math.floor(index / 5) * 5), index + 1).map(c => {
+                                {expandedCompany && filteredData[category].slice(Math.max(0, Math.floor(index / 5) * 5), index + 1).map(c => {
                                   if (c._id === expandedCompany) {
                                     return (
                                       <div key={c._id} className="company-details">
