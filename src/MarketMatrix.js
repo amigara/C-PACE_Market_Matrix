@@ -360,7 +360,22 @@ const MarketMatrix = () => {
                                                 </span>
                                               )}
                                             </h3>
-                                            <div className="company-details-category">{category}</div>
+                                            <div className="company-details-category">
+                                              {/* Show primary category */}
+                                              {category}
+                                              
+                                              {/* Show all categories if company belongs to multiple */}
+                                              {c.allCategories && c.allCategories.length > 1 && (
+                                                <div className="company-all-categories">
+                                                  <span className="all-categories-label">All categories: </span>
+                                                  <div className="categories-tags">
+                                                    {c.allCategories.map((cat, i) => (
+                                                      <span key={i} className="category-tag">{cat}</span>
+                                                    ))}
+                                                  </div>
+                                                </div>
+                                              )}
+                                            </div>
                                           </div>
                                         </div>
                                         
@@ -458,7 +473,17 @@ const MarketMatrix = () => {
                           />
                         </td>
                         <td>{company.name}</td>
-                        <td>{company.category}</td>
+                        <td>
+                          {/* Show primary category */}
+                          {company.category}
+                          
+                          {/* Show indicator if company belongs to multiple categories */}
+                          {company.allCategories && company.allCategories.length > 1 && (
+                            <span className="multiple-categories-badge" title={company.allCategories.join(', ')}>
+                              +{company.allCategories.length - 1}
+                            </span>
+                          )}
+                        </td>
                         <td>
                           {company.verified ? (
                             <span className="table-verified-badge">

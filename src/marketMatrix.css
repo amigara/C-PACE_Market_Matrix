@@ -654,6 +654,33 @@
   font-weight: 500;
 }
 
+/* Modal categories list */
+.modal-categories-list {
+  margin-top: 10px;
+}
+
+.modal-categories-label {
+  font-size: 14px;
+  font-weight: 500;
+  margin: 5px 0;
+  color: #4a5568;
+}
+
+.modal-categories-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 6px;
+}
+
+.modal-category-tag {
+  display: inline-block;
+  padding: 3px 8px;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  font-size: 12px;
+  color: #4a5568;
+}
+
 .modal-info-empty {
   color: #a0aec0;
   font-style: italic;
@@ -755,6 +782,46 @@
 .company-details-category {
   font-size: 14px;
   color: #64748b;
+}
+
+/* Multiple categories display */
+.company-all-categories {
+  margin-top: 5px;
+  font-size: 12px;
+}
+
+.all-categories-label {
+  display: block;
+  margin-bottom: 3px;
+  font-weight: 500;
+  color: #4a5568;
+}
+
+.categories-tags {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+}
+
+.category-tag {
+  display: inline-block;
+  padding: 2px 6px;
+  background-color: #e2e8f0;
+  border-radius: 4px;
+  font-size: 11px;
+  color: #4a5568;
+}
+
+/* Multiple categories badge for table view */
+.multiple-categories-badge {
+  display: inline-block;
+  margin-left: 6px;
+  padding: 1px 5px;
+  background-color: #e2e8f0;
+  border-radius: 10px;
+  font-size: 10px;
+  color: #4a5568;
+  cursor: help;
 }
 
 .company-details-logo {

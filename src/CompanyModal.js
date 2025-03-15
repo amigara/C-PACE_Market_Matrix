@@ -65,6 +65,18 @@ const CompanyModal = ({ company, onClose }) => {
           <div className="modal-info-section">
             <h3 className="modal-section-title">Category</h3>
             <p>{company.category}</p>
+            
+            {/* Show all categories if company belongs to multiple */}
+            {company.allCategories && company.allCategories.length > 1 && (
+              <div className="modal-categories-list">
+                <p className="modal-categories-label">All categories:</p>
+                <div className="modal-categories-tags">
+                  {company.allCategories.map((category, index) => (
+                    <span key={index} className="modal-category-tag">{category}</span>
+                  ))}
+                </div>
+              </div>
+            )}
           </div>
           
           <div className="modal-info-section">

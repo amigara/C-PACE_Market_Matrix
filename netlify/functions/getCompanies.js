@@ -1,17 +1,8 @@
 // Netlify function to fetch company data from Airtable
 const fetch = require('node-fetch');
 
-// Table names in your Airtable base
-const TABLES = {
-  administrators: "C-PACE Administrators",
-  capitalProviders: "Capital Providers",
-  lawFirms: "Law Firms",
-  consultants: "Consultants",
-  softwareProviders: "Software Providers",
-  engineeringFirms: "Engineering Firms",
-  contractors: "Contractors",
-  propertyOwners: "Property Owners"
-};
+// Single table name in your Airtable base
+const MAIN_TABLE = "Companies";
 
 // Field mappings from Airtable fields to app fields
 const FIELD_MAPPINGS = {
@@ -20,19 +11,20 @@ const FIELD_MAPPINGS = {
   verified: "Verified",
   states: "States",
   contactInfo: "ContactInfo",
-  websiteUrl: "WebsiteURL"
+  websiteUrl: "WebsiteURL",
+  categories: "Industry category" // New field for multiselect categories
 };
 
-// Helper function to fetch data from a specific Airtable table
-async function fetchFromAirtable(tableName) {
+// Helper function to fetch data from Airtable
+async function fetchFromAirtable() {
   // Try both environment variable naming conventions
   const baseId = process.env.AIRTABLE_BASE_ID || process.env.REACT_APP_AIRTABLE_BASE_ID;
   const token = process.env.AIRTABLE_PAT || process.env.REACT_APP_AIRTABLE_PAT;
   
-  const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`;
+  const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(MAIN_TABLE)}`;
   
   try {
-    console.log(`Attempting to fetch from table: ${tableName}`);
+    console.log(`Attempting to fetch from table: ${MAIN_TABLE}`);
     console.log(`Using Base ID: ${baseId}`);
     console.log(`Authorization token starts with: ${token ? token.substring(0, 10) + '...' : 'undefined'}`);
     
@@ -45,20 +37,49 @@ async function fetchFromAirtable(tableName) {
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'No error text available');
-      console.error(`Failed to fetch from table "${tableName}": ${response.status} - ${errorText}`);
-      
-      // Return null for this table instead of throwing
+      console.error(`Failed to fetch from table "${MAIN_TABLE}": ${response.status} - ${errorText}`);
       return null;
     }
 
     const data = await response.json();
-    console.log(`Successfully fetched ${data.records ? data.records.length : 0} records from ${tableName}`);
-    return data.records.map(record => transformAirtableRecord(record, tableName));
+    console.log(`Successfully fetched ${data.records ? data.records.length : 0} records from ${MAIN_TABLE}`);
+    
+    // Transform records and organize by category
+    return processRecords(data.records);
   } catch (error) {
-    console.error(`Error fetching from Airtable (${tableName}):`, error);
-    // Return null for this table instead of throwing
+    console.error(`Error fetching from Airtable (${MAIN_TABLE}):`, error);
     return null;
   }
+}
+
+// Process records and organize by category
+function processRecords(records) {
+  // Initialize an object to store companies by category
+  const companiesByCategory = {};
+  
+  // Process each record
+  records.forEach(record => {
+    // Get the categories from the multiselect field
+    const categories = record.fields[FIELD_MAPPINGS.categories] || [];
+    
+    // If no categories are assigned, add to "Uncategorized"
+    if (categories.length === 0) {
+      if (!companiesByCategory["Uncategorized"]) {
+        companiesByCategory["Uncategorized"] = [];
+      }
+      companiesByCategory["Uncategorized"].push(transformAirtableRecord(record, "Uncategorized"));
+    } else {
+      // Add the company to each of its categories
+      categories.forEach(category => {
+        if (!companiesByCategory[category]) {
+          companiesByCategory[category] = [];
+        }
+        companiesByCategory[category].push(transformAirtableRecord(record, category));
+      });
+    }
+  });
+  
+  return companiesByCategory;
 }
 
 // Transform Airtable record to our app's data format
@@ -71,7 +92,8 @@ function transformAirtableRecord(record, category) {
     states: record.fields[FIELD_MAPPINGS.states] || [],
     contactInfo: record.fields[FIELD_MAPPINGS.contactInfo] || null,
     websiteUrl: record.fields[FIELD_MAPPINGS.websiteUrl] || null,
-    category: category // Add the category to each record
+    category: category, // The specific category this instance belongs to
+    allCategories: record.fields[FIELD_MAPPINGS.categories] || [] // All categories the company belongs to
   };
 }
 
@@ -113,45 +135,19 @@ exports.handler = async function(event, context) {
       throw new Error('Airtable Personal Access Token is not configured. Please check your environment variables.');
     }
     
-    // Fetch data from all tables in parallel
-    const tableNames = Object.values(TABLES);
-    const results = await Promise.all(
-      tableNames.map(tableName => fetchFromAirtable(tableName))
-    );
+    // Fetch data from Airtable
+    const data = await fetchFromAirtable();
     
-    // Count successful and failed tables
-    const successfulTables = results.filter(result => result !== null).length;
-    const failedTables = results.filter(result => result === null).length;
-    
-    console.log(`Fetch summary: ${successfulTables} tables succeeded, ${failedTables} tables failed`);
-    
-    // Create an object with categories as keys and arrays of companies as values
-    // Only include tables that returned data successfully
-    const data = {};
-    let hasAnyData = false;
-    
-    tableNames.forEach((tableName, index) => {
-      if (results[index] !== null) {
-        data[tableName] = results[index];
-        hasAnyData = true;
-      }
-    });
-    
-    if (!hasAnyData) {
-      throw new Error('Could not fetch data from any Airtable tables. Please check your table names and permissions.');
+    if (!data || Object.keys(data).length === 0) {
+      throw new Error('Could not fetch data from Airtable. Please check your table name and permissions.');
     }
 
-    console.log(`Successfully fetched data from ${successfulTables} out of ${tableNames.length} tables`);
+    console.log(`Successfully fetched data with ${Object.keys(data).length} categories`);
     
-    // Add a warning message if some tables failed
+    // Return the data
     const response = {
       data: data
     };
-    
-    if (failedTables > 0) {
-      response.warning = `${failedTables} out of ${tableNames.length} tables could not be accessed. This may be due to incorrect table names or insufficient permissions.`;
-      response.availableTables = Object.keys(data);
-    }
 
     return {
       statusCode: 200,
