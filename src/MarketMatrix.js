@@ -1,14 +1,14 @@
 import React, { useState, useEffect } from "react";
 import "./marketMatrix.css";
-import CompanyModal from "./CompanyModal"; // Keep for grid view
+import CompanyModal from "./CompanyModal"; // Keep for table view
 
-// Expanded sample data for testing the Market Matrix with randomized logo colors
+// Expanded sample data for testing the Market Matrix
 const SAMPLE_DATA = {
   "C-PACE Administrators": [
     { 
       _id: "admin1", 
       name: "GreenAdmin Co", 
-      logoUrl: "https://dummyimage.com/50x50/3498db/ffffff&text=GA", 
+      logoUrl: "https://dummyimage.com/50x50/00aa00/ffffff&text=GA", 
       verified: true, 
       states: ["California", "New York", "Florida", "Texas"],
       contactInfo: "info@greenadmin.co"
@@ -16,14 +16,14 @@ const SAMPLE_DATA = {
     { 
       _id: "admin2", 
       name: "EcoProperty Managers", 
-      logoUrl: "https://dummyimage.com/50x50/e74c3c/ffffff&text=EP", 
+      logoUrl: "https://dummyimage.com/50x50/22cc22/ffffff&text=EP", 
       verified: false,
       states: ["Colorado", "Washington", "Oregon"]
     },
     { 
       _id: "admin3", 
       name: "CleanEnergy Admin", 
-      logoUrl: "https://dummyimage.com/50x50/9b59b6/ffffff&text=CE", 
+      logoUrl: "https://dummyimage.com/50x50/44ee44/ffffff&text=CE", 
       verified: true,
       states: ["Massachusetts", "Connecticut", "Rhode Island", "New Hampshire"],
       contactInfo: "contact@cleanenergy.org"
@@ -31,14 +31,14 @@ const SAMPLE_DATA = {
     { 
       _id: "admin4", 
       name: "SustainableOps Inc", 
-      logoUrl: "https://dummyimage.com/50x50/f1c40f/000000&text=SO", 
+      logoUrl: "https://dummyimage.com/50x50/66ff66/ffffff&text=SO", 
       verified: false,
       states: ["California", "Oregon"]
     },
     { 
       _id: "admin5", 
       name: "Pacific Admin Group", 
-      logoUrl: "https://dummyimage.com/50x50/2ecc71/ffffff&text=PA", 
+      logoUrl: "https://dummyimage.com/50x50/88ff88/ffffff&text=PA", 
       verified: true,
       states: ["California", "Hawaii", "Alaska"],
       contactInfo: "info@pacificadmin.com"
@@ -46,14 +46,14 @@ const SAMPLE_DATA = {
     { 
       _id: "admin6", 
       name: "Eastern Admin LLC", 
-      logoUrl: "https://dummyimage.com/50x50/1abc9c/ffffff&text=EA", 
+      logoUrl: "https://dummyimage.com/50x50/aaffaa/ffffff&text=EA", 
       verified: false,
       states: ["New York", "New Jersey", "Pennsylvania", "Delaware"]
     },
     { 
       _id: "admin7", 
       name: "Midwest PACE Admin", 
-      logoUrl: "https://dummyimage.com/50x50/d35400/ffffff&text=MP", 
+      logoUrl: "https://dummyimage.com/50x50/ccffcc/ffffff&text=MP", 
       verified: true,
       states: ["Illinois", "Wisconsin", "Michigan", "Indiana", "Ohio"],
       contactInfo: "hello@midwestpace.org"
@@ -63,139 +63,67 @@ const SAMPLE_DATA = {
     { 
       _id: "capital1", 
       name: "GreenCapital Fund", 
-      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
+      logoUrl: "https://dummyimage.com/50x50/0000aa/ffffff&text=GC", 
       verified: true,
       states: ["All 50 States"],
       contactInfo: "invest@greencapital.com"
     },
     { 
       _id: "capital2", 
-      name: "GreenCapital Fund", 
-      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "invest@greencapital.com"
-    },
-    { 
-      _id: "capital3", 
-      name: "GreenCapital Fund", 
-      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "invest@greencapital.com"
-    },
-    { 
-      _id: "capital4", 
-      name: "GreenCapital Fund", 
-      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "invest@greencapital.com"
-    },
-    { 
-      _id: "capital5", 
-      name: "GreenCapital Fund", 
-      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "invest@greencapital.com"
-    },
-    { 
-      _id: "capital6", 
-      name: "GreenCapital Fund", 
-      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "invest@greencapital.com"
-    },
-    { 
-      _id: "capital7", 
-      name: "GreenCapital Fund", 
-      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "invest@greencapital.com"
-    },
-    { 
-      _id: "capital8", 
-      name: "GreenCapital Fund", 
-      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "invest@greencapital.com"
-    },
-    { 
-      _id: "capital9", 
-      name: "GreenCapital Fund", 
-      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "invest@greencapital.com"
-    },
-    { 
-      _id: "capital10", 
-      name: "GreenCapital Fund", 
-      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GC", 
-      verified: true,
-      states: ["All 50 States"],
-      contactInfo: "invest@greencapital.com"
-    },
-    { 
-      _id: "capital11", 
       name: "EcoInvest Group", 
-      logoUrl: "https://dummyimage.com/50x50/8e44ad/ffffff&text=EI", 
+      logoUrl: "https://dummyimage.com/50x50/2222cc/ffffff&text=EI", 
       verified: false,
       states: ["New York", "New Jersey", "Pennsylvania"]
     },
     { 
-      _id: "capital12", 
+      _id: "capital3", 
       name: "RenewFinance Partners", 
-      logoUrl: "https://dummyimage.com/50x50/c0392b/ffffff&text=RF", 
+      logoUrl: "https://dummyimage.com/50x50/4444ee/ffffff&text=RF", 
       verified: true,
       states: ["California", "Nevada", "Arizona", "New Mexico"],
       contactInfo: "info@renewfinance.com"
     },
     { 
-      _id: "capital13", 
+      _id: "capital4", 
       name: "CleanEnergy Capital", 
-      logoUrl: "https://dummyimage.com/50x50/f39c12/000000&text=CC", 
+      logoUrl: "https://dummyimage.com/50x50/6666ff/ffffff&text=CC", 
       verified: false,
       states: ["Texas", "Oklahoma", "Louisiana"]
     },
     { 
-      _id: "capital14", 
+      _id: "capital5", 
       name: "Sustainable Funding", 
-      logoUrl: "https://dummyimage.com/50x50/16a085/ffffff&text=SF", 
+      logoUrl: "https://dummyimage.com/50x50/8888ff/ffffff&text=SF", 
       verified: true,
       states: ["All 50 States"],
       contactInfo: "funding@sustainablefunding.org"
     },
     { 
-      _id: "capital15", 
+      _id: "capital6", 
       name: "Pacific Investment Group", 
-      logoUrl: "https://dummyimage.com/50x50/2980b9/ffffff&text=PI", 
+      logoUrl: "https://dummyimage.com/50x50/aaaaff/ffffff&text=PI", 
       verified: false,
       states: ["California", "Oregon", "Washington", "Alaska", "Hawaii"]
     },
     { 
-      _id: "capital16", 
+      _id: "capital7", 
       name: "Eastern Funding LLC", 
-      logoUrl: "https://dummyimage.com/50x50/e67e22/ffffff&text=EF", 
+      logoUrl: "https://dummyimage.com/50x50/ccccff/ffffff&text=EF", 
       verified: true,
       states: ["All Northeast States"],
       contactInfo: "contact@easternfunding.com"
     },
     { 
-      _id: "capital17", 
+      _id: "capital8", 
       name: "Midwest PACE Capital", 
-      logoUrl: "https://dummyimage.com/50x50/95a5a6/ffffff&text=MP", 
+      logoUrl: "https://dummyimage.com/50x50/ddddff/ffffff&text=MP", 
       verified: false,
       states: ["Illinois", "Wisconsin", "Michigan", "Indiana", "Ohio"]
     },
     { 
-      _id: "capital18", 
+      _id: "capital9", 
       name: "Southern Financing Co", 
-      logoUrl: "https://dummyimage.com/50x50/34495e/ffffff&text=SF", 
+      logoUrl: "https://dummyimage.com/50x50/eeeeff/ffffff&text=SF", 
       verified: true,
       states: ["Florida", "Georgia", "Alabama", "Mississippi", "South Carolina"],
       contactInfo: "invest@southernfinancing.com"
@@ -205,7 +133,7 @@ const SAMPLE_DATA = {
     { 
       _id: "law1", 
       name: "GreenLaw Partners", 
-      logoUrl: "https://dummyimage.com/50x50/7f8c8d/ffffff&text=GL", 
+      logoUrl: "https://dummyimage.com/50x50/aa00aa/ffffff&text=GL", 
       verified: true,
       states: ["California", "Nevada", "Arizona"],
       contactInfo: "info@greenlawpartners.com"
@@ -213,14 +141,14 @@ const SAMPLE_DATA = {
     { 
       _id: "law2", 
       name: "EcoLegal Group", 
-      logoUrl: "https://dummyimage.com/50x50/3498db/ffffff&text=EL", 
+      logoUrl: "https://dummyimage.com/50x50/cc22cc/ffffff&text=EL", 
       verified: false,
       states: ["New York", "New Jersey", "Connecticut"]
     },
     { 
       _id: "law3", 
       name: "PACE Law Associates", 
-      logoUrl: "https://dummyimage.com/50x50/e74c3c/ffffff&text=PL", 
+      logoUrl: "https://dummyimage.com/50x50/ee44ee/ffffff&text=PL", 
       verified: true,
       states: ["All 50 States"],
       contactInfo: "contact@pacelawassociates.com"
@@ -230,7 +158,7 @@ const SAMPLE_DATA = {
     { 
       _id: "consult1", 
       name: "GreenConsult Co", 
-      logoUrl: "https://dummyimage.com/50x50/9b59b6/ffffff&text=GC", 
+      logoUrl: "https://dummyimage.com/50x50/aa0000/ffffff&text=GC", 
       verified: true,
       states: ["All 50 States"],
       contactInfo: "info@greenconsult.co"
@@ -238,14 +166,14 @@ const SAMPLE_DATA = {
     { 
       _id: "consult2", 
       name: "EcoStrategy Group", 
-      logoUrl: "https://dummyimage.com/50x50/f1c40f/000000&text=ES", 
+      logoUrl: "https://dummyimage.com/50x50/cc2222/ffffff&text=ES", 
       verified: false,
       states: ["California", "Oregon", "Washington"]
     },
     { 
       _id: "consult3", 
       name: "PACE Advisory Services", 
-      logoUrl: "https://dummyimage.com/50x50/2ecc71/ffffff&text=PA", 
+      logoUrl: "https://dummyimage.com/50x50/ee4444/ffffff&text=PA", 
       verified: true,
       states: ["Texas", "Oklahoma", "New Mexico", "Arizona"],
       contactInfo: "hello@paceadvisory.com"
@@ -253,14 +181,14 @@ const SAMPLE_DATA = {
     { 
       _id: "consult4", 
       name: "Sustainable Solutions", 
-      logoUrl: "https://dummyimage.com/50x50/1abc9c/ffffff&text=SS", 
+      logoUrl: "https://dummyimage.com/50x50/ff6666/ffffff&text=SS", 
       verified: false,
       states: ["Florida", "Georgia", "Alabama"]
     },
     { 
       _id: "consult5", 
       name: "Energy Efficiency Experts", 
-      logoUrl: "https://dummyimage.com/50x50/d35400/ffffff&text=EE", 
+      logoUrl: "https://dummyimage.com/50x50/ff8888/ffffff&text=EE", 
       verified: true,
       states: ["New York", "Massachusetts", "Connecticut"],
       contactInfo: "experts@energyefficiency.org"
@@ -270,7 +198,7 @@ const SAMPLE_DATA = {
     { 
       _id: "software1", 
       name: "GreenTech Systems", 
-      logoUrl: "https://dummyimage.com/50x50/27ae60/ffffff&text=GT", 
+      logoUrl: "https://dummyimage.com/50x50/00aaaa/ffffff&text=GT", 
       verified: true,
       states: ["All 50 States"],
       contactInfo: "sales@greentechsystems.com"
@@ -278,7 +206,7 @@ const SAMPLE_DATA = {
     { 
       _id: "software2", 
       name: "EcoPlatform", 
-      logoUrl: "https://dummyimage.com/50x50/8e44ad/ffffff&text=EP", 
+      logoUrl: "https://dummyimage.com/50x50/22cccc/ffffff&text=EP", 
       verified: false,
       states: ["All 50 States"]
     }
@@ -287,7 +215,7 @@ const SAMPLE_DATA = {
     { 
       _id: "eng1", 
       name: "GreenEnergy Engineers", 
-      logoUrl: "https://dummyimage.com/50x50/c0392b/ffffff&text=GE", 
+      logoUrl: "https://dummyimage.com/50x50/aaaa00/ffffff&text=GE", 
       verified: true,
       states: ["California", "Nevada", "Oregon", "Washington"],
       contactInfo: "projects@greenenergy.com"
@@ -295,14 +223,14 @@ const SAMPLE_DATA = {
     { 
       _id: "eng2", 
       name: "EcoBuilding Design", 
-      logoUrl: "https://dummyimage.com/50x50/f39c12/000000&text=EB", 
+      logoUrl: "https://dummyimage.com/50x50/cccc22/ffffff&text=EB", 
       verified: false,
       states: ["New York", "New Jersey", "Connecticut"]
     },
     { 
       _id: "eng3", 
       name: "Sustainable Structures", 
-      logoUrl: "https://dummyimage.com/50x50/16a085/ffffff&text=SS", 
+      logoUrl: "https://dummyimage.com/50x50/eeee44/ffffff&text=SS", 
       verified: true,
       states: ["Texas", "Oklahoma", "Louisiana"],
       contactInfo: "build@sustainablestructures.com"
@@ -310,7 +238,7 @@ const SAMPLE_DATA = {
     { 
       _id: "eng4", 
       name: "Renewable Systems Inc", 
-      logoUrl: "https://dummyimage.com/50x50/2980b9/ffffff&text=RS", 
+      logoUrl: "https://dummyimage.com/50x50/ffff66/ffffff&text=RS", 
       verified: false,
       states: ["Florida", "Georgia", "South Carolina"]
     }
@@ -319,7 +247,7 @@ const SAMPLE_DATA = {
     { 
       _id: "contract1", 
       name: "GreenBuilders Co", 
-      logoUrl: "https://dummyimage.com/50x50/e67e22/ffffff&text=GB", 
+      logoUrl: "https://dummyimage.com/50x50/00aaff/ffffff&text=GB", 
       verified: true,
       states: ["California", "Nevada", "Arizona"],
       contactInfo: "build@greenbuilders.co"
@@ -327,14 +255,14 @@ const SAMPLE_DATA = {
     { 
       _id: "contract2", 
       name: "EcoConstruction Group", 
-      logoUrl: "https://dummyimage.com/50x50/95a5a6/ffffff&text=EC", 
+      logoUrl: "https://dummyimage.com/50x50/22ccff/ffffff&text=EC", 
       verified: false,
       states: ["Oregon", "Washington", "Idaho"]
     },
     { 
       _id: "contract3", 
       name: "PACE Installers", 
-      logoUrl: "https://dummyimage.com/50x50/34495e/ffffff&text=PI", 
+      logoUrl: "https://dummyimage.com/50x50/44eeff/ffffff&text=PI", 
       verified: true,
       states: ["New York", "New Jersey", "Pennsylvania"],
       contactInfo: "installs@paceinstallers.com"
@@ -344,7 +272,7 @@ const SAMPLE_DATA = {
     { 
       _id: "owner1", 
       name: "GreenProperties LLC", 
-      logoUrl: "https://dummyimage.com/50x50/7f8c8d/ffffff&text=GP", 
+      logoUrl: "https://dummyimage.com/50x50/ffaa00/ffffff&text=GP", 
       verified: true,
       states: ["California", "Arizona", "Nevada"],
       contactInfo: "leasing@greenproperties.com"
@@ -352,7 +280,7 @@ const SAMPLE_DATA = {
     { 
       _id: "owner2", 
       name: "EcoEstates Group", 
-      logoUrl: "https://dummyimage.com/50x50/3498db/ffffff&text=EE", 
+      logoUrl: "https://dummyimage.com/50x50/ffcc22/ffffff&text=EE", 
       verified: false,
       states: ["New York", "Connecticut", "Massachusetts"]
     }
@@ -366,15 +294,6 @@ const MarketMatrix = () => {
   const [allCategories, setAllCategories] = useState([]);
   const [activeFilters, setActiveFilters] = useState([]);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
-  const [searchTerm, setSearchTerm] = useState('');
-
-// Add this function to handle search input changes
-const handleSearchChange = (e) => {
-  setSearchTerm(e.target.value);
-  // Reset expanded/selected states when searching
-  setExpandedCompany(null);
-  setSelectedCompany(null);
-};
   
   // State for table sorting
   const [sortConfig, setSortConfig] = useState({
@@ -385,7 +304,7 @@ const handleSearchChange = (e) => {
   // State for expanded company in grid view
   const [expandedCompany, setExpandedCompany] = useState(null);
   
-  // State for selected company in table view (now stores ID rather than company object)
+  // State for modal in table view
   const [selectedCompany, setSelectedCompany] = useState(null);
 
   useEffect(() => {
@@ -456,21 +375,18 @@ const handleSearchChange = (e) => {
     
     // Reset expanded company when filters change
     setExpandedCompany(null);
-    setSelectedCompany(null);
   };
   
   // Select all categories
   const selectAll = () => {
     setActiveFilters([...allCategories]);
     setExpandedCompany(null);
-    setSelectedCompany(null);
   };
   
   // Clear all categories
   const clearAll = () => {
     setActiveFilters([]);
     setExpandedCompany(null);
-    setSelectedCompany(null);
   };
 
   // Toggle view mode
@@ -487,59 +403,38 @@ const handleSearchChange = (e) => {
       setExpandedCompany(companyId);
     }
   };
+  
+  // Open company modal in table view
+  const openCompanyModal = (company) => {
+    setSelectedCompany(company);
+  };
+  
+  // Close company modal
+  const closeCompanyModal = () => {
+    setSelectedCompany(null);
+  };
 
-// Modified getFilteredData function to include search filtering
-const getFilteredData = () => {
-  if (!companiesData) return {};
-  
-  // First filter by active categories
-  const categoriesFiltered = Object.entries(companiesData)
-    .filter(([category]) => activeFilters.includes(category))
-    .reduce((obj, [category, companies]) => {
-      obj[category] = companies;
-      return obj;
-    }, {});
-  
-  // If no search term, just sort by verification status
-  if (!searchTerm.trim()) {
-    return Object.entries(categoriesFiltered)
+  // Filter the data based on active filters and sort by verification status
+  const getFilteredData = () => {
+    if (!companiesData) return {};
+    
+    return Object.entries(companiesData)
+      .filter(([category]) => activeFilters.includes(category))
       .reduce((obj, [category, companies]) => {
         // Sort companies to put verified ones first
         const sortedCompanies = [...companies].sort((a, b) => {
+          // If a is verified and b is not, a comes first
           if (a.verified && !b.verified) return -1;
+          // If b is verified and a is not, b comes first
           if (!a.verified && b.verified) return 1;
+          // Otherwise maintain original order
           return 0;
         });
         
         obj[category] = sortedCompanies;
         return obj;
       }, {});
-  }
-  
-  // If there is a search term, filter companies by name
-  const searchResults = {};
-  const searchTermLower = searchTerm.toLowerCase().trim();
-  
-  Object.entries(categoriesFiltered).forEach(([category, companies]) => {
-    const filteredCompanies = companies.filter(company => 
-      company.name.toLowerCase().includes(searchTermLower)
-    );
-    
-    // Only include categories that have matching companies
-    if (filteredCompanies.length > 0) {
-      // Sort companies to put verified ones first
-      const sortedCompanies = [...filteredCompanies].sort((a, b) => {
-        if (a.verified && !b.verified) return -1;
-        if (!a.verified && b.verified) return 1;
-        return 0;
-      });
-      
-      searchResults[category] = sortedCompanies;
-    }
-  });
-  
-  return searchResults;
-};
+  };
 
   // Function for sorting table columns
   const requestSort = (key) => {
@@ -583,33 +478,8 @@ const getFilteredData = () => {
   return (
     <div className="market-matrix-container">
       <h2 className="matrix-title">C-PACE Market Matrix</h2>
-
-  {/* Search Bar */}
-<div className="search-container">
-  <div className="search-input-wrapper">
-    <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-      <circle cx="11" cy="11" r="8"></circle>
-      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-    </svg>
-    <input
-      type="text"
-      className="search-input"
-      placeholder="Search companies..."
-      value={searchTerm}
-      onChange={handleSearchChange}
-    />
-    {searchTerm && (
-      <button 
-        className="search-clear-button"
-        onClick={() => setSearchTerm('')}
-      >
-        ×
-      </button>
-    )}
-  </div>
-</div>
       
-      {/* Filter Categories Section */}
+      {/* Filter Controls */}
       <div className="matrix-filters">
         <div className="filters-header">
           <h3 className="filters-title">Filter Categories:</h3>
@@ -645,174 +515,157 @@ const getFilteredData = () => {
         </div>
       </div>
       
-      {/* View Options Section */}
-      <div className="matrix-filters">
-        <div className="filters-header">
-          <h3 className="filters-title">View Options:</h3>
-        </div>
-        
-        <div className="view-toggle">
-          <button 
-            className={`view-button ${viewMode === 'grid' ? 'active' : ''}`}
-            onClick={() => toggleView('grid')}
-          >
-            Grid View
-          </button>
-          <button 
-            className={`view-button ${viewMode === 'table' ? 'active' : ''}`}
-            onClick={() => toggleView('table')}
-          >
-            Table View
-          </button>
-        </div>
+      {/* View Toggle */}
+      <div className="view-toggle">
+        <button 
+          className={`view-button ${viewMode === 'grid' ? 'active' : ''}`}
+          onClick={() => toggleView('grid')}
+        >
+          Grid View
+        </button>
+        <button 
+          className={`view-button ${viewMode === 'table' ? 'active' : ''}`}
+          onClick={() => toggleView('table')}
+        >
+          Table View
+        </button>
       </div>
       
-        {/* No results message */}
-        {searchTerm.trim() !== '' && Object.keys(filteredData).length === 0 ? (
-          <div className="matrix-empty">
-            <p>No companies match your search for "{searchTerm}". Try a different search term.</p>
-          </div>
-        ) : Object.keys(filteredData).length === 0 ? (
-          <div className="matrix-empty">
-            <p>No categories selected. Please select at least one category above.</p>
-          </div>
-        ) : (
-          <>
-          
-          {/* Grid View with Adaptive Width Categories */}
-{viewMode === 'grid' && (
-  <div className="matrix-grid">
-    {Object.entries(filteredData).map(([category, companies]) => {
-      // Determine column span based on number of logos
-      let spanClass = '';
-      if (companies.length > 20) {
-        spanClass = 'category-full-width';
-      } else if (companies.length > 10) {
-        spanClass = 'category-half-width';
-      } else {
-        spanClass = 'category-third-width';
-      }
-
-      return (
-        <div 
-          key={category} 
-          className={`matrix-category-container ${spanClass} ${expandedCompany && companies.some(c => c._id === expandedCompany) ? 'expanded' : ''}`}
-        >
-          <div className="matrix-category-title">
-            <span className="category-title-text">{category}</span>
-          </div>
-          <div className="matrix-category">
-            <div className="companies-grid">
-              {companies.map((company, index) => (
-                <React.Fragment key={company._id}>
-                  <div 
-                    className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
-                    onClick={(e) => toggleExpandedCompany(company._id, e)}
-                  >
-                    <div className="logo-container">
-                      <img 
-                        src={company.logoUrl} 
-                        alt={`${company.name} logo`} 
-                        className="company-logo"
-                      />
-                      {company.verified && (
-                        <div className="verified-badge">
-                          <span className="verified-badge-icon">✓</span> VERIFIED
-                        </div>
-                      )}
-                      <div className="company-name-tooltip">
-                        {company.name}
-                      </div>
-                    </div>
+      {/* No categories selected message */}
+      {Object.keys(filteredData).length === 0 ? (
+        <div className="matrix-empty">
+          <p>No categories selected. Please select at least one category above.</p>
+        </div>
+      ) : (
+        <>
+          {/* Grid View with Expandable Details */}
+          {viewMode === 'grid' && (
+            <div className="matrix-grid" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
+              {Object.entries(filteredData).map(([category, companies]) => (
+                <div key={category} className="matrix-category-container">
+                  <div className="matrix-category-title">
+                    <span className="category-title-text">{category}</span>
                   </div>
-                  
-                  {/* Expandable company details - add after every 5th item or at end of row */}
-                  {(index + 1) % 5 === 0 || index === companies.length - 1 ? (
-                    <div 
-                      className={`company-details-wrapper ${
-                        expandedCompany === company._id || 
-                        (expandedCompany && companies.slice(Math.floor(index / 5) * 5, index + 1).some(c => c._id === expandedCompany))
-                          ? 'expanded' 
-                          : ''
-                      }`}
-                    >
-                      {expandedCompany && companies.slice(Math.max(0, Math.floor(index / 5) * 5), index + 1).map(c => {
-                        if (c._id === expandedCompany) {
-                          return (
-                            <div key={c._id} className="company-details">
-                              <button 
-                                className="company-details-close" 
-                                onClick={(e) => {
-                                  e.stopPropagation();
-                                  setExpandedCompany(null);
-                                }}
-                              >
-                                ×
-                              </button>
-                              
-                              <div className="company-details-header">
-                                <img 
-                                  src={c.logoUrl} 
-                                  alt={`${c.name} logo`}
-                                  className="company-details-logo" 
-                                />
-                                <div className="company-details-info">
-                                  <h3 className="company-details-name">
-                                    {c.name}
-                                    {c.verified && (
-                                      <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
-                                        <span className="verified-badge-icon">✓</span> VERIFIED
-                                      </span>
-                                    )}
-                                  </h3>
-                                  <div className="company-details-category">{category}</div>
+                  <div className="matrix-category">
+                    <div className="companies-grid">
+                      {companies.map((company, index) => (
+                        <React.Fragment key={company._id}>
+                          <div 
+                            className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
+                            onClick={(e) => toggleExpandedCompany(company._id, e)}
+                          >
+                            <div className="logo-container">
+                              <img 
+                                src={company.logoUrl} 
+                                alt={`${company.name} logo`} 
+                                className="company-logo"
+                              />
+                              {company.verified && (
+                                <div className="verified-badge">
+                                  <span className="verified-badge-icon">✓</span> VERIFIED
                                 </div>
-                              </div>
-                              
-                              <div className="company-details-sections">
-                                <div className="company-details-section">
-                                  <h4 className="company-details-section-title">States of Operation</h4>
-                                  {c.states && c.states.length > 0 ? (
-                                    <div className="company-states-list">
-                                      {c.states.map((state, i) => (
-                                        <span key={i} className="company-state-tag">{state}</span>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    <p className="company-details-empty">No state information available</p>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              <div className="company-details-actions">
-                                <a 
-                                  href={c.websiteUrl || "#"} 
-                                  target="_blank" 
-                                  rel="noopener noreferrer"
-                                  className="company-website-button"
-                                  onClick={(e) => e.stopPropagation()}
-                                >
-                                  Visit Website
-                                </a>
+                              )}
+                              <div className="company-name-tooltip">
+                                {company.name}
                               </div>
                             </div>
-                          );
-                        }
-                        return null;
-                      })}
+                          </div>
+                          
+                          {/* Expandable company details - add after every 5th item or at end of row */}
+                          {(index + 1) % 5 === 0 || index === companies.length - 1 ? (
+                            <div 
+                              className={`company-details-wrapper ${
+                                expandedCompany === company._id || 
+                                (expandedCompany && companies.slice(Math.floor(index / 5) * 5, index + 1).some(c => c._id === expandedCompany))
+                                  ? 'expanded' 
+                                  : ''
+                              }`}
+                            >
+                              {expandedCompany && companies.slice(Math.max(0, Math.floor(index / 5) * 5), index + 1).map(c => {
+                                if (c._id === expandedCompany) {
+                                  return (
+                                    <div key={c._id} className="company-details">
+                                      <button 
+                                        className="company-details-close" 
+                                        onClick={(e) => {
+                                          e.stopPropagation();
+                                          setExpandedCompany(null);
+                                        }}
+                                      >
+                                        ×
+                                      </button>
+                                      
+                                      <div className="company-details-header">
+                                        <img 
+                                          src={c.logoUrl} 
+                                          alt={`${c.name} logo`}
+                                          className="company-details-logo" 
+                                        />
+                                        <div className="company-details-info">
+                                          <h3 className="company-details-name">
+                                            {c.name}
+                                            {c.verified && (
+                                              <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
+                                                <span className="verified-badge-icon">✓</span> VERIFIED
+                                              </span>
+                                            )}
+                                          </h3>
+                                          <div className="company-details-category">{category}</div>
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="company-details-sections">
+                                        <div className="company-details-section">
+                                          <h4 className="company-details-section-title">States of Operation</h4>
+                                          {c.states && c.states.length > 0 ? (
+                                            <div className="company-states-list">
+                                              {c.states.map((state, i) => (
+                                                <span key={i} className="company-state-tag">{state}</span>
+                                              ))}
+                                            </div>
+                                          ) : (
+                                            <p className="company-details-empty">No state information available</p>
+                                          )}
+                                        </div>
+                                        
+                                        <div className="company-details-section">
+                                          <h4 className="company-details-section-title">Contact Information</h4>
+                                          {c.contactInfo ? (
+                                            <p>{c.contactInfo}</p>
+                                          ) : (
+                                            <p className="company-details-empty">No contact information available</p>
+                                          )}
+                                        </div>
+                                      </div>
+                                      
+                                      <div className="company-details-actions">
+                                        <a 
+                                          href={c.websiteUrl || "#"} 
+                                          target="_blank" 
+                                          rel="noopener noreferrer"
+                                          className="company-website-button"
+                                          onClick={(e) => e.stopPropagation()}
+                                        >
+                                          Visit Website
+                                        </a>
+                                      </div>
+                                    </div>
+                                  );
+                                }
+                                return null;
+                              })}
+                            </div>
+                          ) : null}
+                        </React.Fragment>
+                      ))}
                     </div>
-                  ) : null}
-                </React.Fragment>
+                  </div>
+                </div>
               ))}
             </div>
-          </div>
-        </div>
-      );
-    })}
-  </div>
-)}
+          )}
           
-          {/* Table View with Expandable Rows */}
+          {/* Table View with Sortable Columns and Modal */}
           {viewMode === 'table' && (
             <div className="matrix-table-container">
               <table className="matrix-table">
@@ -845,83 +698,52 @@ const getFilteredData = () => {
                 </thead>
                 <tbody>
                   {sortedAllCompanies.map((company) => (
-                    <React.Fragment key={company._id}>
-                      <tr className={selectedCompany === company._id ? 'row-expanded' : ''}>
-                        <td className="table-logo-cell">
-                          <img 
-                            src={company.logoUrl} 
-                            alt={`${company.name} logo`} 
-                            className="table-logo clickable"
-                            onClick={() => {
-                              if (selectedCompany === company._id) {
-                                setSelectedCompany(null);
-                              } else {
-                                setSelectedCompany(company._id);
-                              }
-                            }}
-                          />
-                        </td>
-                        <td>{company.name}</td>
-                        <td>{company.category}</td>
-                        <td>
-                          {company.verified ? (
-                            <span className="table-verified-badge">
-                              <span className="verified-badge-icon">✓</span> VERIFIED
-                            </span>
-                          ) : (
-                            <span className="table-unverified">—</span>
-                          )}
-                        </td>
-                        <td>
-                          <a 
-                            href={company.websiteUrl || "#"} 
-                            target="_blank" 
-                            rel="noopener noreferrer"
-                          >
-                            <button className="website-button">
-                              Visit Website
-                            </button>
-                          </a>
-                        </td>
-                      </tr>
-                      
-                      {/* Expandable row for company details */}
-                      {selectedCompany === company._id && (
-                        <tr className="expanded-details-row">
-                          <td colSpan="5">
-                            <div className="table-company-details">
-                              <div className="table-company-details-sections">
-                                <div className="table-company-details-section">
-                                  <h4 className="table-details-section-title">States of Operation</h4>
-                                  {company.states && company.states.length > 0 ? (
-                                    <div className="table-company-states-list">
-                                      {company.states.map((state, i) => (
-                                        <span key={i} className="table-company-state-tag">{state}</span>
-                                      ))}
-                                    </div>
-                                  ) : (
-                                    <p className="table-details-empty">No state information available</p>
-                                  )}
-                                </div>
-                              </div>
-                              
-                              <button 
-                                className="table-details-close" 
-                                onClick={() => setSelectedCompany(null)}
-                              >
-                                ×
-                              </button>
-                            </div>
-                          </td>
-                        </tr>
-                      )}
-                    </React.Fragment>
+                    <tr key={company._id}>
+                      <td className="table-logo-cell">
+                        <img 
+                          src={company.logoUrl} 
+                          alt={`${company.name} logo`} 
+                          className="table-logo clickable"
+                          onClick={() => openCompanyModal(company)}
+                        />
+                      </td>
+                      <td>{company.name}</td>
+                      <td>{company.category}</td>
+                      <td>
+                        {company.verified ? (
+                          <span className="table-verified-badge">
+                            <span className="verified-badge-icon">✓</span> VERIFIED
+                          </span>
+                        ) : (
+                          <span className="table-unverified">—</span>
+                        )}
+                      </td>
+                      <td>
+                        <a 
+                          href={company.websiteUrl || "#"} 
+                          target="_blank" 
+                          rel="noopener noreferrer"
+                        >
+                          <button className="website-button">
+                            Visit Website
+                          </button>
+                        </a>
+                      </td>
+                    </tr>
                   ))}
                 </tbody>
               </table>
             </div>
           )}
         </>
+      )}
+      
+      {/* Company Modal for Table View */}
+      {selectedCompany && (
+        <CompanyModal 
+          company={selectedCompany} 
+          onClose={closeCompanyModal} 
+        />
       )}
     </div>
   );
