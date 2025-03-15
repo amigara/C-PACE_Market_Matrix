@@ -441,20 +441,16 @@ const MarketMatrix = () => {
       {/* State Filter Dropdown */}
       <div className={`state-filter-container ${!stateFilterExpanded ? 'filter-collapsed' : ''}`}>
         <div className="state-filter-header">
-          <div className="filter-title-container">
+          <div className="filter-title-container" onClick={toggleStateFilter}>
+            <span className="filter-toggle-arrow">
+              {stateFilterExpanded ? '▼' : '▶'}
+            </span>
             <h3 className="filters-title">
               Filter by States:
               {!stateFilterExpanded && selectedStates.length > 0 && (
                 <span className="filter-count-badge">{selectedStates.length}</span>
               )}
             </h3>
-            <button 
-              className="filter-collapse-button"
-              onClick={toggleStateFilter}
-              aria-label={stateFilterExpanded ? "Collapse state filter" : "Expand state filter"}
-            >
-              {stateFilterExpanded ? '−' : '+'}
-            </button>
           </div>
           <div className="state-filter-actions">
             {selectedStates.length > 0 && (
@@ -583,20 +579,16 @@ const MarketMatrix = () => {
       {/* Filter Controls */}
       <div className={`matrix-filters ${!categoryFilterExpanded ? 'filter-collapsed' : ''}`}>
         <div className="filters-header">
-          <div className="filter-title-container">
+          <div className="filter-title-container" onClick={toggleCategoryFilter}>
+            <span className="filter-toggle-arrow">
+              {categoryFilterExpanded ? '▼' : '▶'}
+            </span>
             <h3 className="filters-title">
               Filter Categories:
               {!categoryFilterExpanded && activeFilters.length > 0 && (
                 <span className="filter-count-badge">{activeFilters.length}</span>
               )}
             </h3>
-            <button 
-              className="filter-collapse-button"
-              onClick={toggleCategoryFilter}
-              aria-label={categoryFilterExpanded ? "Collapse category filter" : "Expand category filter"}
-            >
-              {categoryFilterExpanded ? '−' : '+'}
-            </button>
           </div>
           <div className="filters-actions">
             <button 
