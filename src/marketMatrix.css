@@ -1418,9 +1418,11 @@
   border: 1px solid #e2e8f0;
   border-radius: 6px;
   box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-  z-index: 100;
+  z-index: 150; /* Increased z-index to make sure it's above other elements */
   max-height: 300px;
-  overflow-y: auto;
+  display: flex;
+  flex-direction: column;
+  overflow: hidden; /* Changed from overflow-y: auto to handle layout differently */
 }
 
 .state-search-container {
@@ -1429,7 +1431,8 @@
   position: sticky;
   top: 0;
   background-color: white;
-  z-index: 1;
+  z-index: 2;
+  flex-shrink: 0; /* Prevent search box from shrinking */
 }
 
 .state-search-input {
@@ -1446,16 +1449,34 @@
   box-shadow: 0 0 0 2px rgba(66, 153, 225, 0.2);
 }
 
-.state-options-container {
-  padding: 5px 0;
+.state-dropdown-actions {
+  display: flex;
+  justify-content: space-between;
+  padding: 8px 10px;
+  border-bottom: 1px solid #e2e8f0;
+  background-color: #f8fafc;
+  flex-shrink: 0; /* Prevent action buttons from shrinking */
+  z-index: 2;
 }
 
+.state-options-container {
+  padding: 5px 0;
+  overflow-y: auto; /* Make only the options container scrollable */
+  flex-grow: 1; /* Allow options container to grow and fill available space */
+  max-height: 210px; /* Set a maximum height for the scrollable area */
+  -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+}
+
+/* Improve state option appearance */
 .state-option {
   display: flex;
   align-items: center;
   padding: 8px 16px;
   cursor: pointer;
   transition: background-color 0.2s;
+  width: 100%;
+  box-sizing: border-box;
+  -webkit-tap-highlight-color: rgba(0,0,0,0); /* Prevent highlight on tap for mobile */
 }
 
 .state-option:hover {
@@ -1541,7 +1562,23 @@
   }
   
   .state-dropdown-menu {
-    max-height: 250px;
+    max-height: 300px; /* Ensure dropdown is tall enough on mobile */
+    position: fixed; /* Make position fixed on mobile for better UX */
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    width: 90%;
+    max-width: 400px;
+    border-radius: 8px;
+    box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
+  }
+  
+  .state-search-container {
+    padding: 15px;
+  }
+  
+  .state-options-container {
+    max-height: 180px; /* Shorter on mobile to accommodate keyboard */
   }
   
   .national-option-label {
@@ -1569,12 +1606,27 @@
   }
 }
 
+/* For desktop, ensure the dropdown remains properly positioned */
+@media (min-width: 641px) {
+  .state-dropdown-menu {
+    position: absolute;
+    top: calc(100% + 5px);
+    left: 0;
+    right: 0;
+    width: auto;
+    transform: none;
+    overflow: hidden;
+  }
+}
+
 .state-dropdown-actions {
   display: flex;
   justify-content: space-between;
   padding: 8px 10px;
   border-bottom: 1px solid #e2e8f0;
   background-color: #f8fafc;
+  flex-shrink: 0; /* Prevent action buttons from shrinking */
+  z-index: 2;
 }
 
 .state-action-button {

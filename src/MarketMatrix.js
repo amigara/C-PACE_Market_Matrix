@@ -495,82 +495,97 @@ const MarketMatrix = () => {
                 </div>
                 
                 {stateDropdownOpen && (
-                  <div 
-                    className="state-dropdown-menu"
-                    onClick={(e) => {
-                      // Prevent clicks inside dropdown from closing it
-                      e.stopPropagation();
-                    }}
-                  >
-                    <div className="state-search-container">
-                      <input
-                        type="text"
-                        className="state-search-input"
-                        placeholder="Search states..."
-                        value={stateSearchTerm}
-                        onChange={(e) => {
-                          e.stopPropagation();
-                          setStateSearchTerm(e.target.value);
-                        }}
-                        onClick={(e) => e.stopPropagation()}
-                        onFocus={(e) => e.stopPropagation()}
-                        autoFocus
-                      />
-                    </div>
-                    
-                    <div className="state-dropdown-actions">
-                      <button 
-                        className="state-action-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          selectAllStates();
-                          // Keep search focused
-                          document.querySelector('.state-search-input')?.focus();
-                        }}
-                      >
-                        Select All
-                      </button>
-                      <button 
-                        className="state-action-button"
-                        onClick={(e) => {
-                          e.stopPropagation();
-                          clearStateSelection();
-                          // Keep search focused
-                          document.querySelector('.state-search-input')?.focus();
-                        }}
-                      >
-                        Clear All
-                      </button>
-                    </div>
-                    
-                    <div className="state-options-container">
-                      {getFilteredStates().map(state => (
-                        <div 
-                          key={state} 
-                          className={`state-option ${selectedStates.includes(state) ? 'selected' : ''}`}
-                          onClick={(e) => {
-                            // Make sure to stop propagation
+                  <>
+                    <div 
+                      className="dropdown-backdrop"
+                      onClick={() => setStateDropdownOpen(false)}
+                      style={{
+                        position: 'fixed',
+                        top: 0,
+                        left: 0,
+                        right: 0,
+                        bottom: 0,
+                        zIndex: 90,
+                        display: isMobile ? 'block' : 'none'
+                      }}
+                    />
+                    <div 
+                      className="state-dropdown-menu"
+                      onClick={(e) => {
+                        // Prevent clicks inside dropdown from closing it
+                        e.stopPropagation();
+                      }}
+                    >
+                      <div className="state-search-container">
+                        <input
+                          type="text"
+                          className="state-search-input"
+                          placeholder="Search states..."
+                          value={stateSearchTerm}
+                          onChange={(e) => {
                             e.stopPropagation();
-                            // Toggle the state selection
-                            toggleStateSelection(state);
+                            setStateSearchTerm(e.target.value);
+                          }}
+                          onClick={(e) => e.stopPropagation()}
+                          onFocus={(e) => e.stopPropagation()}
+                          autoFocus
+                        />
+                      </div>
+                      
+                      <div className="state-dropdown-actions">
+                        <button 
+                          className="state-action-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            selectAllStates();
                             // Keep search focused
                             document.querySelector('.state-search-input')?.focus();
                           }}
                         >
-                          <span className="state-checkbox">
-                            {selectedStates.includes(state) ? '✓' : ''}
-                          </span>
-                          <span className="state-name">{state}</span>
-                        </div>
-                      ))}
+                          Select All
+                        </button>
+                        <button 
+                          className="state-action-button"
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            clearStateSelection();
+                            // Keep search focused
+                            document.querySelector('.state-search-input')?.focus();
+                          }}
+                        >
+                          Clear All
+                        </button>
+                      </div>
                       
-                      {getFilteredStates().length === 0 && (
-                        <div className="no-states-found">
-                          No states match your search
-                        </div>
-                      )}
+                      <div className="state-options-container">
+                        {getFilteredStates().map(state => (
+                          <div 
+                            key={state} 
+                            className={`state-option ${selectedStates.includes(state) ? 'selected' : ''}`}
+                            onClick={(e) => {
+                              // Make sure to stop propagation
+                              e.stopPropagation();
+                              // Toggle the state selection
+                              toggleStateSelection(state);
+                              // Keep search focused
+                              document.querySelector('.state-search-input')?.focus();
+                            }}
+                          >
+                            <span className="state-checkbox">
+                              {selectedStates.includes(state) ? '✓' : ''}
+                            </span>
+                            <span className="state-name">{state}</span>
+                          </div>
+                        ))}
+                        
+                        {getFilteredStates().length === 0 && (
+                          <div className="no-states-found">
+                            No states match your search
+                          </div>
+                        )}
+                      </div>
                     </div>
-                  </div>
+                  </>
                 )}
               </div>
               
