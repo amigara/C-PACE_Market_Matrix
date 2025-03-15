@@ -100,7 +100,7 @@
 .matrix-grid {
   display: grid;
   grid-template-columns: 1fr;
-  gap: 24px;
+  gap: 12px;
 }
 
 @media (min-width: 768px) {
@@ -112,7 +112,7 @@
 /* Category container and title styles */
 .matrix-category-container {
   position: relative;
-  margin-top: 30px;
+  margin-top: 20px;
 }
 
 .matrix-category-title {
@@ -149,7 +149,7 @@
 .matrix-category {
   border: 2px solid #4a5568;
   border-top: 2px solid #4a5568;
-  padding: 30px 20px 20px;
+  padding: 20px 20px 20px;
   position: relative;
   margin-top: -1px;
   border-radius: 0;
