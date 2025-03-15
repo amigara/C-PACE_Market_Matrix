@@ -11,7 +11,11 @@
 // Layout configuration
 const LAYOUT_CONFIG = {
   // Set to 1 for single column layout, 2 for two-column layout
-  columnCount: 2
+  columnCount: 2,
+  
+  // Breakpoint (in pixels) below which the layout will automatically switch to single column
+  // This is handled by CSS media queries, not JavaScript
+  mobileBreakpoint: 768
 };
 
 // Category order configuration
