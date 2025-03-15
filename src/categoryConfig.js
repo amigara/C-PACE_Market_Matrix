@@ -10,8 +10,8 @@
 
 const CATEGORY_ORDER = [
   "C-PACE Administrators",
-  "Law Firms",
   "Capital Providers",
+  "Law Firms",
   "Program Consultants",
   "Technical Service Providers",
   "Contractors",
