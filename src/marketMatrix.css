@@ -26,46 +26,41 @@
   color: #e53e3e;
 }
 
-/* True Masonry layout with CSS columns */
+/* Matrix grid responsive layout */
 .matrix-grid {
-  column-count: 1;
-  column-gap: 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
 }
 
 @media (min-width: 768px) {
   .matrix-grid {
-    column-count: 2;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 1200px) {
   .matrix-grid {
-    column-count: 3;
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
-/* Essential container adjustments */
+/* Category container and title styles */
 .matrix-category-container {
-  break-inside: avoid;
-  page-break-inside: avoid; /* For older browsers */
-  display: inline-block; /* Critical for column flow */
-  width: 100%;
-  margin-bottom: 24px; /* Spacing between categories */
   position: relative;
-  margin-top: 24px; /* Space for the title */
+  margin-top: 20px;
 }
 
-/* Category container and title styles */
 .matrix-category-title {
   position: absolute;
-  top: -12px; /* Adjust to position title in the center of the top border */
+  top: 0;
   left: 0;
   right: 0;
-  height: auto;
+  height: 0;
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 3;
+  z-index: 1;
 }
 
 .matrix-category-title:before, 
@@ -86,12 +81,10 @@
 /* Category box styles */
 .matrix-category {
   border: 2px solid black;
+  border-top: 2px solid black;
   padding: 20px 16px 16px;
   position: relative;
-  width: 100%;
-  background-color: white;
-  z-index: 1;
-  margin-top: -1px; /* Adjust for title overlap with border */
+  margin-top: -1px;
 }
 
 /* Company logos grid */
@@ -664,9 +657,6 @@
   margin: 12px 0;
   padding: 16px;
   border-color: #e2e8f0;
-  width: 100%;
-  position: relative;
-  z-index: 2; /* Higher than regular content */
 }
 
 /* Company details styles */
@@ -958,8 +948,6 @@
 .search-clear-button {
   position: absolute;
   right: 15px;
-  top: 50%;
-  transform: translateY(-50%);
   background: none;
   border: none;
   font-size: 18px;
@@ -979,8 +967,27 @@
   background-color: #e2e8f0;
 }
 
-/* Helper class for categories with expanded content */
-.matrix-category-container.expanded {
-  z-index: 10; /* Bring to front when expanded */
-  margin-bottom: 36px;
+/* Clear button styling */
+.search-clear-button {
+  position: absolute;
+  right: 15px;
+  top: 50%;
+  transform: translateY(-50%);
+  background: none;
+  border: none;
+  font-size: 18px;
+  color: #718096;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
+  border-radius: 50%;
+  transition: background-color 0.2s;
+}
+
+.search-clear-button:hover {
+  background-color: #e2e8f0;
 }
