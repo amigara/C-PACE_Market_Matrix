@@ -1,7 +1,19 @@
-import React, { useState, useEffect } from "react";
+import React, { useState, useEffect, useRef } from "react";
 import "./marketMatrix.css";
 import CompanyModal from "./CompanyModal"; // Keep for table view
 import CATEGORY_ORDER, { LAYOUT_CONFIG } from "./categoryConfig"; // Import the category order and layout configuration
+
+// List of all 50 U.S. states plus DC
+const US_STATES = [
+  "Alabama", "Alaska", "Arizona", "Arkansas", "California", "Colorado", "Connecticut", 
+  "Delaware", "Florida", "Georgia", "Hawaii", "Idaho", "Illinois", "Indiana", "Iowa", 
+  "Kansas", "Kentucky", "Louisiana", "Maine", "Maryland", "Massachusetts", "Michigan", 
+  "Minnesota", "Mississippi", "Missouri", "Montana", "Nebraska", "Nevada", "New Hampshire", 
+  "New Jersey", "New Mexico", "New York", "North Carolina", "North Dakota", "Ohio", "Oklahoma", 
+  "Oregon", "Pennsylvania", "Rhode Island", "South Carolina", "South Dakota", "Tennessee", 
+  "Texas", "Utah", "Vermont", "Virginia", "Washington", "West Virginia", "Wisconsin", "Wyoming",
+  "District of Columbia"
+];
 
 const MarketMatrix = () => {
   const [companiesData, setCompaniesData] = useState(null);
@@ -12,6 +24,9 @@ const MarketMatrix = () => {
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
   const [warnings, setWarnings] = useState(null); // Keep for logging purposes, but don't display
   const [searchTerm, setSearchTerm] = useState(''); // New state for search functionality
+  const [selectedStates, setSelectedStates] = useState([]); // State for selected states
+  const [stateDropdownOpen, setStateDropdownOpen] = useState(false); // State for dropdown toggle
+  const [stateSearchTerm, setStateSearchTerm] = useState(''); // State for searching states
   
   // State for table sorting
   const [sortConfig, setSortConfig] = useState({
@@ -27,6 +42,9 @@ const MarketMatrix = () => {
   
   // State for tracking data source - now we only have 'netlify'
   const [dataSource, setDataSource] = useState('netlify');
+
+  // Ref for the dropdown container
+  const stateDropdownRef = useRef(null);
 
   useEffect(() => {
     const fetchCompaniesData = async () => {
@@ -188,7 +206,38 @@ const MarketMatrix = () => {
     setSearchTerm('');
   };
 
-  // Filter the data based on active filters, search term, and sort by verification status
+  // Toggle state selection
+  const toggleStateSelection = (state) => {
+    if (selectedStates.includes(state)) {
+      setSelectedStates(selectedStates.filter(s => s !== state));
+    } else {
+      setSelectedStates([...selectedStates, state]);
+    }
+    // Reset expanded company when filters change
+    setExpandedCompany(null);
+  };
+  
+  // Select all states
+  const selectAllStates = () => {
+    setSelectedStates([...US_STATES]);
+    setExpandedCompany(null);
+  };
+  
+  // Clear all selected states
+  const clearStateSelection = () => {
+    setSelectedStates([]);
+    setExpandedCompany(null);
+  };
+  
+  // Filter states based on search term
+  const getFilteredStates = () => {
+    if (!stateSearchTerm) return US_STATES;
+    return US_STATES.filter(state => 
+      state.toLowerCase().includes(stateSearchTerm.toLowerCase())
+    );
+  };
+
+  // Filter the data based on active filters, search term, selected states, and sort by verification status
   const getFilteredData = () => {
     if (!companiesData) return {};
     
@@ -200,6 +249,26 @@ const MarketMatrix = () => {
         return obj;
       }, {});
     
+    // Then filter by states if any are selected
+    const stateAndCategoryFiltered = selectedStates.length > 0 
+      ? Object.entries(categoryFiltered).reduce((obj, [category, companies]) => {
+          // Filter companies that operate in any of the selected states or nationally
+          const filteredCompanies = companies.filter(company => 
+            company.states && (
+              // Include if company operates in any selected state
+              selectedStates.some(state => company.states.includes(state)) ||
+              // Or if company operates nationally
+              company.states.includes("National")
+            )
+          );
+          
+          if (filteredCompanies.length > 0) {
+            obj[category] = filteredCompanies;
+          }
+          return obj;
+        }, {})
+      : categoryFiltered; // If no states selected, use category filtered data
+    
     // Then filter by search term if one exists
     if (searchTerm.trim() === '') {
       // No search term, just sort the companies within each category
@@ -207,9 +276,9 @@ const MarketMatrix = () => {
       
       // Use allCategories to maintain the original order
       allCategories.forEach(category => {
-        if (categoryFiltered[category]) {
+        if (stateAndCategoryFiltered[category]) {
           // Sort companies to put verified ones first
-          result[category] = [...categoryFiltered[category]].sort((a, b) => {
+          result[category] = [...stateAndCategoryFiltered[category]].sort((a, b) => {
             // If a is verified and b is not, a comes first
             if (a.verified && !b.verified) return -1;
             // If b is verified and a is not, b comes first
@@ -228,9 +297,9 @@ const MarketMatrix = () => {
       
       // Use allCategories to maintain the original order
       allCategories.forEach(category => {
-        if (categoryFiltered[category]) {
+        if (stateAndCategoryFiltered[category]) {
           // Filter companies by search term
-          const filteredCompanies = categoryFiltered[category].filter(company => 
+          const filteredCompanies = stateAndCategoryFiltered[category].filter(company => 
             company.name.toLowerCase().includes(searchTermLower) || 
             (company.contactInfo && company.contactInfo.toLowerCase().includes(searchTermLower)) ||
             (company.states && company.states.some(state => state.toLowerCase().includes(searchTermLower))) ||
@@ -264,6 +333,25 @@ const MarketMatrix = () => {
     }
     setSortConfig({ key, direction });
   };
+
+  // Handle click outside to close dropdown
+  useEffect(() => {
+    const handleClickOutside = (event) => {
+      if (stateDropdownRef.current && !stateDropdownRef.current.contains(event.target)) {
+        setStateDropdownOpen(false);
+      }
+    };
+
+    // Add event listener when dropdown is open
+    if (stateDropdownOpen) {
+      document.addEventListener('mousedown', handleClickOutside);
+    }
+
+    // Cleanup
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, [stateDropdownOpen]);
 
   if (loading) return <div className="matrix-loading">Loading market matrix...</div>;
   if (error) return (
@@ -333,6 +421,113 @@ const MarketMatrix = () => {
             </button>
           )}
         </div>
+      </div>
+      
+      {/* State Filter Dropdown */}
+      <div className="state-filter-container">
+        <div className="state-filter-header">
+          <h3 className="filters-title">Filter by States:</h3>
+          {selectedStates.length > 0 && (
+            <button 
+              onClick={clearStateSelection}
+              className="filter-button filter-button-clear-all"
+            >
+              Clear States
+            </button>
+          )}
+        </div>
+        
+        <div className="state-dropdown-container" ref={stateDropdownRef}>
+          <div 
+            className="state-dropdown-header" 
+            onClick={() => setStateDropdownOpen(!stateDropdownOpen)}
+          >
+            <span className="state-dropdown-label">
+              {selectedStates.length === 0 
+                ? "Select states..." 
+                : `${selectedStates.length} state${selectedStates.length > 1 ? 's' : ''} selected`}
+            </span>
+            <span className="state-dropdown-arrow">
+              {stateDropdownOpen ? '▲' : '▼'}
+            </span>
+          </div>
+          
+          {stateDropdownOpen && (
+            <div className="state-dropdown-menu">
+              <div className="state-search-container">
+                <input
+                  type="text"
+                  className="state-search-input"
+                  placeholder="Search states..."
+                  value={stateSearchTerm}
+                  onChange={(e) => setStateSearchTerm(e.target.value)}
+                  onClick={(e) => e.stopPropagation()}
+                />
+              </div>
+              
+              <div className="state-dropdown-actions">
+                <button 
+                  className="state-action-button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    selectAllStates();
+                  }}
+                >
+                  Select All
+                </button>
+                <button 
+                  className="state-action-button"
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    clearStateSelection();
+                  }}
+                >
+                  Clear All
+                </button>
+              </div>
+              
+              <div className="state-options-container">
+                {getFilteredStates().map(state => (
+                  <div 
+                    key={state} 
+                    className={`state-option ${selectedStates.includes(state) ? 'selected' : ''}`}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      toggleStateSelection(state);
+                    }}
+                  >
+                    <span className="state-checkbox">
+                      {selectedStates.includes(state) ? '✓' : ''}
+                    </span>
+                    <span className="state-name">{state}</span>
+                  </div>
+                ))}
+                
+                {getFilteredStates().length === 0 && (
+                  <div className="no-states-found">
+                    No states match your search
+                  </div>
+                )}
+              </div>
+            </div>
+          )}
+        </div>
+        
+        {selectedStates.length > 0 && (
+          <div className="selected-states-container">
+            {selectedStates.map(state => (
+              <div key={state} className="selected-state-tag">
+                {state}
+                <button 
+                  className="remove-state-button"
+                  onClick={() => toggleStateSelection(state)}
+                >
+                  ×
+                </button>
+              </div>
+            ))}
+          </div>
+        )}
       </div>
       
       {/* Filter Controls */}
