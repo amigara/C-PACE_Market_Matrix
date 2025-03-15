@@ -110,9 +110,9 @@
     grid-template-columns: 1fr !important; /* Force single column on mobile */
   }
   
-  /* Adjust company grid to show more items per row on mobile */
+  /* Adjust company grid to use the same auto-fill approach on mobile */
   .companies-grid {
-    grid-template-columns: repeat(3, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(70px, 1fr));
     gap: 10px;
   }
   
@@ -230,43 +230,44 @@
 /* Companies grid - adjust based on column count */
 .companies-grid {
   display: grid;
-  grid-template-columns: repeat(4, 1fr);
+  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   gap: 12px;
   margin-top: 15px;
   position: relative;
   align-content: start; /* Keep logos at the top, don't stretch them */
 }
 
+/* Remove the media queries that were causing inconsistent grid layouts */
 @media (min-width: 640px) {
   .companies-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   }
 }
 
 @media (min-width: 768px) {
-  /* For two-column layout, use 4 logos per row */
+  /* For two-column layout, maintain consistent grid */
   .companies-grid {
-    grid-template-columns: repeat(4, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
-  /* For two-column layout, use 5 logos per row on larger screens */
+  /* For two-column layout, maintain consistent grid */
   .companies-grid {
-    grid-template-columns: repeat(5, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   }
 }
 
-/* For single-column layout, allow more logos per row */
+/* For single-column layout, maintain consistent grid */
 @media (min-width: 768px) and (max-width: 1023px) {
   .matrix-grid[style*="gridTemplateColumns: 1fr"] .companies-grid {
-    grid-template-columns: repeat(6, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   }
 }
 
 @media (min-width: 1024px) {
   .matrix-grid[style*="gridTemplateColumns: 1fr"] .companies-grid {
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
   }
 }
 
