@@ -1,4 +1,4 @@
-/* marketMatrix.css - Complete styles for the Market Matrix component */
+/* marketMatrix.css - Updated for 2-column maximum layout */
 
 /* Basic container styles */
 .market-matrix-container {
@@ -26,7 +26,7 @@
   color: #e53e3e;
 }
 
-/* Matrix grid responsive layout */
+/* Matrix grid responsive layout - UPDATED FOR 2 COLUMN MAX */
 .matrix-grid {
   display: grid;
   grid-template-columns: 1fr;
@@ -39,10 +39,26 @@
   }
 }
 
-@media (min-width: 1200px) {
-  .matrix-grid {
-    grid-template-columns: repeat(3, 1fr);
+/* Remove the 3-column layout that was at 1200px */
+
+/* Category adaptive width classes */
+.category-full-width {
+  grid-column: 1 / -1; /* Span all available columns */
+}
+
+.category-half-width {
+  grid-column: auto / span 1; /* Default span 1 column */
+}
+
+@media (max-width: 767px) {
+  .category-half-width {
+    grid-column: 1 / -1; /* On mobile, span full width */
   }
+}
+
+/* No third-width needed since we're only using 2 columns max */
+.category-third-width {
+  grid-column: auto / span 1;
 }
 
 /* Category container and title styles */
@@ -114,6 +130,7 @@
   }
 }
 
+/* Rest of the CSS remains unchanged */
 /* Company grid item styles */
 .company-item {
   cursor: pointer;
@@ -449,192 +466,70 @@
   width: 60px;
 }
 
-/* Modal styles */
-.modal-overlay {
-  position: fixed;
-  top: 0;
-  left: 0;
-  right: 0;
-  bottom: 0;
-  background-color: rgba(0, 0, 0, 0.5);
+/* Search container styling */
+.search-container {
+  margin-bottom: 20px;
+  width: 100%;
+}
+
+/* Search input wrapper for positioning icon and input */
+.search-input-wrapper {
+  position: relative;
   display: flex;
   align-items: center;
-  justify-content: center;
-  z-index: 1000;
-  padding: 20px;
-  animation: fadeIn 0.2s ease-out;
-}
-
-.modal-container {
-  background-color: white;
-  border-radius: 8px;
-  box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   width: 100%;
-  max-width: 500px;
-  max-height: 90vh;
-  overflow-y: auto;
-  position: relative;
-  animation: slideIn 0.3s ease-out;
 }
 
-.modal-close-button {
+/* Search icon styling */
+.search-icon {
   position: absolute;
-  top: 15px;
+  left: 15px;
+  color: #718096;
+  z-index: 1;
+}
+
+/* Search input styling */
+.search-input {
+  width: 100%;
+  padding: 12px 15px 12px 40px; /* Add left padding for icon */
+  border: 2px solid #e2e8f0;
+  border-radius: 30px;
+  font-size: 16px;
+  transition: all 0.2s ease;
+  outline: none;
+  background-color: #ffffff;
+}
+
+.search-input:focus {
+  border-color: #000;
+  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
+}
+
+.search-input::placeholder {
+  color: #a0aec0;
+}
+
+/* Clear button styling */
+.search-clear-button {
+  position: absolute;
   right: 15px;
   background: none;
   border: none;
-  font-size: 24px;
-  color: #666;
+  font-size: 18px;
+  color: #718096;
   cursor: pointer;
-  padding: 0;
-  width: 30px;
-  height: 30px;
   display: flex;
   align-items: center;
   justify-content: center;
+  width: 20px;
+  height: 20px;
+  padding: 0;
   border-radius: 50%;
   transition: background-color 0.2s;
 }
 
-.modal-close-button:hover {
-  background-color: #f0f0f0;
-  color: #333;
-}
-
-.modal-header {
-  padding: 25px 25px 15px;
-  display: flex;
-  align-items: center;
-  border-bottom: 1px solid #eee;
-}
-
-.modal-logo-container {
-  position: relative;
-  margin-right: 15px;
-}
-
-.modal-logo {
-  width: 60px;
-  height: 60px;
-  object-fit: contain;
-  background-color: #f7fafc;
-  padding: 5px;
-  border: 1px solid #e2e8f0;
-  border-radius: 4px;
-}
-
-.modal-verified-badge {
-  position: absolute;
-  bottom: -8px;
-  left: 50%;
-  transform: translateX(-50%);
-  background-color: #524AE8;
-  color: white;
-  font-size: 9px;
-  font-weight: bold;
-  padding: 3px 6px;
-  border-radius: 12px;
-  display: flex;
-  align-items: center;
-  border: 1.5px solid white;
-  z-index: 2;
-  box-shadow: 0 2px 4px rgba(0,0,0,0.1);
-  white-space: nowrap;
-}
-
-.modal-title {
-  font-size: 22px;
-  font-weight: 600;
-  margin: 0;
-  flex: 1;
-}
-
-.modal-content {
-  padding: 15px 25px;
-}
-
-.modal-info-section {
-  margin-bottom: 20px;
-}
-
-.modal-section-title {
-  font-size: 16px;
-  font-weight: 600;
-  margin: 0 0 8px;
-  color: #333;
-}
-
-.modal-states-list {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 6px;
-}
-
-.modal-state-tag {
-  display: inline-block;
-  padding: 4px 8px;
-  background-color: #f0f4f8;
-  border-radius: 4px;
-  font-size: 12px;
-  color: #4a5568;
-  font-weight: 500;
-}
-
-.modal-info-empty {
-  color: #a0aec0;
-  font-style: italic;
-  margin: 0;
-}
-
-.modal-footer {
-  padding: 15px 25px 25px;
-  display: flex;
-  justify-content: flex-end;
-  border-top: 1px solid #eee;
-}
-
-.modal-website-button {
-  padding: 8px 20px;
-  background-color: #000;
-  color: white;
-  border: none;
-  border-radius: 30px;
-  font-size: 14px;
-  font-weight: 500;
-  text-decoration: none;
-  transition: background-color 0.2s;
-}
-
-.modal-website-button:hover {
-  background-color: #222;
-}
-
-/* Animations */
-@keyframes fadeIn {
-  from { opacity: 0; }
-  to { opacity: 1; }
-}
-
-@keyframes slideIn {
-  from { transform: translateY(20px); opacity: 0; }
-  to { transform: translateY(0); opacity: 1; }
-}
-
-/* Mobile adjustments for modal */
-@media (max-width: 600px) {
-  .modal-container {
-    max-width: 100%;
-  }
-  
-  .modal-header {
-    flex-direction: column;
-    align-items: flex-start;
-  }
-  
-  .modal-logo-container {
-    margin-right: 0;
-    margin-bottom: 15px;
-  }
+.search-clear-button:hover {
+  background-color: #e2e8f0;
 }
 
 /* Expandable details styles */
@@ -899,72 +794,6 @@
   .table-company-details-sections {
     grid-template-columns: 1fr 1fr;
   }
-}
-
-/* Search container styling */
-.search-container {
-  margin-bottom: 20px;
-  width: 100%;
-}
-
-/* Search input wrapper for positioning icon and input */
-.search-input-wrapper {
-  position: relative;
-  display: flex;
-  align-items: center;
-  width: 100%;
-}
-
-/* Search icon styling */
-.search-icon {
-  position: absolute;
-  left: 15px;
-  color: #718096;
-  z-index: 1;
-}
-
-/* Search input styling */
-.search-input {
-  width: 100%;
-  padding: 12px 15px 12px 40px; /* Add left padding for icon */
-  border: 2px solid #e2e8f0;
-  border-radius: 30px;
-  font-size: 16px;
-  transition: all 0.2s ease;
-  outline: none;
-  background-color: #ffffff;
-}
-
-.search-input:focus {
-  border-color: #000;
-  box-shadow: 0 0 0 2px rgba(0, 0, 0, 0.1);
-}
-
-.search-input::placeholder {
-  color: #a0aec0;
-}
-
-/* Clear button styling */
-.search-clear-button {
-  position: absolute;
-  right: 15px;
-  background: none;
-  border: none;
-  font-size: 18px;
-  color: #718096;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  border-radius: 50%;
-  transition: background-color 0.2s;
-}
-
-.search-clear-button:hover {
-  background-color: #e2e8f0;
 }
 
 /* Clear button styling */
