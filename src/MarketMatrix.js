@@ -753,107 +753,101 @@ const getFilteredData = () => {
             </div>
             <div className="matrix-category">
               <div className="companies-grid">
-                {companies.map((company, index) => (
-                  <React.Fragment key={company._id}>
-                    <div 
-                      className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
-                      onClick={(e) => toggleExpandedCompany(company._id, e)}
-                    >
-                      <div className="logo-container">
-                        <img 
-                          src={company.logoUrl} 
-                          alt={`${company.name} logo`} 
-                          className="company-logo"
-                        />
-                        {company.verified && (
-                          <div className="verified-badge">
-                            <span className="verified-badge-icon">✓</span> VERIFIED
-                          </div>
-                        )}
-                        <div className="company-name-tooltip">
-                          {company.name}
-                        </div>
-                      </div>
-                    </div>
-                    
-                    {/* Expandable company details - add after every 5th item or at end of row */}
-                    {(index + 1) % 5 === 0 || index === companies.length - 1 ? (
-                      <div 
-                        className={`company-details-wrapper ${
-                          expandedCompany === company._id || 
-                          (expandedCompany && companies.slice(Math.floor(index / 5) * 5, index + 1).some(c => c._id === expandedCompany))
-                            ? 'expanded' 
-                            : ''
-                        }`}
-                      >
-                        {expandedCompany && companies.slice(Math.max(0, Math.floor(index / 5) * 5), index + 1).map(c => {
-                          if (c._id === expandedCompany) {
-                            return (
-                              <div key={c._id} className="company-details">
-                                <button 
-                                  className="company-details-close" 
-                                  onClick={(e) => {
-                                    e.stopPropagation();
-                                    setExpandedCompany(null);
-                                  }}
-                                >
-                                  ×
-                                </button>
-                                
-                                <div className="company-details-header">
-                                  <img 
-                                    src={c.logoUrl} 
-                                    alt={`${c.name} logo`}
-                                    className="company-details-logo" 
-                                  />
-                                  <div className="company-details-info">
-                                    <h3 className="company-details-name">
-                                      {c.name}
-                                      {c.verified && (
-                                        <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
-                                          <span className="verified-badge-icon">✓</span> VERIFIED
-                                        </span>
-                                      )}
-                                    </h3>
-                                    <div className="company-details-category">{category}</div>
-                                  </div>
-                                </div>
-                                
-                                <div className="company-details-sections">
-                                  <div className="company-details-section">
-                                    <h4 className="company-details-section-title">States of Operation</h4>
-                                    {c.states && c.states.length > 0 ? (
-                                      <div className="company-states-list">
-                                        {c.states.map((state, i) => (
-                                          <span key={i} className="company-state-tag">{state}</span>
-                                        ))}
-                                      </div>
-                                    ) : (
-                                      <p className="company-details-empty">No state information available</p>
-                                    )}
-                                  </div>
-                                </div>
-                                
-                                <div className="company-details-actions">
-                                  <a 
-                                    href={c.websiteUrl || "#"} 
-                                    target="_blank" 
-                                    rel="noopener noreferrer"
-                                    className="company-website-button"
-                                    onClick={(e) => e.stopPropagation()}
-                                  >
-                                    Visit Website
-                                  </a>
-                                </div>
-                              </div>
-                            );
-                          }
-                          return null;
-                        })}
-                      </div>
-                    ) : null}
-                  </React.Fragment>
-                ))}
+                // Update the expandable company details logic in MarketMatrix.js
+// Replace the existing implementation with this improved version
+
+{companies.map((company, index) => (
+  <React.Fragment key={company._id}>
+    <div 
+      className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
+      onClick={(e) => toggleExpandedCompany(company._id, e)}
+    >
+      <div className="logo-container">
+        <img 
+          src={company.logoUrl} 
+          alt={`${company.name} logo`} 
+          className="company-logo"
+        />
+        {company.verified && (
+          <div className="verified-badge">
+            <span className="verified-badge-icon">✓</span> VERIFIED
+          </div>
+        )}
+        <div className="company-name-tooltip">
+          {company.name}
+        </div>
+      </div>
+    </div>
+    
+    {/* 
+      Place expandable details after every item, but only show for active item
+      This fixes the layout issue with rows having 1 item
+    */}
+    <div 
+      className={`company-details-wrapper ${expandedCompany === company._id ? 'expanded' : ''}`}
+    >
+      {expandedCompany === company._id && (
+        <div className="company-details">
+          <button 
+            className="company-details-close" 
+            onClick={(e) => {
+              e.stopPropagation();
+              setExpandedCompany(null);
+            }}
+          >
+            ×
+          </button>
+          
+          <div className="company-details-header">
+            <img 
+              src={company.logoUrl} 
+              alt={`${company.name} logo`}
+              className="company-details-logo" 
+            />
+            <div className="company-details-info">
+              <h3 className="company-details-name">
+                {company.name}
+                {company.verified && (
+                  <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
+                    <span className="verified-badge-icon">✓</span> VERIFIED
+                  </span>
+                )}
+              </h3>
+              <div className="company-details-category">{category}</div>
+            </div>
+          </div>
+          
+          <div className="company-details-sections">
+            <div className="company-details-section">
+              <h4 className="company-details-section-title">States of Operation</h4>
+              {company.states && company.states.length > 0 ? (
+                <div className="company-states-list">
+                  {company.states.map((state, i) => (
+                    <span key={i} className="company-state-tag">{state}</span>
+                  ))}
+                </div>
+              ) : (
+                <p className="company-details-empty">No state information available</p>
+              )}
+            </div>
+          </div>
+          
+          <div className="company-details-actions">
+            <a 
+              href={company.websiteUrl || "#"} 
+              target="_blank" 
+              rel="noopener noreferrer"
+              className="company-website-button"
+              onClick={(e) => e.stopPropagation()}
+            >
+              Visit Website
+            </a>
+          </div>
+        </div>
+      )}
+    </div>
+  </React.Fragment>
+))}
               </div>
             </div>
           </div>
