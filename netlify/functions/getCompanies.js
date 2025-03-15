@@ -45,7 +45,10 @@ async function fetchFromAirtable(tableName) {
 
     if (!response.ok) {
       const errorText = await response.text().catch(() => 'No error text available');
-      throw new Error(`Airtable API error: ${response.status} - ${errorText}`);
+      console.error(`Failed to fetch from table "${tableName}": ${response.status} - ${errorText}`);
+      
+      // Return null for this table instead of throwing
+      return null;
     }
 
     const data = await response.json();
@@ -53,7 +56,8 @@ async function fetchFromAirtable(tableName) {
     return data.records.map(record => transformAirtableRecord(record, tableName));
   } catch (error) {
     console.error(`Error fetching from Airtable (${tableName}):`, error);
-    throw error;
+    // Return null for this table instead of throwing
+    return null;
   }
 }
 
@@ -110,23 +114,49 @@ exports.handler = async function(event, context) {
     }
     
     // Fetch data from all tables in parallel
-    const promises = Object.values(TABLES).map(tableName => 
-      fetchFromAirtable(tableName)
+    const tableNames = Object.values(TABLES);
+    const results = await Promise.all(
+      tableNames.map(tableName => fetchFromAirtable(tableName))
     );
     
-    const results = await Promise.all(promises);
+    // Count successful and failed tables
+    const successfulTables = results.filter(result => result !== null).length;
+    const failedTables = results.filter(result => result === null).length;
+    
+    console.log(`Fetch summary: ${successfulTables} tables succeeded, ${failedTables} tables failed`);
     
     // Create an object with categories as keys and arrays of companies as values
-    const data = Object.keys(TABLES).reduce((acc, key, index) => {
-      acc[TABLES[key]] = results[index];
-      return acc;
-    }, {});
+    // Only include tables that returned data successfully
+    const data = {};
+    let hasAnyData = false;
+    
+    tableNames.forEach((tableName, index) => {
+      if (results[index] !== null) {
+        data[tableName] = results[index];
+        hasAnyData = true;
+      }
+    });
+    
+    if (!hasAnyData) {
+      throw new Error('Could not fetch data from any Airtable tables. Please check your table names and permissions.');
+    }
 
-    console.log('Successfully fetched all data from Airtable');
+    console.log(`Successfully fetched data from ${successfulTables} out of ${tableNames.length} tables`);
+    
+    // Add a warning message if some tables failed
+    const response = {
+      data: data
+    };
+    
+    if (failedTables > 0) {
+      response.warning = `${failedTables} out of ${tableNames.length} tables could not be accessed. This may be due to incorrect table names or insufficient permissions.`;
+      response.availableTables = Object.keys(data);
+    }
+
     return {
       statusCode: 200,
       headers,
-      body: JSON.stringify(data)
+      body: JSON.stringify(response)
     };
   } catch (error) {
     console.error('Error fetching data from Airtable:', error);

@@ -9,6 +9,7 @@ const MarketMatrix = () => {
   const [allCategories, setAllCategories] = useState([]);
   const [activeFilters, setActiveFilters] = useState([]);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
+  const [warnings, setWarnings] = useState(null); // New state for API warnings
   
   // State for table sorting
   const [sortConfig, setSortConfig] = useState({
@@ -36,7 +37,21 @@ const MarketMatrix = () => {
           throw new Error(errorData.message || `API error: ${response.status}`);
         }
         
-        const data = await response.json();
+        const responseData = await response.json();
+        
+        // Check if we have the new response format with nested data
+        const data = responseData.data || responseData;
+        
+        // Store any warnings
+        if (responseData.warning) {
+          setWarnings(responseData.warning);
+          console.warn("API Warning:", responseData.warning);
+          
+          if (responseData.availableTables) {
+            console.info("Available tables:", responseData.availableTables);
+          }
+        }
+        
         processData(data);
         setDataSource('netlify');
         console.log("Data loaded from Netlify function successfully");
@@ -216,6 +231,13 @@ const MarketMatrix = () => {
       <div className="data-source-indicator">
         <span className="data-source airtable">Live data from Airtable (via Netlify)</span>
       </div>
+      
+      {/* Display warnings if any */}
+      {warnings && (
+        <div className="data-warning">
+          <p><strong>Note:</strong> {warnings}</p>
+        </div>
+      )}
       
       {/* Filter Controls */}
       <div className="matrix-filters">
