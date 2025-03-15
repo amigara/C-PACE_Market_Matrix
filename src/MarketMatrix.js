@@ -54,6 +54,9 @@ const MarketMatrix = () => {
   // Ref for the dropdown container
   const stateDropdownRef = useRef(null);
 
+  // Add refs to track company items for better positioning of expandable details
+  const companyRefs = useRef({});
+
   useEffect(() => {
     const fetchCompaniesData = async () => {
       try {
@@ -182,7 +185,7 @@ const MarketMatrix = () => {
     setViewMode(mode);
   };
   
-  // Toggle expanded company in grid view
+  // Toggle expanded company in grid view with improved positioning
   const toggleExpandedCompany = (companyId, e) => {
     e.preventDefault(); // Prevent default link behavior
     if (expandedCompany === companyId) {
@@ -429,6 +432,16 @@ const MarketMatrix = () => {
     // If we're sorting by name or category but they're equal, fallback to verified status
     return a.verified === b.verified ? 0 : a.verified ? -1 : 1;
   });
+
+  // Calculate the position for the expandable details
+  const getExpandedDetailsPosition = (index) => {
+    // On mobile (2-column layout), position it after every 2nd item
+    const rowHeight = 95; // Approximate height of a logo item with margins
+    const rowIndex = Math.floor(index / 2); // Which row the logo is in (0-indexed)
+    return {
+      top: `${rowIndex * rowHeight + rowHeight}px` // Position after the current row
+    };
+  };
 
   return (
     <div className="market-matrix-container">
@@ -691,7 +704,7 @@ const MarketMatrix = () => {
               }}>
                 {allCategories
                   .filter(category => filteredData[category]) // Only include categories that exist in filtered data
-                  .map(category => (
+                  .map((category, index) => (
                 <div key={category} className="matrix-category-container">
                   <div className="matrix-category-title">
                     <span className="category-title-text">{category}</span>
@@ -703,6 +716,7 @@ const MarketMatrix = () => {
                           <div 
                             className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
                             onClick={(e) => toggleExpandedCompany(company._id, e)}
+                            id={`company-${company._id}`}
                           >
                             <div className="logo-container">
                               <img 
@@ -723,7 +737,10 @@ const MarketMatrix = () => {
                           
                           {/* Inline expandable details - appears immediately after the clicked item */}
                           {expandedCompany === company._id && (
-                            <div className="company-details-wrapper expanded inline-after">
+                            <div 
+                              className="company-details-wrapper expanded inline-after" 
+                              style={getExpandedDetailsPosition(index)}
+                            >
                               <div className="company-details">
                                 <button 
                                   className="company-details-close" 
