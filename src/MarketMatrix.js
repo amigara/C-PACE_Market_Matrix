@@ -29,6 +29,13 @@ const MarketMatrix = () => {
   const [stateSearchTerm, setStateSearchTerm] = useState(''); // State for searching states
   const [includeNational, setIncludeNational] = useState(true); // State for including national companies
   
+  // New state variables for collapsible filters
+  const [stateFilterExpanded, setStateFilterExpanded] = useState(true);
+  const [categoryFilterExpanded, setCategoryFilterExpanded] = useState(true);
+  
+  // State for tracking window width for responsive behavior
+  const [isMobile, setIsMobile] = useState(window.innerWidth <= 767);
+  
   // State for table sorting
   const [sortConfig, setSortConfig] = useState({
     key: 'verified', // Default sort by verification status (verified first)
@@ -354,6 +361,33 @@ const MarketMatrix = () => {
     };
   }, [stateDropdownOpen]);
 
+  // Toggle state filter expansion
+  const toggleStateFilter = () => {
+    setStateFilterExpanded(!stateFilterExpanded);
+  };
+  
+  // Toggle category filter expansion
+  const toggleCategoryFilter = () => {
+    setCategoryFilterExpanded(!categoryFilterExpanded);
+  };
+
+  // Add window resize listener for responsive behavior
+  useEffect(() => {
+    const handleResize = () => {
+      setIsMobile(window.innerWidth <= 767);
+    };
+    
+    window.addEventListener('resize', handleResize);
+    
+    // Initial check
+    handleResize();
+    
+    // Cleanup
+    return () => {
+      window.removeEventListener('resize', handleResize);
+    };
+  }, []);
+
   if (loading) return <div className="matrix-loading">Loading market matrix...</div>;
   if (error) return (
     <div className="matrix-error">
@@ -425,9 +459,19 @@ const MarketMatrix = () => {
       </div>
       
       {/* State Filter Dropdown */}
-      <div className="state-filter-container">
+      <div className={`state-filter-container ${!stateFilterExpanded ? 'filter-collapsed' : ''}`}>
         <div className="state-filter-header">
-          <h3 className="filters-title">Filter by States:</h3>
+          <div className="filter-title-container" onClick={toggleStateFilter}>
+            <span className="filter-toggle-arrow">
+              {stateFilterExpanded ? '▼' : '▶'}
+            </span>
+            <h3 className="filters-title">
+              Filter by States:
+              {!stateFilterExpanded && selectedStates.length > 0 && (
+                <span className="filter-count-badge">{selectedStates.length}</span>
+              )}
+            </h3>
+          </div>
           <div className="state-filter-actions">
             {selectedStates.length > 0 && (
               <button 
@@ -440,116 +484,132 @@ const MarketMatrix = () => {
           </div>
         </div>
         
-        <div className="state-dropdown-container" ref={stateDropdownRef}>
-          <div 
-            className="state-dropdown-header" 
-            onClick={() => setStateDropdownOpen(!stateDropdownOpen)}
-          >
-            <span className="state-dropdown-label">
-              {selectedStates.length === 0 
-                ? "Select states..." 
-                : `${selectedStates.length} state${selectedStates.length > 1 ? 's' : ''} selected`}
-            </span>
-            <span className="state-dropdown-arrow">
-              {stateDropdownOpen ? '▲' : '▼'}
-            </span>
-          </div>
-          
-          {stateDropdownOpen && (
-            <div className="state-dropdown-menu">
-              <div className="state-search-container">
-                <input
-                  type="text"
-                  className="state-search-input"
-                  placeholder="Search states..."
-                  value={stateSearchTerm}
-                  onChange={(e) => setStateSearchTerm(e.target.value)}
-                  onClick={(e) => e.stopPropagation()}
-                />
-              </div>
-              
-              <div className="state-dropdown-actions">
-                <button 
-                  className="state-action-button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    selectAllStates();
-                  }}
+        <div className={`collapsible-content ${stateFilterExpanded ? 'expanded' : 'collapsed'}`}>
+          {stateFilterExpanded && (
+            <>
+              <div className="state-dropdown-container" ref={stateDropdownRef}>
+                <div 
+                  className="state-dropdown-header" 
+                  onClick={() => setStateDropdownOpen(!stateDropdownOpen)}
                 >
-                  Select All
-                </button>
-                <button 
-                  className="state-action-button"
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    clearStateSelection();
-                  }}
-                >
-                  Clear All
-                </button>
-              </div>
-              
-              <div className="state-options-container">
-                {getFilteredStates().map(state => (
-                  <div 
-                    key={state} 
-                    className={`state-option ${selectedStates.includes(state) ? 'selected' : ''}`}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      toggleStateSelection(state);
-                    }}
-                  >
-                    <span className="state-checkbox">
-                      {selectedStates.includes(state) ? '✓' : ''}
-                    </span>
-                    <span className="state-name">{state}</span>
-                  </div>
-                ))}
+                  <span className="state-dropdown-label">
+                    {selectedStates.length === 0 
+                      ? "Select states..." 
+                      : `${selectedStates.length} state${selectedStates.length > 1 ? 's' : ''} selected`}
+                  </span>
+                  <span className="state-dropdown-arrow">
+                    {stateDropdownOpen ? '▲' : '▼'}
+                  </span>
+                </div>
                 
-                {getFilteredStates().length === 0 && (
-                  <div className="no-states-found">
-                    No states match your search
+                {stateDropdownOpen && (
+                  <div className="state-dropdown-menu">
+                    <div className="state-search-container">
+                      <input
+                        type="text"
+                        className="state-search-input"
+                        placeholder="Search states..."
+                        value={stateSearchTerm}
+                        onChange={(e) => setStateSearchTerm(e.target.value)}
+                        onClick={(e) => e.stopPropagation()}
+                      />
+                    </div>
+                    
+                    <div className="state-dropdown-actions">
+                      <button 
+                        className="state-action-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          selectAllStates();
+                        }}
+                      >
+                        Select All
+                      </button>
+                      <button 
+                        className="state-action-button"
+                        onClick={(e) => {
+                          e.stopPropagation();
+                          clearStateSelection();
+                        }}
+                      >
+                        Clear All
+                      </button>
+                    </div>
+                    
+                    <div className="state-options-container">
+                      {getFilteredStates().map(state => (
+                        <div 
+                          key={state} 
+                          className={`state-option ${selectedStates.includes(state) ? 'selected' : ''}`}
+                          onClick={(e) => {
+                            e.stopPropagation();
+                            toggleStateSelection(state);
+                          }}
+                        >
+                          <span className="state-checkbox">
+                            {selectedStates.includes(state) ? '✓' : ''}
+                          </span>
+                          <span className="state-name">{state}</span>
+                        </div>
+                      ))}
+                      
+                      {getFilteredStates().length === 0 && (
+                        <div className="no-states-found">
+                          No states match your search
+                        </div>
+                      )}
+                    </div>
                   </div>
                 )}
               </div>
-            </div>
+              
+              {/* National Companies Checkbox */}
+              <div className="national-option-container">
+                <label className="national-option-label">
+                  <input
+                    type="checkbox"
+                    className="national-checkbox"
+                    checked={includeNational}
+                    onChange={() => setIncludeNational(!includeNational)}
+                  />
+                  <span className="national-label-text">Include companies operating nationally</span>
+                </label>
+              </div>
+              
+              {selectedStates.length > 0 && (
+                <div className="selected-states-container">
+                  {selectedStates.map(state => (
+                    <div key={state} className="selected-state-tag">
+                      {state}
+                      <button 
+                        className="remove-state-button"
+                        onClick={() => toggleStateSelection(state)}
+                      >
+                        ×
+                      </button>
+                    </div>
+                  ))}
+                </div>
+              )}
+            </>
           )}
         </div>
-        
-        {/* National Companies Checkbox */}
-        <div className="national-option-container">
-          <label className="national-option-label">
-            <input
-              type="checkbox"
-              className="national-checkbox"
-              checked={includeNational}
-              onChange={() => setIncludeNational(!includeNational)}
-            />
-            <span className="national-label-text">Include companies operating nationally</span>
-          </label>
-        </div>
-        
-        {selectedStates.length > 0 && (
-          <div className="selected-states-container">
-            {selectedStates.map(state => (
-              <div key={state} className="selected-state-tag">
-                {state}
-                <button 
-                  className="remove-state-button"
-                  onClick={() => toggleStateSelection(state)}
-                >
-                  ×
-                </button>
-              </div>
-            ))}
-          </div>
-        )}
       </div>
       
       {/* Filter Controls */}
-      <div className="matrix-filters">
+      <div className={`matrix-filters ${!categoryFilterExpanded ? 'filter-collapsed' : ''}`}>
         <div className="filters-header">
-          <h3 className="filters-title">Filter Categories:</h3>
+          <div className="filter-title-container" onClick={toggleCategoryFilter}>
+            <span className="filter-toggle-arrow">
+              {categoryFilterExpanded ? '▼' : '▶'}
+            </span>
+            <h3 className="filters-title">
+              Filter Categories:
+              {!categoryFilterExpanded && activeFilters.length > 0 && (
+                <span className="filter-count-badge">{activeFilters.length}</span>
+              )}
+            </h3>
+          </div>
           <div className="filters-actions">
             <button 
               onClick={selectAll}
@@ -566,6 +626,8 @@ const MarketMatrix = () => {
           </div>
         </div>
         
+        <div className={`collapsible-content ${categoryFilterExpanded ? 'expanded' : 'collapsed'}`}>
+          {categoryFilterExpanded && (
         <div className="filter-buttons">
           {allCategories.map(category => (
             <button
@@ -579,6 +641,8 @@ const MarketMatrix = () => {
               {activeFilters.includes(category) ? ' ✓' : ''}
             </button>
           ))}
+            </div>
+          )}
         </div>
       </div>
       
@@ -658,16 +722,31 @@ const MarketMatrix = () => {
                           </div>
                           
                           {/* Expandable company details - add after every 5th item or at end of row */}
-                            {(index + 1) % 5 === 0 || index === filteredData[category].length - 1 ? (
+                          {(index + 1) % 5 === 0 || index === filteredData[category].length - 1 || 
+                            // For mobile (2-column grid), add after every 2nd item
+                            (isMobile && (index + 1) % 2 === 0) ? (
                             <div 
                               className={`company-details-wrapper ${
                                 expandedCompany === company._id || 
-                                  (expandedCompany && filteredData[category].slice(Math.floor(index / 5) * 5, index + 1).some(c => c._id === expandedCompany))
+                                  (expandedCompany && filteredData[category].slice(
+                                    // Use different slice logic based on screen width
+                                    isMobile 
+                                      ? Math.floor(index / 2) * 2 // For mobile (2-column grid)
+                                      : Math.floor(index / 5) * 5, // For desktop (5-column grid)
+                                    index + 1
+                                  ).some(c => c._id === expandedCompany))
                                   ? 'expanded' 
                                   : ''
                               }`}
                             >
-                                {expandedCompany && filteredData[category].slice(Math.max(0, Math.floor(index / 5) * 5), index + 1).map(c => {
+                              {expandedCompany && filteredData[category].slice(
+                                // Use different slice logic based on screen width
+                                Math.max(0, isMobile 
+                                  ? Math.floor(index / 2) * 2 // For mobile (2-column grid)
+                                  : Math.floor(index / 5) * 5  // For desktop (5-column grid)
+                                ), 
+                                index + 1
+                              ).map(c => {
                                 if (c._id === expandedCompany) {
                                   return (
                                     <div key={c._id} className="company-details">
