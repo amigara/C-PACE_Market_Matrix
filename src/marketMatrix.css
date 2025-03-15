@@ -1046,3 +1046,18 @@
 .search-clear-button:hover {
   background-color: #e2e8f0;
 }
+
+/* Keep existing category styles */
+.matrix-category {
+  width: 100%;
+}
+
+/* Handle expanded details - span across all columns when needed */
+.company-details-wrapper.expanded {
+  width: 100%;
+}
+
+/* When category has expanded content, add space below it */
+.matrix-category-container.expanded {
+  margin-bottom: 36px;
+}
