@@ -26,22 +26,77 @@
   color: #e53e3e;
 }
 
-/* Matrix grid responsive layout */
+/* Masonry layout for the Market Matrix using CSS columns */
+
+/* Use CSS multi-column layout for true masonry effect */
 .matrix-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
+  column-count: 1; /* Mobile first approach */
+  column-gap: 24px;
 }
 
+/* Responsive column count */
 @media (min-width: 768px) {
   .matrix-grid {
-    grid-template-columns: repeat(2, 1fr);
+    column-count: 2;
   }
 }
 
 @media (min-width: 1200px) {
   .matrix-grid {
-    grid-template-columns: repeat(3, 1fr);
+    column-count: 3;
+  }
+}
+
+/* Ensure each category container stays intact */
+.matrix-category-container {
+  break-inside: avoid;
+  margin-bottom: 24px;
+  display: inline-block;
+  width: 100%;
+  position: relative;
+}
+
+/* Keep existing category styles */
+.matrix-category {
+  width: 100%;
+}
+
+/* Handle expanded details - span across all columns when needed */
+.company-details-wrapper.expanded {
+  width: 100%;
+}
+
+/* Ensure consistent spacing in the companies grid */
+.companies-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
+  gap: 6px;
+  width: 100%;
+}
+
+/* When category has expanded content, add space below it */
+.matrix-category-container.expanded {
+  margin-bottom: 36px;
+}
+
+/* Fix for the filter buttons layout */
+.filter-buttons {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 8px;
+  max-width: 100%;
+}
+
+/* Adjust search container */
+.search-container {
+  margin-bottom: 24px;
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  /* Single column mode on mobile */
+  .matrix-grid {
+    column-count: 1;
   }
 }
 
