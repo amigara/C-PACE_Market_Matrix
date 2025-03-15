@@ -306,18 +306,47 @@ const MarketMatrix = () => {
   
   // State for modal in table view
   const [selectedCompany, setSelectedCompany] = useState(null);
+  
+  // State for tracking data source
+  const [dataSource, setDataSource] = useState('sample'); // 'netlify', 'window', or 'sample'
 
   useEffect(() => {
     const fetchCompaniesData = async () => {
       try {
-        // In CodeSandbox, use the sample data
-        // In production, this would check for window.companiesData first
-        if (window.companiesData) {
-          processData(window.companiesData);
-        } else {
-          // Use sample data for development
-          const data = SAMPLE_DATA;
+        // First try to fetch from Netlify function
+        try {
+          const response = await fetch('/api/getCompanies');
+          
+          if (!response.ok) {
+            throw new Error(`API error: ${response.status}`);
+          }
+          
+          const data = await response.json();
           processData(data);
+          setDataSource('netlify');
+          console.log("Data loaded from Netlify function successfully");
+        } catch (apiError) {
+          console.warn("Failed to load data from Netlify function, falling back to alternatives:", apiError);
+          
+          // Check if it's an authentication error
+          if (apiError.message && (
+              apiError.message.includes("401") || 
+              apiError.message.includes("403") ||
+              apiError.message.includes("authentication") ||
+              apiError.message.includes("unauthorized")
+            )) {
+            console.error("Authentication error. Please check your Airtable credentials in Netlify environment variables.");
+          }
+          
+          // If API fails, check for window.companiesData
+          if (window.companiesData) {
+            processData(window.companiesData);
+            setDataSource('window');
+          } else {
+            // Use sample data as last resort
+            processData(SAMPLE_DATA);
+            setDataSource('sample');
+          }
         }
       } catch (err) {
         console.error("Error fetching company data:", err);
@@ -478,6 +507,22 @@ const MarketMatrix = () => {
   return (
     <div className="market-matrix-container">
       <h2 className="matrix-title">C-PACE Market Matrix</h2>
+      
+      {/* Data Source Indicator */}
+      <div className="data-source-indicator">
+        {dataSource === 'netlify' ? (
+          <span className="data-source airtable">Live data from Airtable (via Netlify)</span>
+        ) : dataSource === 'window' ? (
+          <span className="data-source window">Data from window.companiesData</span>
+        ) : (
+          <span className="data-source sample">
+            Sample data 
+            <span className="data-source-info">
+              (Airtable connection not configured - check Netlify environment variables)
+            </span>
+          </span>
+        )}
+      </div>
       
       {/* Filter Controls */}
       <div className="matrix-filters">
