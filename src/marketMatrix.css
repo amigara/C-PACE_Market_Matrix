@@ -26,25 +26,33 @@
   color: #e53e3e;
 }
 
-/* Masonry layout for the Market Matrix using CSS columns */
-
-/* Use CSS multi-column layout for true masonry effect */
+/* Matrix grid with dense packing for masonry-like effect */
 .matrix-grid {
-  column-count: 1; /* Mobile first approach */
-  column-gap: 24px;
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 24px;
+  grid-auto-flow: dense; /* Enables dense packing of grid items */
 }
 
-/* Responsive column count */
 @media (min-width: 768px) {
   .matrix-grid {
-    column-count: 2;
+    grid-template-columns: repeat(2, 1fr);
   }
 }
 
 @media (min-width: 1200px) {
   .matrix-grid {
-    column-count: 3;
+    grid-template-columns: repeat(3, 1fr);
   }
+}
+
+/* Make sure each category takes its own grid cell completely */
+.matrix-category-container {
+  display: flex;
+  flex-direction: column;
+  position: relative;
+  height: fit-content;
+  margin-bottom: 0;
 }
 
 /* Ensure each category container stays intact */
