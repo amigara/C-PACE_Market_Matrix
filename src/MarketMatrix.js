@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./marketMatrix.css";
 import CompanyModal from "./CompanyModal"; // Keep for table view
-import CATEGORY_ORDER from "./categoryConfig"; // Import the category order configuration
+import CATEGORY_ORDER, { LAYOUT_CONFIG } from "./categoryConfig"; // Import the category order and layout configuration
 
 const MarketMatrix = () => {
   const [companiesData, setCompaniesData] = useState(null);
@@ -411,7 +411,9 @@ const MarketMatrix = () => {
           <>
             {/* Grid View with Expandable Details */}
             {viewMode === 'grid' && (
-              <div className="matrix-grid" style={{ gridTemplateColumns: "repeat(2, 1fr)" }}>
+              <div className="matrix-grid" style={{ 
+                gridTemplateColumns: LAYOUT_CONFIG.columnCount === 1 ? "1fr" : "repeat(2, 1fr)" 
+              }}>
                 {allCategories
                   .filter(category => filteredData[category]) // Only include categories that exist in filtered data
                   .map(category => (

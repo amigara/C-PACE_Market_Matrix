@@ -103,10 +103,11 @@
   gap: 30px;
 }
 
+/* We'll keep this media query for automatic responsiveness on small screens,
+   but the inline style from the JS component will override it on larger screens */
 @media (min-width: 768px) {
   .matrix-grid {
-    grid-template-columns: repeat(2, 1fr);
-    align-items: stretch;
+    /* This will be overridden by the inline style based on the config */
     gap: 30px;
   }
 }
@@ -166,7 +167,7 @@
   min-height: 200px; /* Ensure minimum height for categories with few logos */
 }
 
-/* Company logos grid */
+/* Companies grid - adjust based on column count */
 .companies-grid {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
@@ -183,14 +184,29 @@
 }
 
 @media (min-width: 768px) {
+  /* For two-column layout, use 4 logos per row */
   .companies-grid {
     grid-template-columns: repeat(4, 1fr);
   }
 }
 
 @media (min-width: 1024px) {
+  /* For two-column layout, use 5 logos per row on larger screens */
   .companies-grid {
     grid-template-columns: repeat(5, 1fr);
+  }
+}
+
+/* For single-column layout, allow more logos per row */
+@media (min-width: 768px) and (max-width: 1023px) {
+  .matrix-grid[style*="gridTemplateColumns: 1fr"] .companies-grid {
+    grid-template-columns: repeat(6, 1fr);
+  }
+}
+
+@media (min-width: 1024px) {
+  .matrix-grid[style*="gridTemplateColumns: 1fr"] .companies-grid {
+    grid-template-columns: repeat(8, 1fr);
   }
 }
 

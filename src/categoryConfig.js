@@ -8,10 +8,17 @@
  * Any categories not listed here will appear at the end in alphabetical order.
  */
 
+// Layout configuration
+const LAYOUT_CONFIG = {
+  // Set to 1 for single column layout, 2 for two-column layout
+  columnCount: 2
+};
+
+// Category order configuration
 const CATEGORY_ORDER = [
   "C-PACE Administrators",
-  "Capital Providers",
   "Law Firms",
+  "Capital Providers",
   "Program Consultants",
   "Technical Service Providers",
   "Contractors",
@@ -19,4 +26,5 @@ const CATEGORY_ORDER = [
   "Mortgage Holders"
 ];
 
+export { CATEGORY_ORDER, LAYOUT_CONFIG };
 export default CATEGORY_ORDER; 
