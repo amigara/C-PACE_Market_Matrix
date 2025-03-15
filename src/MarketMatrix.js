@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from "react";
 import "./marketMatrix.css";
 import CompanyModal from "./CompanyModal"; // Keep for table view
+import CATEGORY_ORDER from "./categoryConfig"; // Import the category order configuration
 
 const MarketMatrix = () => {
   const [companiesData, setCompaniesData] = useState(null);
@@ -89,42 +90,26 @@ const MarketMatrix = () => {
         categories = [...new Set(data.map(item => item.category))];
       } else {
         // For pre-grouped data, get categories from object keys
-        // This is the case with our Airtable data
         categories = Object.keys(data);
-        
-        // Try to determine the original order from the allCategories arrays in the data
-        // We'll create a map of category to its earliest position in any company's allCategories
-        const categoryPositions = {};
-        
-        // Examine each category's companies
-        Object.entries(data).forEach(([category, companies]) => {
-          companies.forEach(company => {
-            if (company.allCategories && Array.isArray(company.allCategories)) {
-              // Find position of this category in the company's allCategories
-              const position = company.allCategories.indexOf(category);
-              if (position !== -1) {
-                // If we haven't seen this category yet, or this position is earlier
-                if (categoryPositions[category] === undefined || position < categoryPositions[category]) {
-                  categoryPositions[category] = position;
-                }
-              }
-            }
-          });
-        });
-        
-        // Sort categories based on their positions
-        categories.sort((a, b) => {
-          // If we have position data for both categories, use it
-          if (categoryPositions[a] !== undefined && categoryPositions[b] !== undefined) {
-            return categoryPositions[a] - categoryPositions[b];
-          }
-          // If we only have position for one, prioritize the one with position
-          if (categoryPositions[a] !== undefined) return -1;
-          if (categoryPositions[b] !== undefined) return 1;
-          // If neither has position data, maintain alphabetical order
-          return a.localeCompare(b);
-        });
       }
+      
+      // Sort categories based on the CATEGORY_ORDER configuration
+      categories.sort((a, b) => {
+        const indexA = CATEGORY_ORDER.indexOf(a);
+        const indexB = CATEGORY_ORDER.indexOf(b);
+        
+        // If both categories are in the config, sort by their position
+        if (indexA !== -1 && indexB !== -1) {
+          return indexA - indexB;
+        }
+        
+        // If only one category is in the config, prioritize it
+        if (indexA !== -1) return -1;
+        if (indexB !== -1) return 1;
+        
+        // If neither is in the config, sort alphabetically
+        return a.localeCompare(b);
+      });
       
       setAllCategories(categories);
       setActiveFilters(categories);

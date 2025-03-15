@@ -7,7 +7,7 @@ const MAIN_TABLE = "Companies";
 // Field mappings from Airtable fields to app fields
 const FIELD_MAPPINGS = {
   name: "Name",
-  logoUrl: "LogoURL",
+  logo: "Logo",
   verified: "Verified",
   states: "States",
   contactInfo: "ContactInfo",
@@ -84,16 +84,28 @@ function processRecords(records) {
 
 // Transform Airtable record to our app's data format
 function transformAirtableRecord(record, category) {
+  const fields = record.fields;
+  
+  // Handle logo as an attachment field instead of URL
+  let logoUrl = '';
+  if (fields[FIELD_MAPPINGS.logo] && Array.isArray(fields[FIELD_MAPPINGS.logo]) && fields[FIELD_MAPPINGS.logo].length > 0) {
+    // Use the first attachment's URL
+    logoUrl = fields[FIELD_MAPPINGS.logo][0].url;
+  } else {
+    // Fallback to a default image if no logo is available
+    logoUrl = "https://dummyimage.com/50x50/cccccc/ffffff&text=NA";
+  }
+  
   return {
     _id: record.id,
-    name: record.fields[FIELD_MAPPINGS.name] || "Unknown",
-    logoUrl: record.fields[FIELD_MAPPINGS.logoUrl] || "https://dummyimage.com/50x50/cccccc/ffffff&text=NA",
-    verified: record.fields[FIELD_MAPPINGS.verified] || false,
-    states: record.fields[FIELD_MAPPINGS.states] || [],
-    contactInfo: record.fields[FIELD_MAPPINGS.contactInfo] || null,
-    websiteUrl: record.fields[FIELD_MAPPINGS.websiteUrl] || null,
+    name: fields[FIELD_MAPPINGS.name] || "Unknown",
+    logoUrl: logoUrl,
+    verified: fields[FIELD_MAPPINGS.verified] || false,
+    states: fields[FIELD_MAPPINGS.states] || [],
+    contactInfo: fields[FIELD_MAPPINGS.contactInfo] || null,
+    websiteUrl: fields[FIELD_MAPPINGS.websiteUrl] || null,
     category: category, // The specific category this instance belongs to
-    allCategories: record.fields[FIELD_MAPPINGS.categories] || [] // All categories the company belongs to
+    allCategories: fields[FIELD_MAPPINGS.categories] || [] // All categories the company belongs to
   };
 }
 
