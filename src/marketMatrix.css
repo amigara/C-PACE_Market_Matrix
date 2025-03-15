@@ -134,12 +134,21 @@
     margin-top: 25px;
   }
   
-  /* 2 logos per row for all mobile devices */
+  /* Switch to flexbox for mobile to ensure 2-across layout */
   .companies-grid {
-    display: grid;
-    grid-template-columns: repeat(2, 1fr);
+    display: flex;
+    flex-wrap: wrap;
     gap: 10px;
     width: 100%;
+  }
+  
+  /* Force each company item to take exactly 50% width minus gap */
+  .company-item {
+    flex: 0 0 calc(50% - 5px);
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+    margin-bottom: 10px;
   }
   
   /* Ensure logos don't get too small on mobile */
@@ -156,17 +165,11 @@
   
   /* Fix for expandable details to ensure they don't break the 2-column layout */
   .company-details-wrapper {
-    grid-column: 1 / span 2 !important;
+    flex: 0 0 100%;
     width: 100%;
     box-sizing: border-box;
-  }
-  
-  /* Ensure the company items always take up exactly half the width */
-  .company-item {
-    width: 100%;
-    box-sizing: border-box;
-    display: flex;
-    justify-content: center;
+    order: 999; /* Place expandable details at the end of the flex container */
+    margin-top: 5px;
   }
   
   /* Force the grid to maintain 2 columns */
