@@ -108,6 +108,8 @@
   flex: 1; /* Make this element fill the available space */
   display: flex;
   flex-direction: column;
+  /* Ensure content aligns to the top while the box expands */
+  justify-content: flex-start;
 }
 
 /* Company logos grid */
@@ -117,7 +119,8 @@
   gap: 2px;
   margin-top: 15px;
   position: relative;
-  flex: 1; /* Make the companies grid fill available space */
+  /* Remove flex: 1 to prevent stretching the grid */
+  align-content: start; /* Align content to the top */
 }
 
 @media (min-width: 640px) {
@@ -144,6 +147,9 @@
   cursor: pointer;
   position: relative;
   transition: all 0.2s ease;
+  /* Ensure fixed height to prevent stretching */
+  height: auto;
+  margin-bottom: 8px; /* Add consistent spacing between rows */
 }
 
 .company-item.active .logo-container {
