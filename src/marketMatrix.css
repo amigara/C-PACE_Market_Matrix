@@ -349,20 +349,11 @@
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-.state-filter-header,
 .filters-header {
   display: flex;
   justify-content: space-between;
   align-items: center;
   margin-bottom: 16px;
-  padding: 8px 10px;
-  border-radius: 6px;
-  transition: background-color 0.2s ease;
-}
-
-.state-filter-header:hover,
-.filters-header:hover {
-  background-color: #edf2f7;
 }
 
 .filters-title {
@@ -1197,29 +1188,6 @@
   display: flex;
   align-items: center;
   gap: 10px;
-  cursor: pointer;
-  user-select: none;
-  transition: all 0.2s ease;
-  flex: 1;
-}
-
-.filter-title-container:hover {
-  color: #4299e1;
-}
-
-.filter-toggle-arrow {
-  color: #4299e1;
-  font-size: 14px;
-  width: 20px;
-  height: 20px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  transition: transform 0.2s ease;
-}
-
-.filter-collapsed .filter-toggle-arrow {
-  transform: rotate(-90deg);
 }
 
 .filter-count-badge {
@@ -1275,9 +1243,6 @@
 .collapsible-content {
   transition: max-height 0.3s ease, opacity 0.2s ease;
   overflow: hidden;
-  padding-left: 30px; /* Increase indentation to content */
-  margin-top: -10px;
-  margin-bottom: 10px;
 }
 
 .collapsible-content.expanded {
@@ -1301,6 +1266,13 @@
   padding: 20px;
   border-radius: 10px;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+}
+
+.state-filter-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  margin-bottom: 16px;
 }
 
 .state-dropdown-container {
@@ -1455,14 +1427,12 @@
 
 /* Mobile adjustments for state filter */
 @media (max-width: 640px) {
-  .state-filter-header,
-  .filters-header {
+  .state-filter-header {
     flex-direction: column;
     align-items: flex-start;
   }
   
-  .state-filter-header button,
-  .filters-header button {
+  .state-filter-header button {
     margin-top: 10px;
   }
   
@@ -1482,12 +1452,12 @@
   .filter-title-container {
     width: 100%;
     display: flex;
-    justify-content: flex-start;
-    padding: 8px 0;
+    justify-content: space-between;
   }
   
-  .filter-toggle-arrow {
-    font-size: 16px;
+  .filters-header {
+    flex-direction: column;
+    gap: 10px;
   }
   
   .filters-actions {
