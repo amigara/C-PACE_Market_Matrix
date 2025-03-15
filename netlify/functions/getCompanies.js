@@ -25,21 +25,31 @@ const FIELD_MAPPINGS = {
 
 // Helper function to fetch data from a specific Airtable table
 async function fetchFromAirtable(tableName) {
-  const url = `https://api.airtable.com/v0/${process.env.REACT_APP_AIRTABLE_BASE_ID}/${encodeURIComponent(tableName)}`;
+  // Try both environment variable naming conventions
+  const baseId = process.env.AIRTABLE_BASE_ID || process.env.REACT_APP_AIRTABLE_BASE_ID;
+  const token = process.env.AIRTABLE_PAT || process.env.REACT_APP_AIRTABLE_PAT;
+  
+  const url = `https://api.airtable.com/v0/${baseId}/${encodeURIComponent(tableName)}`;
   
   try {
+    console.log(`Attempting to fetch from table: ${tableName}`);
+    console.log(`Using Base ID: ${baseId}`);
+    console.log(`Authorization token starts with: ${token ? token.substring(0, 10) + '...' : 'undefined'}`);
+    
     const response = await fetch(url, {
       headers: {
-        Authorization: `Bearer ${process.env.REACT_APP_AIRTABLE_PAT}`,
+        Authorization: `Bearer ${token}`,
         'Content-Type': 'application/json'
       }
     });
 
     if (!response.ok) {
-      throw new Error(`Airtable API error: ${response.status}`);
+      const errorText = await response.text().catch(() => 'No error text available');
+      throw new Error(`Airtable API error: ${response.status} - ${errorText}`);
     }
 
     const data = await response.json();
+    console.log(`Successfully fetched ${data.records ? data.records.length : 0} records from ${tableName}`);
     return data.records.map(record => transformAirtableRecord(record, tableName));
   } catch (error) {
     console.error(`Error fetching from Airtable (${tableName}):`, error);
@@ -80,6 +90,13 @@ exports.handler = async function(event, context) {
   }
 
   try {
+    console.log('Starting Airtable data fetch');
+    console.log('Environment check:');
+    console.log(`- AIRTABLE_BASE_ID exists: ${Boolean(process.env.AIRTABLE_BASE_ID)}`);
+    console.log(`- REACT_APP_AIRTABLE_BASE_ID exists: ${Boolean(process.env.REACT_APP_AIRTABLE_BASE_ID)}`);
+    console.log(`- AIRTABLE_PAT exists: ${Boolean(process.env.AIRTABLE_PAT)}`);
+    console.log(`- REACT_APP_AIRTABLE_PAT exists: ${Boolean(process.env.REACT_APP_AIRTABLE_PAT)}`);
+    
     // Fetch data from all tables in parallel
     const promises = Object.values(TABLES).map(tableName => 
       fetchFromAirtable(tableName)
@@ -93,6 +110,7 @@ exports.handler = async function(event, context) {
       return acc;
     }, {});
 
+    console.log('Successfully fetched all data from Airtable');
     return {
       statusCode: 200,
       headers,
@@ -104,7 +122,11 @@ exports.handler = async function(event, context) {
     return {
       statusCode: 500,
       headers,
-      body: JSON.stringify({ error: 'Failed to fetch data from Airtable' })
+      body: JSON.stringify({ 
+        error: 'Failed to fetch data from Airtable',
+        message: error.message,
+        details: process.env.NODE_ENV === 'development' ? error.stack : undefined
+      })
     };
   }
 }; 
