@@ -311,13 +311,18 @@
 .filter-button-select-all,
 .filter-button-clear-all {
   background-color: white;
-  color: #000;
-  border: 2px solid #000;
+  color: #666;
+  border: 1px solid #ddd;
+  padding: 6px 12px;
+  font-size: 14px;
+  font-weight: normal;
 }
 
 .filter-button-select-all:hover,
 .filter-button-clear-all:hover {
   background-color: #f8f8f8;
+  color: #333;
+  border-color: #ccc;
 }
 
 .filter-buttons {
