@@ -720,102 +720,97 @@ const MarketMatrix = () => {
                               </div>
                             </div>
                           </div>
+                          
+                          {/* Inline expandable details - appears immediately after the clicked item */}
+                          {expandedCompany === company._id && (
+                            <div className="company-details-wrapper expanded inline-after">
+                              <div className="company-details">
+                                <button 
+                                  className="company-details-close" 
+                                  onClick={(e) => {
+                                    e.stopPropagation();
+                                    setExpandedCompany(null);
+                                  }}
+                                >
+                                  ×
+                                </button>
+                                
+                                <div className="company-details-header">
+                                  <img 
+                                    src={company.logoUrl} 
+                                    alt={`${company.name} logo`}
+                                    className="company-details-logo" 
+                                  />
+                                  <div className="company-details-info">
+                                    <h3 className="company-details-name">
+                                      {company.name}
+                                      {company.verified && (
+                                        <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
+                                          <span className="verified-badge-icon">✓</span> VERIFIED
+                                        </span>
+                                      )}
+                                    </h3>
+                                      <div className="company-details-category">
+                                        {/* Show primary category */}
+                                        {category}
+                                        
+                                        {/* Show all categories if company belongs to multiple */}
+                                        {company.allCategories && company.allCategories.length > 1 && (
+                                          <div className="company-all-categories">
+                                            <span className="all-categories-label">All categories: </span>
+                                            <div className="categories-tags">
+                                              {company.allCategories.map((cat, i) => (
+                                                <span key={i} className="category-tag">{cat}</span>
+                                              ))}
+                                            </div>
+                                          </div>
+                                        )}
+                                      </div>
+                                    </div>
+                                </div>
+                                
+                                <div className="company-details-sections">
+                                  <div className="company-details-section">
+                                    <h4 className="company-details-section-title">States of Operation</h4>
+                                    {company.states && company.states.length > 0 ? (
+                                      <div className="company-states-list">
+                                        {company.states.map((state, i) => (
+                                          <span key={i} className="company-state-tag">{state}</span>
+                                        ))}
+                                      </div>
+                                    ) : (
+                                      <p className="company-details-empty">No state information available</p>
+                                    )}
+                                  </div>
+                                  
+                                  <div className="company-details-section">
+                                    <h4 className="company-details-section-title">Contact Information</h4>
+                                    {company.contactInfo ? (
+                                      <p>{company.contactInfo}</p>
+                                    ) : (
+                                      <p className="company-details-empty">No contact information available</p>
+                                    )}
+                                  </div>
+                                </div>
+                                
+                                <div className="company-details-actions">
+                                  <a 
+                                    href={company.websiteUrl || "#"} 
+                                    target="_blank" 
+                                    rel="noopener noreferrer"
+                                    className="company-website-button"
+                                    onClick={(e) => e.stopPropagation()}
+                                  >
+                                    Visit Website
+                                  </a>
+                                </div>
+                              </div>
+                            </div>
+                          )}
                         </React.Fragment>
                       ))}
                       
-                      {/* Separate expandable details rendering - always at the end of the grid */}
-                      {expandedCompany && filteredData[category].some(c => c._id === expandedCompany) && (
-                        <div className="company-details-wrapper expanded">
-                          {filteredData[category].map(c => {
-                            if (c._id === expandedCompany) {
-                              return (
-                                <div key={c._id} className="company-details">
-                                  <button 
-                                    className="company-details-close" 
-                                    onClick={(e) => {
-                                      e.stopPropagation();
-                                      setExpandedCompany(null);
-                                    }}
-                                  >
-                                    ×
-                                  </button>
-                                  
-                                  <div className="company-details-header">
-                                    <img 
-                                      src={c.logoUrl} 
-                                      alt={`${c.name} logo`}
-                                      className="company-details-logo" 
-                                    />
-                                    <div className="company-details-info">
-                                      <h3 className="company-details-name">
-                                        {c.name}
-                                        {c.verified && (
-                                          <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
-                                            <span className="verified-badge-icon">✓</span> VERIFIED
-                                          </span>
-                                        )}
-                                      </h3>
-                                        <div className="company-details-category">
-                                          {/* Show primary category */}
-                                          {category}
-                                          
-                                          {/* Show all categories if company belongs to multiple */}
-                                          {c.allCategories && c.allCategories.length > 1 && (
-                                            <div className="company-all-categories">
-                                              <span className="all-categories-label">All categories: </span>
-                                              <div className="categories-tags">
-                                                {c.allCategories.map((cat, i) => (
-                                                  <span key={i} className="category-tag">{cat}</span>
-                                                ))}
-                                              </div>
-                                            </div>
-                                          )}
-                                        </div>
-                                      </div>
-                                  </div>
-                                  
-                                  <div className="company-details-sections">
-                                    <div className="company-details-section">
-                                      <h4 className="company-details-section-title">States of Operation</h4>
-                                      {c.states && c.states.length > 0 ? (
-                                        <div className="company-states-list">
-                                          {c.states.map((state, i) => (
-                                            <span key={i} className="company-state-tag">{state}</span>
-                                          ))}
-                                        </div>
-                                      ) : (
-                                        <p className="company-details-empty">No state information available</p>
-                                      )}
-                                    </div>
-                                    
-                                    <div className="company-details-section">
-                                      <h4 className="company-details-section-title">Contact Information</h4>
-                                      {c.contactInfo ? (
-                                        <p>{c.contactInfo}</p>
-                                      ) : (
-                                        <p className="company-details-empty">No contact information available</p>
-                                      )}
-                                    </div>
-                                  </div>
-                                  
-                                  <div className="company-details-actions">
-                                    <a 
-                                      href={c.websiteUrl || "#"} 
-                                      target="_blank" 
-                                      rel="noopener noreferrer"
-                                      className="company-website-button"
-                                      onClick={(e) => e.stopPropagation()}
-                                    >
-                                      Visit Website
-                                    </a>
-                                  </div>
-                                </div>
-                              );
-                            }
-                            return null;
-                          })}
-                        </div>
-                      )}
+                      {/* Remove the separate expandable details section at the end */}
                     </div>
                   </div>
                 </div>

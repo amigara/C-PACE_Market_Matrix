@@ -140,6 +140,7 @@
     flex-wrap: wrap;
     gap: 10px;
     width: 100%;
+    position: relative;
   }
   
   /* Force each company item to take exactly 50% width minus gap */
@@ -149,6 +150,7 @@
     display: flex;
     justify-content: center;
     margin-bottom: 10px;
+    position: relative;
   }
   
   /* Ensure logos don't get too small on mobile */
@@ -163,13 +165,24 @@
     max-width: 60px;
   }
   
-  /* Fix for expandable details to ensure they don't break the 2-column layout */
+  /* Fix for expandable details to ensure they appear inline */
   .company-details-wrapper {
-    flex: 0 0 100%;
     width: 100%;
     box-sizing: border-box;
-    order: 999; /* Place expandable details at the end of the flex container */
     margin-top: 5px;
+    margin-bottom: 15px;
+    /* Reset order property to let it flow naturally */
+    order: unset;
+  }
+  
+  /* Company details wrapper styles for mobile */
+  .company-details-wrapper.inline-after {
+    order: unset;
+    margin-left: 0;
+    margin-right: 0;
+    flex-basis: 100%;
+    flex-grow: 0;
+    flex-shrink: 0;
   }
   
   /* Force the grid to maintain 2 columns */
@@ -907,9 +920,15 @@
     padding: 15px;
   }
   
-  /* Ensure the expanded details appear after every 2nd item on mobile (2-column grid) */
-  .companies-grid .company-details-wrapper {
-    grid-column: 1 / span 2;
+  /* Company details wrapper styles for mobile */
+  .company-details-wrapper.inline-after {
+    flex-basis: 100%;
+    flex-grow: 0;
+    flex-shrink: 0;
+    order: unset;
+    margin-left: 0;
+    margin-right: 0;
+    width: 100%;
   }
   
   /* Adjust company details layout for better mobile experience */
