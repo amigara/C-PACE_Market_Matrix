@@ -141,7 +141,7 @@
   font-size: 20px;
   font-weight: 600;
   color: #2d3748;
-  border-radius: 20px;
+  border-radius: 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
@@ -152,7 +152,7 @@
   padding: 30px 20px 20px;
   position: relative;
   margin-top: -1px;
-  border-radius: 8px;
+  border-radius: 0;
   background-color: white;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
 }
@@ -198,11 +198,12 @@
   box-shadow: 0 2px 8px rgba(82, 74, 232, 0.2);
 }
 
+/* Logo container styles */
 .logo-container {
   position: relative;
   background-color: #f7fafc;
   padding: 8px;
-  border-radius: 6px;
+  border-radius: 0;
   height: 70px;
   width: 70px;
   display: flex;
@@ -236,7 +237,7 @@
   font-size: 10px;
   font-weight: bold;
   padding: 4px 8px;
-  border-radius: 12px;
+  border-radius: 0;
   display: flex;
   align-items: center;
   border: 2px solid white;
@@ -260,7 +261,7 @@
   color: white;
   font-size: 12px;
   padding: 4px 8px;
-  border-radius: 4px;
+  border-radius: 0;
   white-space: nowrap;
   opacity: 0;
   transition: opacity 0.2s ease;
@@ -290,7 +291,7 @@
   margin-bottom: 30px;
   background-color: #f8fafc;
   padding: 20px;
-  border-radius: 10px;
+  border-radius: 0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
@@ -316,7 +317,7 @@
 .filter-button {
   padding: 8px 16px;
   font-size: 16px;
-  border-radius: 30px;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.2s;
   font-weight: 500;
@@ -350,7 +351,7 @@
 .filter-category-button {
   padding: 8px 16px;
   font-size: 14px;
-  border-radius: 20px;
+  border-radius: 0;
   cursor: pointer;
   transition: all 0.2s;
   box-shadow: 0 1px 2px rgba(0, 0, 0, 0.05);
@@ -388,7 +389,7 @@
   border-bottom: 2px solid #e2e8f0;
   position: relative;
   background-color: #f8fafc;
-  border-radius: 8px 8px 0 0;
+  border-radius: 0;
   padding: 0 10px;
 }
 
@@ -427,7 +428,7 @@
 .matrix-table-container {
   overflow-x: auto;
   margin-top: 20px;
-  border-radius: 8px;
+  border-radius: 0;
   box-shadow: 0 2px 8px rgba(0, 0, 0, 0.08);
 }
 
@@ -435,7 +436,7 @@
   width: 100%;
   border-collapse: separate;
   border-spacing: 0;
-  border-radius: 8px;
+  border-radius: 0;
   overflow: hidden;
 }
 
@@ -473,7 +474,7 @@
   object-fit: contain;
   background-color: #f7fafc;
   padding: 5px;
-  border-radius: 6px;
+  border-radius: 0;
   border: 1px solid #e2e8f0;
 }
 
@@ -496,7 +497,7 @@
   font-size: 11px;
   font-weight: bold;
   padding: 4px 10px;
-  border-radius: 12px;
+  border-radius: 0;
   margin-left: 8px;
 }
 
@@ -514,7 +515,7 @@
   background-color: #4299e1;
   color: white;
   border: none;
-  border-radius: 30px;
+  border-radius: 0;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -588,7 +589,7 @@
 
 .modal-container {
   background-color: white;
-  border-radius: 8px;
+  border-radius: 0;
   box-shadow: 0 10px 25px rgba(0, 0, 0, 0.2);
   width: 100%;
   max-width: 500px;
@@ -641,7 +642,7 @@
   background-color: #f7fafc;
   padding: 5px;
   border: 1px solid #e2e8f0;
-  border-radius: 4px;
+  border-radius: 0;
 }
 
 .modal-verified-badge {
@@ -649,12 +650,12 @@
   bottom: -8px;
   left: 50%;
   transform: translateX(-50%);
-  background-color: #524AE8;
+  background-color: #4299e1;
   color: white;
   font-size: 9px;
   font-weight: bold;
   padding: 3px 6px;
-  border-radius: 12px;
+  border-radius: 0;
   display: flex;
   align-items: center;
   border: 1.5px solid white;
@@ -695,7 +696,7 @@
   display: inline-block;
   padding: 4px 8px;
   background-color: #f0f4f8;
-  border-radius: 4px;
+  border-radius: 0;
   font-size: 12px;
   color: #4a5568;
   font-weight: 500;
@@ -723,7 +724,7 @@
   display: inline-block;
   padding: 3px 8px;
   background-color: #e2e8f0;
-  border-radius: 4px;
+  border-radius: 0;
   font-size: 12px;
   color: #4a5568;
 }
@@ -743,18 +744,18 @@
 
 .modal-website-button {
   padding: 8px 20px;
-  background-color: #000;
+  background-color: #4299e1;
   color: white;
   border: none;
-  border-radius: 30px;
+  border-radius: 0;
   font-size: 14px;
   font-weight: 500;
   text-decoration: none;
-  transition: background-color 0.2s;
+  transition: all 0.2s;
 }
 
 .modal-website-button:hover {
-  background-color: #222;
+  background-color: #3182ce;
 }
 
 /* Animations */
@@ -793,7 +794,7 @@
   opacity: 0;
   transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
   background-color: #f9fafc;
-  border-radius: 8px;
+  border-radius: 0;
   margin: 0;
   padding: 0;
   border: 1px solid transparent;
@@ -859,7 +860,7 @@
   display: inline-block;
   padding: 2px 6px;
   background-color: #e2e8f0;
-  border-radius: 4px;
+  border-radius: 0;
   font-size: 11px;
   color: #4a5568;
 }
@@ -870,7 +871,7 @@
   margin-left: 6px;
   padding: 1px 5px;
   background-color: #e2e8f0;
-  border-radius: 10px;
+  border-radius: 0;
   font-size: 10px;
   color: #4a5568;
   cursor: help;
@@ -882,7 +883,7 @@
   object-fit: contain;
   background-color: white;
   padding: 8px;
-  border-radius: 4px;
+  border-radius: 0;
   margin-right: 15px;
   border: 1px solid #e2e8f0;
 }
@@ -897,7 +898,7 @@
   gap: 24px;
   background-color: #f8fafc;
   padding: 16px;
-  border-radius: 8px;
+  border-radius: 0;
   margin-bottom: 16px;
 }
 
@@ -931,7 +932,7 @@
   display: inline-block;
   padding: 5px 10px;
   background-color: #ebf4ff;
-  border-radius: 6px;
+  border-radius: 0;
   font-size: 12px;
   color: #3182ce;
   font-weight: 500;
@@ -959,7 +960,7 @@
   background-color: #4299e1;
   color: white;
   border: none;
-  border-radius: 30px;
+  border-radius: 0;
   cursor: pointer;
   font-size: 14px;
   font-weight: 500;
@@ -1040,7 +1041,7 @@
   padding: 14px 16px 14px 46px;
   font-size: 16px;
   border: 2px solid #e2e8f0;
-  border-radius: 30px;
+  border-radius: 0;
   background-color: #fff;
   transition: all 0.2s;
   color: #2d3748;
@@ -1084,7 +1085,7 @@
   text-align: center;
   padding: 40px;
   background-color: #f8fafc;
-  border-radius: 8px;
+  border-radius: 0;
   color: #4a5568;
   border: 1px dashed #cbd5e0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
@@ -1114,7 +1115,7 @@
   color: white;
   border: none;
   padding: 10px 20px;
-  border-radius: 30px;
+  border-radius: 0;
   font-size: 14px;
   cursor: pointer;
   transition: all 0.2s;
