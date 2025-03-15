@@ -9,7 +9,7 @@ const MarketMatrix = () => {
   const [allCategories, setAllCategories] = useState([]);
   const [activeFilters, setActiveFilters] = useState([]);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
-  const [warnings, setWarnings] = useState(null); // New state for API warnings
+  const [warnings, setWarnings] = useState(null); // Keep for logging purposes, but don't display
   
   // State for table sorting
   const [sortConfig, setSortConfig] = useState({
@@ -42,7 +42,7 @@ const MarketMatrix = () => {
         // Check if we have the new response format with nested data
         const data = responseData.data || responseData;
         
-        // Store any warnings
+        // Store any warnings for logging but don't display to users
         if (responseData.warning) {
           setWarnings(responseData.warning);
           console.warn("API Warning:", responseData.warning);
@@ -226,18 +226,6 @@ const MarketMatrix = () => {
   return (
     <div className="market-matrix-container">
       <h2 className="matrix-title">C-PACE Market Matrix</h2>
-      
-      {/* Data Source Indicator - simplified */}
-      <div className="data-source-indicator">
-        <span className="data-source airtable">Live data from Airtable (via Netlify)</span>
-      </div>
-      
-      {/* Display warnings if any */}
-      {warnings && (
-        <div className="data-warning">
-          <p><strong>Note:</strong> {warnings}</p>
-        </div>
-      )}
       
       {/* Filter Controls */}
       <div className="matrix-filters">
