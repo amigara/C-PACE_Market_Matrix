@@ -367,15 +367,14 @@ const MarketMatrix = () => {
   const [activeFilters, setActiveFilters] = useState([]);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
   const [searchTerm, setSearchTerm] = useState('');
-  const [categoryOrder, setCategoryOrder] = useState([]); // Added state for category order
 
-  // Add this function to handle search input changes
-  const handleSearchChange = (e) => {
-    setSearchTerm(e.target.value);
-    // Reset expanded/selected states when searching
-    setExpandedCompany(null);
-    setSelectedCompany(null);
-  };
+// Add this function to handle search input changes
+const handleSearchChange = (e) => {
+  setSearchTerm(e.target.value);
+  // Reset expanded/selected states when searching
+  setExpandedCompany(null);
+  setSelectedCompany(null);
+};
   
   // State for table sorting
   const [sortConfig, setSortConfig] = useState({
@@ -392,18 +391,14 @@ const MarketMatrix = () => {
   useEffect(() => {
     const fetchCompaniesData = async () => {
       try {
-        // Check for Webflow data first
-        if (window.Webflow && window.Webflow.categoryData && window.Webflow.companiesData) {
-          // Process data from Webflow CMS
-          processWebflowData(window.Webflow.categoryData, window.Webflow.companiesData);
-        } 
-        // Fall back to regular companiesData if available
-        else if (window.companiesData) {
+        // In CodeSandbox, use the sample data
+        // In production, this would check for window.companiesData first
+        if (window.companiesData) {
           processData(window.companiesData);
-        } 
-        // Use sample data for development
-        else {
-          processData(SAMPLE_DATA);
+        } else {
+          // Use sample data for development
+          const data = SAMPLE_DATA;
+          processData(data);
         }
       } catch (err) {
         console.error("Error fetching company data:", err);
@@ -412,39 +407,6 @@ const MarketMatrix = () => {
       }
     };
 
-    // Process Webflow CMS data
-    const processWebflowData = (categoryData, companiesData) => {
-      // Sort categories by display order
-      const sortedCategories = [...categoryData].sort((a, b) => 
-        (a.displayOrder || 999) - (b.displayOrder || 999)
-      );
-      
-      // Store the ordered category names
-      const orderedCategoryNames = sortedCategories.map(category => category.name);
-      setCategoryOrder(orderedCategoryNames);
-      
-      // Group companies by category
-      const groupedCompanies = {};
-      
-      // Initialize empty arrays for each category
-      orderedCategoryNames.forEach(categoryName => {
-        groupedCompanies[categoryName] = [];
-      });
-      
-      // Populate the categories with companies
-      companiesData.forEach(company => {
-        if (company.category && groupedCompanies[company.category]) {
-          groupedCompanies[company.category].push(company);
-        }
-      });
-      
-      setCompaniesData(groupedCompanies);
-      setAllCategories(orderedCategoryNames);
-      setActiveFilters(orderedCategoryNames);
-      setLoading(false);
-    };
-
-    // Process regular data
     const processData = (data) => {
       // If data is an array of companies with category property
       if (Array.isArray(data)) {
@@ -458,23 +420,18 @@ const MarketMatrix = () => {
         }, {});
         
         setCompaniesData(groupedData);
-        
-        // Get categories
-        const categories = [...new Set(data.map(item => item.category))];
-        setCategoryOrder(categories);
-        setAllCategories(categories);
-        setActiveFilters(categories);
       } else {
         // If data is already grouped by category
         setCompaniesData(data);
-        
-        // Get categories
-        const categories = Object.keys(data);
-        setCategoryOrder(categories);
-        setAllCategories(categories);
-        setActiveFilters(categories);
       }
       
+      // Set all categories and initialize active filters
+      const categories = Array.isArray(data) 
+        ? [...new Set(data.map(item => item.category))]
+        : Object.keys(data);
+      
+      setAllCategories(categories);
+      setActiveFilters(categories);
       setLoading(false);
     };
 
@@ -530,58 +487,59 @@ const MarketMatrix = () => {
       setExpandedCompany(companyId);
     }
   };
-  // Modified getFilteredData function to include search filtering
-  const getFilteredData = () => {
-    if (!companiesData) return {};
-    
-    // First filter by active categories
-    const categoriesFiltered = Object.entries(companiesData)
-      .filter(([category]) => activeFilters.includes(category))
+
+// Modified getFilteredData function to include search filtering
+const getFilteredData = () => {
+  if (!companiesData) return {};
+  
+  // First filter by active categories
+  const categoriesFiltered = Object.entries(companiesData)
+    .filter(([category]) => activeFilters.includes(category))
+    .reduce((obj, [category, companies]) => {
+      obj[category] = companies;
+      return obj;
+    }, {});
+  
+  // If no search term, just sort by verification status
+  if (!searchTerm.trim()) {
+    return Object.entries(categoriesFiltered)
       .reduce((obj, [category, companies]) => {
-        obj[category] = companies;
-        return obj;
-      }, {});
-    
-    // If no search term, just sort by verification status
-    if (!searchTerm.trim()) {
-      return Object.entries(categoriesFiltered)
-        .reduce((obj, [category, companies]) => {
-          // Sort companies to put verified ones first
-          const sortedCompanies = [...companies].sort((a, b) => {
-            if (a.verified && !b.verified) return -1;
-            if (!a.verified && b.verified) return 1;
-            return 0;
-          });
-          
-          obj[category] = sortedCompanies;
-          return obj;
-        }, {});
-    }
-    
-    // If there is a search term, filter companies by name
-    const searchResults = {};
-    const searchTermLower = searchTerm.toLowerCase().trim();
-    
-    Object.entries(categoriesFiltered).forEach(([category, companies]) => {
-      const filteredCompanies = companies.filter(company => 
-        company.name.toLowerCase().includes(searchTermLower)
-      );
-      
-      // Only include categories that have matching companies
-      if (filteredCompanies.length > 0) {
         // Sort companies to put verified ones first
-        const sortedCompanies = [...filteredCompanies].sort((a, b) => {
+        const sortedCompanies = [...companies].sort((a, b) => {
           if (a.verified && !b.verified) return -1;
           if (!a.verified && b.verified) return 1;
           return 0;
         });
         
-        searchResults[category] = sortedCompanies;
-      }
-    });
+        obj[category] = sortedCompanies;
+        return obj;
+      }, {});
+  }
+  
+  // If there is a search term, filter companies by name
+  const searchResults = {};
+  const searchTermLower = searchTerm.toLowerCase().trim();
+  
+  Object.entries(categoriesFiltered).forEach(([category, companies]) => {
+    const filteredCompanies = companies.filter(company => 
+      company.name.toLowerCase().includes(searchTermLower)
+    );
     
-    return searchResults;
-  };
+    // Only include categories that have matching companies
+    if (filteredCompanies.length > 0) {
+      // Sort companies to put verified ones first
+      const sortedCompanies = [...filteredCompanies].sort((a, b) => {
+        if (a.verified && !b.verified) return -1;
+        if (!a.verified && b.verified) return 1;
+        return 0;
+      });
+      
+      searchResults[category] = sortedCompanies;
+    }
+  });
+  
+  return searchResults;
+};
 
   // Function for sorting table columns
   const requestSort = (key) => {
@@ -597,12 +555,10 @@ const MarketMatrix = () => {
 
   const filteredData = getFilteredData();
   
-  // Get all companies for table view using ordered categories
-  const allCompanies = categoryOrder
-    .filter(category => filteredData[category]) // Only include categories that exist in filtered data
-    .reduce((acc, category) => {
-      return [...acc, ...filteredData[category].map(company => ({ ...company, category }))];
-    }, []);
+  // Get all companies for table view
+  const allCompanies = Object.entries(filteredData).reduce((acc, [category, companies]) => {
+    return [...acc, ...companies.map(company => ({ ...company, category }))];
+  }, []);
   
   // Sort companies for table view based on current sort configuration
   const sortedAllCompanies = [...allCompanies].sort((a, b) => {
@@ -628,30 +584,30 @@ const MarketMatrix = () => {
     <div className="market-matrix-container">
       <h2 className="matrix-title">C-PACE Market Matrix</h2>
 
-      {/* Search Bar */}
-      <div className="search-container">
-        <div className="search-input-wrapper">
-          <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
-            <circle cx="11" cy="11" r="8"></circle>
-            <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
-          </svg>
-          <input
-            type="text"
-            className="search-input"
-            placeholder="Search companies..."
-            value={searchTerm}
-            onChange={handleSearchChange}
-          />
-          {searchTerm && (
-            <button 
-              className="search-clear-button"
-              onClick={() => setSearchTerm('')}
-            >
-              ×
-            </button>
-          )}
-        </div>
-      </div>
+  {/* Search Bar */}
+<div className="search-container">
+  <div className="search-input-wrapper">
+    <svg className="search-icon" xmlns="http://www.w3.org/2000/svg" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+      <circle cx="11" cy="11" r="8"></circle>
+      <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+    </svg>
+    <input
+      type="text"
+      className="search-input"
+      placeholder="Search companies..."
+      value={searchTerm}
+      onChange={handleSearchChange}
+    />
+    {searchTerm && (
+      <button 
+        className="search-clear-button"
+        onClick={() => setSearchTerm('')}
+      >
+        ×
+      </button>
+    )}
+  </div>
+</div>
       
       {/* Filter Categories Section */}
       <div className="matrix-filters">
@@ -674,8 +630,7 @@ const MarketMatrix = () => {
         </div>
         
         <div className="filter-buttons">
-          {/* Use categoryOrder instead of allCategories */}
-          {categoryOrder.map(category => (
+          {allCategories.map(category => (
             <button
               key={category}
               onClick={() => toggleFilter(category)}
@@ -712,144 +667,150 @@ const MarketMatrix = () => {
         </div>
       </div>
       
-      {/* No results message */}
-      {searchTerm.trim() !== '' && Object.keys(filteredData).length === 0 ? (
-        <div className="matrix-empty">
-          <p>No companies match your search for "{searchTerm}". Try a different search term.</p>
-        </div>
-      ) : Object.keys(filteredData).length === 0 ? (
-        <div className="matrix-empty">
-          <p>No categories selected. Please select at least one category above.</p>
-        </div>
-      ) : (
-        <>
-          {/* Grid View with Adaptive Width Categories - Using ordered categories */}
-          {viewMode === 'grid' && (
-            <div className="matrix-grid">
-              {categoryOrder
-                .filter(category => filteredData[category]) // Only include categories that exist in filtered data
-                .map(category => {
-                  const companies = filteredData[category];
-                
-                  // Determine column span based on number of logos
-                  let spanClass = '';
-                  if (companies.length > 20) {
-                    spanClass = 'category-full-width';
-                  } else if (companies.length > 10) {
-                    spanClass = 'category-half-width';
-                  } else {
-                    spanClass = 'category-third-width';
-                  }
+        {/* No results message */}
+        {searchTerm.trim() !== '' && Object.keys(filteredData).length === 0 ? (
+          <div className="matrix-empty">
+            <p>No companies match your search for "{searchTerm}". Try a different search term.</p>
+          </div>
+        ) : Object.keys(filteredData).length === 0 ? (
+          <div className="matrix-empty">
+            <p>No categories selected. Please select at least one category above.</p>
+          </div>
+        ) : (
+          <>
+          
+          {/* Grid View with Adaptive Width Categories */}
+{viewMode === 'grid' && (
+  <div className="matrix-grid">
+    {Object.entries(filteredData).map(([category, companies]) => {
+      // Determine column span based on number of logos
+      let spanClass = '';
+      if (companies.length > 20) {
+        spanClass = 'category-full-width';
+      } else if (companies.length > 10) {
+        spanClass = 'category-half-width';
+      } else {
+        spanClass = 'category-third-width';
+      }
 
-                  return (
-                    <div 
-                      key={category} 
-                      className={`matrix-category-container ${spanClass} ${expandedCompany && companies.some(c => c._id === expandedCompany) ? 'expanded' : ''}`}
-                    >
-                      <div className="matrix-category-title">
-                        <span className="category-title-text">{category}</span>
+      return (
+        <div 
+          key={category} 
+          className={`matrix-category-container ${spanClass} ${expandedCompany && companies.some(c => c._id === expandedCompany) ? 'expanded' : ''}`}
+        >
+          <div className="matrix-category-title">
+            <span className="category-title-text">{category}</span>
+          </div>
+          <div className="matrix-category">
+            <div className="companies-grid">
+              {companies.map((company, index) => (
+                <React.Fragment key={company._id}>
+                  <div 
+                    className={`company-item ${expandedCompany === company._id ? 'active' : ''}`}
+                    onClick={(e) => toggleExpandedCompany(company._id, e)}
+                  >
+                    <div className="logo-container">
+                      <img 
+                        src={company.logoUrl} 
+                        alt={`${company.name} logo`} 
+                        className="company-logo"
+                      />
+                      {company.verified && (
+                        <div className="verified-badge">
+                          <span className="verified-badge-icon">✓</span> VERIFIED
+                        </div>
+                      )}
+                      <div className="company-name-tooltip">
+                        {company.name}
                       </div>
-                      <div className="matrix-category">
-                        <div className="companies-grid">
-                          {companies.map((company, index) => (
-                            <React.Fragment key={company._id}>
-                              <div 
-                                className={`company-item ${expandedCompany === company._id ?'active' : ''}`}
-                                onClick={(e) => toggleExpandedCompany(company._id, e)}
+                    </div>
+                  </div>
+                  
+                  {/* Expandable company details - add after every 5th item or at end of row */}
+                  {(index + 1) % 5 === 0 || index === companies.length - 1 ? (
+                    <div 
+                      className={`company-details-wrapper ${
+                        expandedCompany === company._id || 
+                        (expandedCompany && companies.slice(Math.floor(index / 5) * 5, index + 1).some(c => c._id === expandedCompany))
+                          ? 'expanded' 
+                          : ''
+                      }`}
+                    >
+                      {expandedCompany && companies.slice(Math.max(0, Math.floor(index / 5) * 5), index + 1).map(c => {
+                        if (c._id === expandedCompany) {
+                          return (
+                            <div key={c._id} className="company-details">
+                              <button 
+                                className="company-details-close" 
+                                onClick={(e) => {
+                                  e.stopPropagation();
+                                  setExpandedCompany(null);
+                                }}
                               >
-                                <div className="logo-container">
-                                  <img 
-                                    src={company.logoUrl} 
-                                    alt={`${company.name} logo`} 
-                                    className="company-logo"
-                                  />
-                                  {company.verified && (
-                                    <div className="verified-badge">
-                                      <span className="verified-badge-icon">✓</span> VERIFIED
-                                    </div>
-                                  )}
-                                  <div className="company-name-tooltip">
-                                    {company.name}
-                                  </div>
+                                ×
+                              </button>
+                              
+                              <div className="company-details-header">
+                                <img 
+                                  src={c.logoUrl} 
+                                  alt={`${c.name} logo`}
+                                  className="company-details-logo" 
+                                />
+                                <div className="company-details-info">
+                                  <h3 className="company-details-name">
+                                    {c.name}
+                                    {c.verified && (
+                                      <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
+                                        <span className="verified-badge-icon">✓</span> VERIFIED
+                                      </span>
+                                    )}
+                                  </h3>
+                                  <div className="company-details-category">{category}</div>
                                 </div>
                               </div>
                               
-                              {/* 
-                                Place expandable details after every item, but only show for active item
-                                This fixes the layout issue with rows having 1 item
-                              */}
-                              <div 
-                                className={`company-details-wrapper ${expandedCompany === company._id ? 'expanded' : ''}`}
-                              >
-                                {expandedCompany === company._id && (
-                                  <div className="company-details">
-                                    <button 
-                                      className="company-details-close" 
-                                      onClick={(e) => {
-                                        e.stopPropagation();
-                                        setExpandedCompany(null);
-                                      }}
-                                    >
-                                      ×
-                                    </button>
-                                    
-                                    <div className="company-details-header">
-                                      <img 
-                                        src={company.logoUrl} 
-                                        alt={`${company.name} logo`}
-                                        className="company-details-logo" 
-                                      />
-                                      <div className="company-details-info">
-                                        <h3 className="company-details-name">
-                                          {company.name}
-                                          {company.verified && (
-                                            <span className="table-verified-badge" style={{marginLeft: '8px', verticalAlign: 'middle'}}>
-                                              <span className="verified-badge-icon">✓</span> VERIFIED
-                                            </span>
-                                          )}
-                                        </h3>
-                                        <div className="company-details-category">{category}</div>
-                                      </div>
+                              <div className="company-details-sections">
+                                <div className="company-details-section">
+                                  <h4 className="company-details-section-title">States of Operation</h4>
+                                  {c.states && c.states.length > 0 ? (
+                                    <div className="company-states-list">
+                                      {c.states.map((state, i) => (
+                                        <span key={i} className="company-state-tag">{state}</span>
+                                      ))}
                                     </div>
-                                    
-                                    <div className="company-details-sections">
-                                      <div className="company-details-section">
-                                        <h4 className="company-details-section-title">States of Operation</h4>
-                                        {company.states && company.states.length > 0 ? (
-                                          <div className="company-states-list">
-                                            {company.states.map((state, i) => (
-                                              <span key={i} className="company-state-tag">{state}</span>
-                                            ))}
-                                          </div>
-                                        ) : (
-                                          <p className="company-details-empty">No state information available</p>
-                                        )}
-                                      </div>
-                                    </div>
-                                    
-                                    <div className="company-details-actions">
-                                      <a 
-                                        href={company.websiteUrl || "#"} 
-                                        target="_blank" 
-                                        rel="noopener noreferrer"
-                                        className="company-website-button"
-                                        onClick={(e) => e.stopPropagation()}
-                                      >
-                                        Visit Website
-                                      </a>
-                                    </div>
-                                  </div>
-                                )}
+                                  ) : (
+                                    <p className="company-details-empty">No state information available</p>
+                                  )}
+                                </div>
                               </div>
-                            </React.Fragment>
-                          ))}
-                        </div>
-                      </div>
+                              
+                              <div className="company-details-actions">
+                                <a 
+                                  href={c.websiteUrl || "#"} 
+                                  target="_blank" 
+                                  rel="noopener noreferrer"
+                                  className="company-website-button"
+                                  onClick={(e) => e.stopPropagation()}
+                                >
+                                  Visit Website
+                                </a>
+                              </div>
+                            </div>
+                          );
+                        }
+                        return null;
+                      })}
                     </div>
-                  );
-                })}
+                  ) : null}
+                </React.Fragment>
+              ))}
             </div>
-          )}
+          </div>
+        </div>
+      );
+    })}
+  </div>
+)}
           
           {/* Table View with Expandable Rows */}
           {viewMode === 'table' && (
