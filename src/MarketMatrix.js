@@ -328,13 +328,22 @@ const MarketMatrix = () => {
   // Handle click outside to close dropdown
   useEffect(() => {
     const handleClickOutside = (event) => {
-      if (stateDropdownRef.current && !stateDropdownRef.current.contains(event.target)) {
-        setStateDropdownOpen(false);
-      }
+      // Don't close if the dropdown ref doesn't exist yet
+      if (!stateDropdownRef.current) return;
+      
+      // Don't close if the click is inside the dropdown
+      if (stateDropdownRef.current.contains(event.target)) return;
+      
+      // Additional check: don't close if interacting with a search input
+      if (event.target.classList?.contains('state-search-input')) return;
+      
+      // If none of the above, safe to close the dropdown
+      setStateDropdownOpen(false);
     };
 
     // Add event listener when dropdown is open
     if (stateDropdownOpen) {
+      // Use mousedown for better cross-browser compatibility
       document.addEventListener('mousedown', handleClickOutside);
     }
 
@@ -486,15 +495,26 @@ const MarketMatrix = () => {
                 </div>
                 
                 {stateDropdownOpen && (
-                  <div className="state-dropdown-menu">
+                  <div 
+                    className="state-dropdown-menu"
+                    onClick={(e) => {
+                      // Prevent clicks inside dropdown from closing it
+                      e.stopPropagation();
+                    }}
+                  >
                     <div className="state-search-container">
                       <input
                         type="text"
                         className="state-search-input"
                         placeholder="Search states..."
                         value={stateSearchTerm}
-                        onChange={(e) => setStateSearchTerm(e.target.value)}
+                        onChange={(e) => {
+                          e.stopPropagation();
+                          setStateSearchTerm(e.target.value);
+                        }}
                         onClick={(e) => e.stopPropagation()}
+                        onFocus={(e) => e.stopPropagation()}
+                        autoFocus
                       />
                     </div>
                     
@@ -504,6 +524,8 @@ const MarketMatrix = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           selectAllStates();
+                          // Keep search focused
+                          document.querySelector('.state-search-input')?.focus();
                         }}
                       >
                         Select All
@@ -513,6 +535,8 @@ const MarketMatrix = () => {
                         onClick={(e) => {
                           e.stopPropagation();
                           clearStateSelection();
+                          // Keep search focused
+                          document.querySelector('.state-search-input')?.focus();
                         }}
                       >
                         Clear All
@@ -525,8 +549,12 @@ const MarketMatrix = () => {
                           key={state} 
                           className={`state-option ${selectedStates.includes(state) ? 'selected' : ''}`}
                           onClick={(e) => {
+                            // Make sure to stop propagation
                             e.stopPropagation();
+                            // Toggle the state selection
                             toggleStateSelection(state);
+                            // Keep search focused
+                            document.querySelector('.state-search-input')?.focus();
                           }}
                         >
                           <span className="state-checkbox">
