@@ -26,41 +26,42 @@
   color: #e53e3e;
 }
 
-/* Matrix grid with dense packing for masonry-like effect */
+/* True Masonry layout with CSS columns */
 .matrix-grid {
-  display: grid;
-  grid-template-columns: 1fr;
-  gap: 24px;
-  grid-auto-flow: dense; /* Enables dense packing of grid items */
+  column-count: 1;
+  column-gap: 24px;
 }
 
 @media (min-width: 768px) {
   .matrix-grid {
-    grid-template-columns: repeat(2, 1fr);
+    column-count: 2;
   }
 }
 
 @media (min-width: 1200px) {
   .matrix-grid {
-    grid-template-columns: repeat(3, 1fr);
+    column-count: 3;
   }
 }
 
-/* Category container and title styles */
+/* Essential container adjustments */
 .matrix-category-container {
+  break-inside: avoid;
+  page-break-inside: avoid; /* For older browsers */
+  display: inline-block; /* Critical for column flow */
+  width: 100%;
+  margin-bottom: 24px; /* Spacing between categories */
   position: relative;
-  margin-top: 20px;
-  display: flex;
-  flex-direction: column;
-  height: fit-content;
+  margin-top: 24px; /* Space for the title */
 }
 
+/* Category container and title styles */
 .matrix-category-title {
   position: absolute;
-  top: 0;
+  top: -12px; /* Adjust to position title in the center of the top border */
   left: 0;
   right: 0;
-  height: 0;
+  height: auto;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -85,13 +86,12 @@
 /* Category box styles */
 .matrix-category {
   border: 2px solid black;
-  border-top: 2px solid black;
   padding: 20px 16px 16px;
   position: relative;
-  margin-top: -1px;
   width: 100%;
   background-color: white;
   z-index: 1;
+  margin-top: -1px; /* Adjust for title overlap with border */
 }
 
 /* Company logos grid */
@@ -665,6 +665,8 @@
   padding: 16px;
   border-color: #e2e8f0;
   width: 100%;
+  position: relative;
+  z-index: 2; /* Higher than regular content */
 }
 
 /* Company details styles */
