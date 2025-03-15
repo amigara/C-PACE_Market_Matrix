@@ -10,6 +10,7 @@ const MarketMatrix = () => {
   const [activeFilters, setActiveFilters] = useState([]);
   const [viewMode, setViewMode] = useState('grid'); // 'grid' or 'table'
   const [warnings, setWarnings] = useState(null); // Keep for logging purposes, but don't display
+  const [searchTerm, setSearchTerm] = useState(''); // New state for search functionality
   
   // State for table sorting
   const [sortConfig, setSortConfig] = useState({
@@ -149,14 +150,35 @@ const MarketMatrix = () => {
   const closeCompanyModal = () => {
     setSelectedCompany(null);
   };
+  
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    setSearchTerm(e.target.value);
+    // Reset expanded company when search changes
+    setExpandedCompany(null);
+  };
+  
+  // Clear search
+  const clearSearch = () => {
+    setSearchTerm('');
+  };
 
-  // Filter the data based on active filters and sort by verification status
+  // Filter the data based on active filters, search term, and sort by verification status
   const getFilteredData = () => {
     if (!companiesData) return {};
     
-    return Object.entries(companiesData)
+    // First filter by categories
+    const categoryFiltered = Object.entries(companiesData)
       .filter(([category]) => activeFilters.includes(category))
       .reduce((obj, [category, companies]) => {
+        obj[category] = companies;
+        return obj;
+      }, {});
+    
+    // Then filter by search term if one exists
+    if (searchTerm.trim() === '') {
+      // No search term, just sort the companies
+      return Object.entries(categoryFiltered).reduce((obj, [category, companies]) => {
         // Sort companies to put verified ones first
         const sortedCompanies = [...companies].sort((a, b) => {
           // If a is verified and b is not, a comes first
@@ -170,6 +192,37 @@ const MarketMatrix = () => {
         obj[category] = sortedCompanies;
         return obj;
       }, {});
+    } else {
+      // Filter by search term
+      const searchTermLower = searchTerm.toLowerCase();
+      
+      return Object.entries(categoryFiltered).reduce((obj, [category, companies]) => {
+        // Filter companies by search term
+        const filteredCompanies = companies.filter(company => 
+          company.name.toLowerCase().includes(searchTermLower) || 
+          (company.contactInfo && company.contactInfo.toLowerCase().includes(searchTermLower)) ||
+          (company.states && company.states.some(state => state.toLowerCase().includes(searchTermLower))) ||
+          (company.allCategories && company.allCategories.some(cat => cat.toLowerCase().includes(searchTermLower)))
+        );
+        
+        // Only include categories that have matching companies
+        if (filteredCompanies.length > 0) {
+          // Sort companies to put verified ones first
+          const sortedCompanies = [...filteredCompanies].sort((a, b) => {
+            // If a is verified and b is not, a comes first
+            if (a.verified && !b.verified) return -1;
+            // If b is verified and a is not, b comes first
+            if (!a.verified && b.verified) return 1;
+            // Otherwise maintain original order
+            return 0;
+          });
+          
+          obj[category] = sortedCompanies;
+        }
+        
+        return obj;
+      }, {});
+    }
   };
 
   // Function for sorting table columns
@@ -226,6 +279,30 @@ const MarketMatrix = () => {
   return (
     <div className="market-matrix-container">
       <h2 className="matrix-title">C-PACE Market Matrix</h2>
+      
+      {/* Search Bar */}
+      <div className="search-container">
+        <div className="search-input-wrapper">
+          <span className="search-icon">
+            <svg xmlns="http://www.w3.org/2000/svg" width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+              <circle cx="11" cy="11" r="8"></circle>
+              <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+            </svg>
+          </span>
+          <input
+            type="text"
+            className="search-input"
+            placeholder="Search companies and organizations..."
+            value={searchTerm}
+            onChange={handleSearchChange}
+          />
+          {searchTerm && (
+            <button className="search-clear-button" onClick={clearSearch}>
+              ×
+            </button>
+          )}
+        </div>
+      </div>
       
       {/* Filter Controls */}
       <div className="matrix-filters">
@@ -284,7 +361,20 @@ const MarketMatrix = () => {
         {/* No categories selected message */}
         {Object.keys(filteredData).length === 0 ? (
           <div className="matrix-empty">
-            <p>No categories selected. Please select at least one category above.</p>
+            {searchTerm ? (
+              <div className="no-search-results">
+                <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <circle cx="11" cy="11" r="8"></circle>
+                  <line x1="21" y1="21" x2="16.65" y2="16.65"></line>
+                </svg>
+                <p>No results found for "<strong>{searchTerm}</strong>"</p>
+                <button className="clear-search-button" onClick={clearSearch}>
+                  Clear Search
+                </button>
+              </div>
+            ) : (
+              <p>No categories selected. Please select at least one category above.</p>
+            )}
           </div>
         ) : (
           <>
