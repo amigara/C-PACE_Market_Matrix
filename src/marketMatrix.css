@@ -50,6 +50,9 @@
   margin: 0 auto;
   padding: 0 20px;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Open Sans', 'Helvetica Neue', sans-serif;
+  overflow-x: hidden; /* Prevent horizontal scrolling */
+  width: 100%; /* Ensure container takes full width */
+  box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .matrix-title {
@@ -101,6 +104,8 @@
   display: grid;
   grid-template-columns: 1fr;
   gap: 30px;
+  width: 100%; /* Ensure grid takes full width */
+  box-sizing: border-box; /* Include padding in width calculation */
 }
 
 /* We'll keep this media query for automatic responsiveness on small screens,
@@ -120,6 +125,19 @@
   margin-top: 15px;
   position: relative;
   align-content: start; /* Keep logos at the top, don't stretch them */
+  width: 100%; /* Ensure grid takes full width */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+/* Ensure all elements respect container width */
+.matrix-category-container, 
+.matrix-category, 
+.matrix-filters, 
+.view-toggle, 
+.view-content,
+.matrix-table-container {
+  max-width: 100%;
+  box-sizing: border-box;
 }
 
 /* Remove all media queries that change the number of logos per row */
@@ -144,6 +162,38 @@
   .company-logo {
     max-height: 55px;
     max-width: 55px;
+  }
+  
+  /* Adjust padding to prevent overflow */
+  .market-matrix-container {
+    padding: 0 15px;
+  }
+  
+  .matrix-category {
+    padding: 20px 15px 15px;
+  }
+}
+
+/* For medium screens that might have issues */
+@media (min-width: 768px) and (max-width: 991px) {
+  /* Ensure the grid doesn't overflow */
+  .companies-grid {
+    gap: 8px; /* Reduce gap between logos */
+  }
+  
+  .logo-container {
+    height: 75px;
+    width: 75px;
+  }
+  
+  .company-logo {
+    max-height: 60px;
+    max-width: 60px;
+  }
+  
+  /* Adjust padding to prevent overflow */
+  .matrix-category {
+    padding: 20px 15px 15px;
   }
 }
 
@@ -180,6 +230,29 @@
   .logo-container {
     height: 70px;
     width: 70px;
+  }
+}
+
+/* Additional fixes for horizontal scrollbar issues */
+@media (min-width: 992px) and (max-width: 1100px) {
+  /* Adjust for medium-large screens where issues might occur */
+  .companies-grid {
+    gap: 10px; /* Reduce gap between logos */
+  }
+  
+  .logo-container {
+    height: 75px;
+    width: 75px;
+  }
+  
+  .company-logo {
+    max-height: 60px;
+    max-width: 60px;
+  }
+  
+  /* Adjust padding to prevent overflow */
+  .matrix-category {
+    padding: 20px 15px 15px;
   }
 }
 
@@ -1181,4 +1254,36 @@
   background-color: #3182ce;
   transform: translateY(-1px);
   box-shadow: 0 3px 6px rgba(66, 153, 225, 0.3);
+}
+
+/* Adjust padding for smaller screens to prevent overflow */
+@media (max-width: 767px) {
+  .market-matrix-container {
+    padding: 0 15px;
+  }
+  
+  .matrix-category {
+    padding: 20px 15px 15px;
+  }
+  
+  /* Force 1-column layout for the overall grid */
+  .matrix-grid {
+    grid-template-columns: 1fr !important; /* Override any inline styles */
+  }
+  
+  /* Adjust spacing for mobile */
+  .matrix-category-container {
+    margin-top: 25px;
+  }
+  
+  /* Ensure logos don't get too small on mobile */
+  .logo-container {
+    height: 70px;
+    width: 70px;
+  }
+  
+  .company-logo {
+    max-height: 55px;
+    max-width: 55px;
+  }
 }
