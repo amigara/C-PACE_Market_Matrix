@@ -27,6 +27,7 @@ const MarketMatrix = () => {
   const [selectedStates, setSelectedStates] = useState([]); // State for selected states
   const [stateDropdownOpen, setStateDropdownOpen] = useState(false); // State for dropdown toggle
   const [stateSearchTerm, setStateSearchTerm] = useState(''); // State for searching states
+  const [includeNational, setIncludeNational] = useState(true); // State for including national companies
   
   // State for table sorting
   const [sortConfig, setSortConfig] = useState({
@@ -252,13 +253,13 @@ const MarketMatrix = () => {
     // Then filter by states if any are selected
     const stateAndCategoryFiltered = selectedStates.length > 0 
       ? Object.entries(categoryFiltered).reduce((obj, [category, companies]) => {
-          // Filter companies that operate in any of the selected states or nationally
+          // Filter companies that operate in any of the selected states or nationally (if includeNational is true)
           const filteredCompanies = companies.filter(company => 
             company.states && (
               // Include if company operates in any selected state
               selectedStates.some(state => company.states.includes(state)) ||
-              // Or if company operates nationally
-              company.states.includes("National")
+              // Or if company operates nationally and includeNational is true
+              (includeNational && company.states.includes("National"))
             )
           );
           
@@ -427,14 +428,16 @@ const MarketMatrix = () => {
       <div className="state-filter-container">
         <div className="state-filter-header">
           <h3 className="filters-title">Filter by States:</h3>
-          {selectedStates.length > 0 && (
-            <button 
-              onClick={clearStateSelection}
-              className="filter-button filter-button-clear-all"
-            >
-              Clear States
-            </button>
-          )}
+          <div className="state-filter-actions">
+            {selectedStates.length > 0 && (
+              <button 
+                onClick={clearStateSelection}
+                className="filter-button filter-button-clear-all"
+              >
+                Clear States
+              </button>
+            )}
+          </div>
         </div>
         
         <div className="state-dropdown-container" ref={stateDropdownRef}>
@@ -511,6 +514,19 @@ const MarketMatrix = () => {
               </div>
             </div>
           )}
+        </div>
+        
+        {/* National Companies Checkbox */}
+        <div className="national-option-container">
+          <label className="national-option-label">
+            <input
+              type="checkbox"
+              className="national-checkbox"
+              checked={includeNational}
+              onChange={() => setIncludeNational(!includeNational)}
+            />
+            <span className="national-label-text">Include companies operating nationally</span>
+          </label>
         </div>
         
         {selectedStates.length > 0 && (
