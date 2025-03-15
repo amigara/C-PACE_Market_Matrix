@@ -136,19 +136,43 @@
   
   /* 2 logos per row for all mobile devices */
   .companies-grid {
+    display: grid;
     grid-template-columns: repeat(2, 1fr);
     gap: 10px;
+    width: 100%;
   }
   
   /* Ensure logos don't get too small on mobile */
   .logo-container {
     height: 80px;
     width: 80px;
+    margin: 0 auto; /* Center the logo container */
   }
   
   .company-logo {
     max-height: 60px;
     max-width: 60px;
+  }
+  
+  /* Fix for expandable details to ensure they don't break the 2-column layout */
+  .company-details-wrapper {
+    grid-column: 1 / span 2 !important;
+    width: 100%;
+    box-sizing: border-box;
+  }
+  
+  /* Ensure the company items always take up exactly half the width */
+  .company-item {
+    width: 100%;
+    box-sizing: border-box;
+    display: flex;
+    justify-content: center;
+  }
+  
+  /* Force the grid to maintain 2 columns */
+  .matrix-category {
+    display: flex;
+    flex-direction: column;
   }
 }
 

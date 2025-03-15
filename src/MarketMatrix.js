@@ -723,8 +723,8 @@ const MarketMatrix = () => {
                           
                           {/* Expandable company details - add after every 5th item or at end of row */}
                           {(index + 1) % 5 === 0 || index === filteredData[category].length - 1 || 
-                            // For mobile (2-column grid), add after every 2nd item
-                            (isMobile && (index + 1) % 2 === 0) ? (
+                            // For mobile (2-column grid), add after every 2nd item or at the end
+                            (isMobile && ((index + 1) % 2 === 0 || index === filteredData[category].length - 1)) ? (
                             <div 
                               className={`company-details-wrapper ${
                                 expandedCompany === company._id || 
@@ -738,6 +738,7 @@ const MarketMatrix = () => {
                                   ? 'expanded' 
                                   : ''
                               }`}
+                              style={{ gridColumn: isMobile ? '1 / span 2' : '1 / -1' }}
                             >
                               {expandedCompany && filteredData[category].slice(
                                 // Use different slice logic based on screen width
