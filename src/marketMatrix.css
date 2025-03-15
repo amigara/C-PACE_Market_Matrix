@@ -159,22 +159,17 @@
 
 /* Category box styles */
 .matrix-category {
-  border: 2px solid #4a5568;
-  border-top: 2px solid #4a5568;
-  padding: 20px 15px 15px; /* Slightly reduce padding to allow more space for logos */
+  border: 1px solid #e5e7eb;
+  border-radius: 8px;
+  padding: 20px 15px 15px;
+  background-color: #fff;
+  min-height: 100px;
   position: relative;
-  margin-top: -1px;
-  border-radius: 0;
-  background-color: #f8fafc;
-  box-shadow: 0 2px 5px rgba(0, 0, 0, 0.05);
-  flex-grow: 1;
-  display: flex;
-  flex-direction: column;
-  min-height: 200px; /* Ensure minimum height for categories with few logos */
-  width: 100%; /* Ensure category box takes full width */
+  overflow: visible; /* Allow expanded details to be visible */
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
 }
 
-/* Companies grid - adjust gap for better spacing */
+/* Companies grid - adjust based on column count */
 .companies-grid {
   display: grid;
   grid-template-columns: repeat(5, 1fr);
@@ -184,6 +179,14 @@
   align-content: start; /* Keep logos at the top, don't stretch them */
   padding: 5px; /* Add slight padding around the grid */
   width: 100%; /* Ensure grid takes full width of container */
+  box-sizing: border-box; /* Include padding in width calculation */
+}
+
+/* Override media queries for full-width categories */
+.full-width .companies-grid {
+  grid-template-columns: repeat(5, 1fr) !important; /* Force 5 columns on small screens */
+  justify-content: start; /* Align items to the start */
+  width: 100%; /* Ensure full width */
 }
 
 @media (min-width: 768px) {
@@ -192,9 +195,10 @@
     grid-template-columns: repeat(4, 1fr);
   }
   
-  /* For full-width categories, use fixed number of columns */
+  /* For full-width categories, use more columns */
   .full-width .companies-grid {
-    grid-template-columns: repeat(8, 1fr);
+    grid-template-columns: repeat(6, 1fr) !important; /* Force 6 columns on medium screens */
+    width: 100%; /* Ensure full width */
   }
 }
 
@@ -204,16 +208,24 @@
     grid-template-columns: repeat(5, 1fr);
   }
   
-  /* For full-width categories, use fixed number of columns */
+  /* For full-width categories, use more columns */
   .full-width .companies-grid {
-    grid-template-columns: repeat(10, 1fr);
+    grid-template-columns: repeat(8, 1fr) !important; /* Force 8 columns on large screens */
+    width: 100%; /* Ensure full width */
+  }
+}
+
+@media (min-width: 1280px) {
+  /* For full-width categories on extra large screens */
+  .full-width .companies-grid {
+    grid-template-columns: repeat(10, 1fr) !important; /* Force 10 columns on extra large screens */
+    width: 100%; /* Ensure full width */
   }
 }
 
 /* Remove the auto-fill approach which was causing issues */
 @media (max-width: 767px) {
-  .companies-grid,
-  .full-width .companies-grid {
+  .companies-grid {
     grid-template-columns: repeat(3, 1fr);
   }
 }
@@ -227,6 +239,7 @@
   justify-content: center;
   padding: 2px; /* Add slight padding around each item */
   width: 100%; /* Ensure item takes full width of its grid cell */
+  box-sizing: border-box; /* Include padding in width calculation */
 }
 
 .company-item.active .logo-container {
@@ -826,29 +839,31 @@
   }
 }
 
-/* Expandable details styles */
+/* Expandable details styles - fix containment issues */
 .company-details-wrapper {
   grid-column: 1 / -1; /* Span all columns */
   overflow: hidden;
   max-height: 0;
   opacity: 0;
-  transition: max-height 0.4s ease, opacity 0.3s ease, padding 0.3s ease, box-shadow 0.3s ease;
-  background-color: #ffffff; /* Changed to white to match logo backgrounds */
-  border-radius: 0;
-  margin: 0;
-  padding: 0;
-  border: 1px solid transparent;
-  width: 100%; /* Ensure full width */
+  transition: all 0.3s ease-in-out;
+  width: calc(100% - 2px); /* Account for borders */
+  margin-left: 1px; /* Center within the category */
+  position: relative;
+  z-index: 5; /* Keep above other elements */
+  box-sizing: border-box;
+  background-color: #fff; /* Match background color */
+  border-top: 1px solid #e5e7eb; /* Add subtle top border */
 }
 
+/* Expanded state for company details */
 .company-details-wrapper.expanded {
-  max-height: 400px; /* Increased to accommodate larger content */
+  max-height: 400px; /* Allow enough space for content */
   opacity: 1;
-  margin: 16px 0;
-  padding: 20px;
-  border-color: #e2e8f0;
-  box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
-  width: 100%; /* Ensure full width when expanded */
+  padding: 15px 10px;
+  margin-top: 10px;
+  margin-bottom: 5px;
+  border-radius: 0 0 6px 6px; /* Round bottom corners */
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05); /* Subtle shadow */
 }
 
 /* Company details styles */
@@ -856,6 +871,7 @@
   display: flex;
   flex-direction: column;
   position: relative;
+  width: 100%; /* Ensure full width */
 }
 
 .company-details-header {
@@ -944,6 +960,7 @@
   border-radius: 0;
   margin-bottom: 16px;
   width: 100%; /* Ensure full width */
+  box-sizing: border-box; /* Include padding in width calculation */
 }
 
 /* Adjust grid columns for full-width categories */
@@ -1184,11 +1201,12 @@
   box-shadow: 0 3px 6px rgba(66, 153, 225, 0.3);
 }
 
-/* Full-width category container - ensure proper expansion and spacing */
+/* Full-width category container - spans the entire width with proper spacing */
 .matrix-category-container.full-width {
-  width: 100%; /* Ensure container takes full width */
-  margin-top: 40px; /* Add more space above full-width categories */
-  margin-bottom: 10px; /* Add space below full-width categories */
+  width: 100%;
+  margin-top: 40px;
+  margin-bottom: 10px;
+  position: relative;
 }
 
 /* Adjust grid columns for different screen sizes */
