@@ -46,72 +46,13 @@
   }
 }
 
-/* Make sure each category takes its own grid cell completely */
-.matrix-category-container {
-  display: flex;
-  flex-direction: column;
-  position: relative;
-  height: fit-content;
-  margin-bottom: 0;
-}
-
-/* Ensure each category container stays intact */
-.matrix-category-container {
-  break-inside: avoid;
-  margin-bottom: 24px;
-  display: inline-block;
-  width: 100%;
-  position: relative;
-}
-
-/* Keep existing category styles */
-.matrix-category {
-  width: 100%;
-}
-
-/* Handle expanded details - span across all columns when needed */
-.company-details-wrapper.expanded {
-  width: 100%;
-}
-
-/* Ensure consistent spacing in the companies grid */
-.companies-grid {
-  display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(50px, 1fr));
-  gap: 6px;
-  width: 100%;
-}
-
-/* When category has expanded content, add space below it */
-.matrix-category-container.expanded {
-  margin-bottom: 36px;
-}
-
-/* Fix for the filter buttons layout */
-.filter-buttons {
-  display: flex;
-  flex-wrap: wrap;
-  gap: 8px;
-  max-width: 100%;
-}
-
-/* Adjust search container */
-.search-container {
-  margin-bottom: 24px;
-  width: 100%;
-}
-
-@media (max-width: 767px) {
-  /* Single column mode on mobile */
-  .matrix-grid {
-    column-count: 1;
-  }
-}
-
 /* Category container and title styles */
 .matrix-category-container {
   position: relative;
   margin-top: 20px;
+  display: flex;
+  flex-direction: column;
+  height: fit-content;
 }
 
 .matrix-category-title {
@@ -123,7 +64,7 @@
   display: flex;
   align-items: center;
   justify-content: center;
-  z-index: 1;
+  z-index: 3;
 }
 
 .matrix-category-title:before, 
@@ -148,6 +89,9 @@
   padding: 20px 16px 16px;
   position: relative;
   margin-top: -1px;
+  width: 100%;
+  background-color: white;
+  z-index: 1;
 }
 
 /* Company logos grid */
@@ -720,6 +664,7 @@
   margin: 12px 0;
   padding: 16px;
   border-color: #e2e8f0;
+  width: 100%;
 }
 
 /* Company details styles */
@@ -1011,29 +956,6 @@
 .search-clear-button {
   position: absolute;
   right: 15px;
-  background: none;
-  border: none;
-  font-size: 18px;
-  color: #718096;
-  cursor: pointer;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  width: 20px;
-  height: 20px;
-  padding: 0;
-  border-radius: 50%;
-  transition: background-color 0.2s;
-}
-
-.search-clear-button:hover {
-  background-color: #e2e8f0;
-}
-
-/* Clear button styling */
-.search-clear-button {
-  position: absolute;
-  right: 15px;
   top: 50%;
   transform: translateY(-50%);
   background: none;
@@ -1055,17 +977,8 @@
   background-color: #e2e8f0;
 }
 
-/* Keep existing category styles */
-.matrix-category {
-  width: 100%;
-}
-
-/* Handle expanded details - span across all columns when needed */
-.company-details-wrapper.expanded {
-  width: 100%;
-}
-
-/* When category has expanded content, add space below it */
+/* Helper class for categories with expanded content */
 .matrix-category-container.expanded {
+  z-index: 10; /* Bring to front when expanded */
   margin-bottom: 36px;
 }
