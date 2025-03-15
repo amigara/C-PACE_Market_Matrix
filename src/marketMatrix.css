@@ -817,3 +817,37 @@
   from { opacity: 0; }
   to { opacity: 1; }
 }
+
+/* Direct fix for the vertical logo issue */
+.companies-grid {
+  display: grid;
+  grid-template-columns: repeat(5, 1fr) !important; /* Force 5 columns */
+  gap: 16px !important;
+  margin-top: 15px;
+  width: 100%;
+}
+
+@media (max-width: 767px) {
+  .companies-grid {
+    grid-template-columns: repeat(4, 1fr) !important;
+  }
+}
+
+@media (max-width: 480px) {
+  .companies-grid {
+    grid-template-columns: repeat(3, 1fr) !important;
+  }
+}
+
+/* Ensure company items have correct layout */
+.company-item {
+  display: flex;
+  justify-content: center;
+  margin-bottom: 0 !important;
+  width: 100%;
+}
+
+/* Make sure parent container isn't forcing a column layout */
+.matrix-category {
+  display: block !important; /* Override flex if it's causing issues */
+}
