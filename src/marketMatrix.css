@@ -114,6 +114,7 @@
   /* Full-width category container */
   .matrix-category-container.full-width {
     grid-column: 1 / -1; /* Span all columns */
+    margin-top: 40px; /* Add more space above full-width categories */
   }
 }
 
@@ -160,7 +161,7 @@
 .matrix-category {
   border: 2px solid #4a5568;
   border-top: 2px solid #4a5568;
-  padding: 20px 20px 20px;
+  padding: 20px 15px 15px; /* Slightly reduce padding to allow more space for logos */
   position: relative;
   margin-top: -1px;
   border-radius: 0;
@@ -173,22 +174,16 @@
   width: 100%; /* Ensure category box takes full width */
 }
 
-/* Companies grid - adjust based on column count */
+/* Companies grid - adjust gap for better spacing */
 .companies-grid {
   display: grid;
-  grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-  gap: 12px;
+  grid-template-columns: repeat(5, 1fr);
+  gap: 10px; /* Slightly reduce gap for better spacing */
   margin-top: 15px;
   position: relative;
   align-content: start; /* Keep logos at the top, don't stretch them */
   padding: 5px; /* Add slight padding around the grid */
   width: 100%; /* Ensure grid takes full width of container */
-}
-
-@media (min-width: 640px) {
-  .companies-grid {
-    grid-template-columns: repeat(5, 1fr);
-  }
 }
 
 @media (min-width: 768px) {
@@ -197,10 +192,9 @@
     grid-template-columns: repeat(4, 1fr);
   }
   
-  /* For full-width categories, use auto-fill to distribute logos evenly */
+  /* For full-width categories, use fixed number of columns */
   .full-width .companies-grid {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    width: 100%; /* Ensure full width */
+    grid-template-columns: repeat(8, 1fr);
   }
 }
 
@@ -210,23 +204,17 @@
     grid-template-columns: repeat(5, 1fr);
   }
   
-  /* For full-width categories, use auto-fill to distribute logos evenly */
+  /* For full-width categories, use fixed number of columns */
   .full-width .companies-grid {
-    grid-template-columns: repeat(auto-fill, minmax(80px, 1fr));
-    width: 100%; /* Ensure full width */
+    grid-template-columns: repeat(10, 1fr);
   }
 }
 
-/* Remove the old selectors that were based on inline styles */
-@media (min-width: 768px) and (max-width: 1023px) {
-  .matrix-grid[style*="gridTemplateColumns: 1fr"] .companies-grid {
-    /* This is no longer needed */
-  }
-}
-
-@media (min-width: 1024px) {
-  .matrix-grid[style*="gridTemplateColumns: 1fr"] .companies-grid {
-    /* This is no longer needed */
+/* Remove the auto-fill approach which was causing issues */
+@media (max-width: 767px) {
+  .companies-grid,
+  .full-width .companies-grid {
+    grid-template-columns: repeat(3, 1fr);
   }
 }
 
@@ -238,6 +226,7 @@
   display: flex;
   justify-content: center;
   padding: 2px; /* Add slight padding around each item */
+  width: 100%; /* Ensure item takes full width of its grid cell */
 }
 
 .company-item.active .logo-container {
@@ -259,6 +248,7 @@
   transition: all 0.2s ease;
   border: 1px solid #e2e8f0;
   box-shadow: 0 1px 3px rgba(0, 0, 0, 0.05);
+  margin: 0 auto; /* Center the logo container */
 }
 
 .company-item:hover .logo-container {
@@ -1194,7 +1184,31 @@
   box-shadow: 0 3px 6px rgba(66, 153, 225, 0.3);
 }
 
-/* Full-width category container - ensure proper expansion */
+/* Full-width category container - ensure proper expansion and spacing */
 .matrix-category-container.full-width {
   width: 100%; /* Ensure container takes full width */
+  margin-top: 40px; /* Add more space above full-width categories */
+  margin-bottom: 10px; /* Add space below full-width categories */
+}
+
+/* Adjust grid columns for different screen sizes */
+@media (min-width: 768px) and (max-width: 1023px) {
+  /* For full-width categories on medium screens */
+  .full-width .companies-grid {
+    grid-template-columns: repeat(6, 1fr); /* 6 columns on medium screens */
+  }
+}
+
+@media (min-width: 1024px) and (max-width: 1279px) {
+  /* For full-width categories on large screens */
+  .full-width .companies-grid {
+    grid-template-columns: repeat(8, 1fr); /* 8 columns on large screens */
+  }
+}
+
+@media (min-width: 1280px) {
+  /* For full-width categories on extra large screens */
+  .full-width .companies-grid {
+    grid-template-columns: repeat(10, 1fr); /* 10 columns on extra large screens */
+  }
 }
