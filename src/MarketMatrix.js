@@ -25,7 +25,6 @@ const MarketMatrix = () => {
   const [warnings, setWarnings] = useState(null); // Keep for logging purposes, but don't display
   const [searchTerm, setSearchTerm] = useState(''); // New state for search functionality
   const [selectedStates, setSelectedStates] = useState([]); // State for selected states
-  const [stateDropdownOpen, setStateDropdownOpen] = useState(false); // State for dropdown toggle
   const [stateSearchTerm, setStateSearchTerm] = useState(''); // State for searching states
   const [includeNational, setIncludeNational] = useState(true); // State for including national companies
   
@@ -47,9 +46,6 @@ const MarketMatrix = () => {
   
   // State for tracking data source - now we only have 'netlify'
   const [dataSource, setDataSource] = useState('netlify');
-
-  // Ref for the dropdown container
-  const stateDropdownRef = useRef(null);
 
   useEffect(() => {
     const fetchCompaniesData = async () => {
@@ -325,34 +321,6 @@ const MarketMatrix = () => {
     setSortConfig({ key, direction });
   };
 
-  // Handle click outside to close dropdown
-  useEffect(() => {
-    const handleClickOutside = (event) => {
-      // Don't close if the dropdown ref doesn't exist yet
-      if (!stateDropdownRef.current) return;
-      
-      // Don't close if the click is inside the dropdown
-      if (stateDropdownRef.current.contains(event.target)) return;
-      
-      // Additional check: don't close if interacting with a search input
-      if (event.target.classList?.contains('state-search-input')) return;
-      
-      // If none of the above, safe to close the dropdown
-      setStateDropdownOpen(false);
-    };
-
-    // Add event listener when dropdown is open
-    if (stateDropdownOpen) {
-      // Use mousedown for better cross-browser compatibility
-      document.addEventListener('mousedown', handleClickOutside);
-    }
-
-    // Cleanup
-    return () => {
-      document.removeEventListener('mousedown', handleClickOutside);
-    };
-  }, [stateDropdownOpen]);
-
   // Toggle state filter expansion
   const toggleStateFilter = () => {
     setStateFilterExpanded(!stateFilterExpanded);
@@ -479,114 +447,57 @@ const MarketMatrix = () => {
         <div className={`collapsible-content ${stateFilterExpanded ? 'expanded' : 'collapsed'}`}>
           {stateFilterExpanded && (
             <>
-              <div className="state-dropdown-container" ref={stateDropdownRef}>
-                <div 
-                  className="state-dropdown-header" 
-                  onClick={() => setStateDropdownOpen(!stateDropdownOpen)}
-                >
-                  <span className="state-dropdown-label">
-                    {selectedStates.length === 0 
-                      ? "Select states..." 
-                      : `${selectedStates.length} state${selectedStates.length > 1 ? 's' : ''} selected`}
-                  </span>
-                  <span className="state-dropdown-arrow">
-                    {stateDropdownOpen ? '▲' : '▼'}
-                  </span>
-                </div>
+              <div className="state-dropdown-container">
+                {/* Remove the dropdown header that had click handler */}
                 
-                {stateDropdownOpen && (
-                  <>
-                    <div 
-                      className="dropdown-backdrop"
-                      onClick={() => setStateDropdownOpen(false)}
-                      style={{
-                        position: 'fixed',
-                        top: 0,
-                        left: 0,
-                        right: 0,
-                        bottom: 0,
-                        zIndex: 90,
-                        display: isMobile ? 'block' : 'none'
-                      }}
+                {/* Always show the state selection interface when section is expanded */}
+                <div className="state-selection-interface">
+                  <div className="state-search-container">
+                    <input
+                      type="text"
+                      className="state-search-input"
+                      placeholder="Search states..."
+                      value={stateSearchTerm}
+                      onChange={(e) => setStateSearchTerm(e.target.value)}
                     />
-                    <div 
-                      className="state-dropdown-menu"
-                      onClick={(e) => {
-                        // Prevent clicks inside dropdown from closing it
-                        e.stopPropagation();
-                      }}
+                  </div>
+                  
+                  <div className="state-dropdown-actions">
+                    <button 
+                      className="state-action-button"
+                      onClick={(e) => selectAllStates()}
                     >
-                      <div className="state-search-container">
-                        <input
-                          type="text"
-                          className="state-search-input"
-                          placeholder="Search states..."
-                          value={stateSearchTerm}
-                          onChange={(e) => {
-                            e.stopPropagation();
-                            setStateSearchTerm(e.target.value);
-                          }}
-                          onClick={(e) => e.stopPropagation()}
-                          onFocus={(e) => e.stopPropagation()}
-                          autoFocus
-                        />
+                      Select All
+                    </button>
+                    <button 
+                      className="state-action-button"
+                      onClick={(e) => clearStateSelection()}
+                    >
+                      Clear All
+                    </button>
+                  </div>
+                  
+                  <div className="state-options-container">
+                    {getFilteredStates().map(state => (
+                      <div 
+                        key={state} 
+                        className={`state-option ${selectedStates.includes(state) ? 'selected' : ''}`}
+                        onClick={() => toggleStateSelection(state)}
+                      >
+                        <span className="state-checkbox">
+                          {selectedStates.includes(state) ? '✓' : ''}
+                        </span>
+                        <span className="state-name">{state}</span>
                       </div>
-                      
-                      <div className="state-dropdown-actions">
-                        <button 
-                          className="state-action-button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            selectAllStates();
-                            // Keep search focused
-                            document.querySelector('.state-search-input')?.focus();
-                          }}
-                        >
-                          Select All
-                        </button>
-                        <button 
-                          className="state-action-button"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            clearStateSelection();
-                            // Keep search focused
-                            document.querySelector('.state-search-input')?.focus();
-                          }}
-                        >
-                          Clear All
-                        </button>
+                    ))}
+                    
+                    {getFilteredStates().length === 0 && (
+                      <div className="no-states-found">
+                        No states match your search
                       </div>
-                      
-                      <div className="state-options-container">
-                        {getFilteredStates().map(state => (
-                          <div 
-                            key={state} 
-                            className={`state-option ${selectedStates.includes(state) ? 'selected' : ''}`}
-                            onClick={(e) => {
-                              // Make sure to stop propagation
-                              e.stopPropagation();
-                              // Toggle the state selection
-                              toggleStateSelection(state);
-                              // Keep search focused
-                              document.querySelector('.state-search-input')?.focus();
-                            }}
-                          >
-                            <span className="state-checkbox">
-                              {selectedStates.includes(state) ? '✓' : ''}
-                            </span>
-                            <span className="state-name">{state}</span>
-                          </div>
-                        ))}
-                        
-                        {getFilteredStates().length === 0 && (
-                          <div className="no-states-found">
-                            No states match your search
-                          </div>
-                        )}
-                      </div>
-                    </div>
-                  </>
-                )}
+                    )}
+                  </div>
+                </div>
               </div>
               
               {/* National Companies Checkbox */}
